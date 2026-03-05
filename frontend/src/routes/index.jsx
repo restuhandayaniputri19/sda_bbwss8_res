@@ -44,6 +44,7 @@ import PrediksiCuacaAdmin from "../features/admin/prediksi-cuaca";
 import RpsdaPage from "../features/rpsda";
 import PrediksiCuacaPage from "../features/prediksi-cuaca";
 import InformasiBerkalaPage from "../features/informasi-berkala";
+import MajalahUser from "../features/majalah";
 
 export const router = createBrowserRouter([
   {
@@ -99,6 +100,10 @@ export const router = createBrowserRouter([
         element: <StrukturOrganisasi />,
       },
       {
+        path: "/sejarah",
+        element: <Sejarah />
+      },
+      {
         path: "/profil-pejabat",
         element: <ProfilePejabat />,
       },
@@ -137,7 +142,11 @@ export const router = createBrowserRouter([
       {
         path: "/informasi-berkala",
         element: <InformasiBerkalaPage />,
-      }
+      },
+      {
+        path: "/majalah",
+        element: <MajalahUser />, // Pakai komponen yang baru kita buat
+      },
     ],
   },
   {

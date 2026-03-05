@@ -39,7 +39,7 @@ const LayoutUser = () => {
           links={[
             {
               path: "/",
-              label: "Home",
+              label: "Beranda",
             },
             {
               path: "#",
@@ -84,18 +84,6 @@ const LayoutUser = () => {
               label: "Publikasi",
               submenu: [
                 {
-                  path: "https://pdsda.sda.pu.go.id/",
-                  label: "WRDC",
-                },
-                {
-                  path: "https://mppbbwss8.com/visiting-point",
-                  label: "Visiting Point",
-                },
-                {
-                  path: "https://bbwssumateraviii.co.id",
-                  label: "E-Hidrologi",
-                },
-                {
                   path: "https://sinbad.sda.pu.go.id/simadu/main/login.php",
                   label: "Early Warning System (E-SIMADU)",
                 },
@@ -138,6 +126,10 @@ const LayoutUser = () => {
                 //   path: "/tkpsda",
                 //   label: "TKPSDA",
                 // },
+                {
+                  path: "/majalah",
+                  label: "Majalah"
+                },
                 {
                   path: "/berita",
                   label: "Berita",

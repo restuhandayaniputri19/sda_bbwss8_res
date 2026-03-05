@@ -33,7 +33,7 @@ const HomePage = () => {
   const { beritaDataHighlighted } = useBeritaDataHighlighted();
   const { banners } = useBannerData();
   const { infografisData } = useInfografisData();
-  const { layananTerpaduData } = useLayananTerpaduData();
+  const { layananTerpaduData: apiData } = useLayananTerpaduData();
   const { galeriData } = useGaleriData();
   const { youtubeData } = useYoutubeData();
   const { majalahData } = useMajalahData();
@@ -60,6 +60,27 @@ const HomePage = () => {
     link.click();
     document.body.removeChild(link); // Clean up the link
   };
+
+ const layananTerpaduData = [
+  {
+    id: 1,
+    img: "public/images/wrdc.png",
+    title: "WRDC",
+    url: "https://pdsda.sda.pu.go.id/",
+  },
+  {
+    id: 2,
+    img: "public/images/visiting-point.png",
+    title: "Visiting Point",
+    url: "https://sda.pu.go.id/balai/bbwssumatera8/map/",
+  },
+  {
+    id: 3,
+    img: "public/images/e-hidrologi.png",
+    title: "E-Hidrologi",
+    url: "https://bbwssumateraviii.co.id",
+  },
+];
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -98,11 +119,11 @@ const HomePage = () => {
         )}
       </section>
 
-      <section className="bg-mango text-indigo hover:text-blue-950 py-2">
+      <section className="bg-mango text-indigo hover:text-blue-950 py-1">
         <div className="flex flex-row items-center w-full overflow-hidden justify-between">
           {/* RealTimeClock component */}
 
-          <div className="flex flex-row gap-3 pl-10 pr-2 bg-mango z-10">
+          <div className="flex flex-row gap-2 pl-6 pr-2 bg-mango z-10 text-sm">
             <RealTimeClock />
             <div className="border-l border-l-black"></div>
             <WeatherForecast />
@@ -118,7 +139,7 @@ const HomePage = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <li>{item.title}</li>
+                <span>{item.title}</span>
               </a>
             ))}
           </div>
@@ -350,27 +371,25 @@ const HomePage = () => {
               <Carousel className="w-full">
                 <CarouselContent className="-ml-1">
                   {layananTerpaduData?.map((item, index) => (
-                    <CarouselItem
-                      key={index}
-                      className="pl-1 sm:basis-1/2 lg:basis-1/4 p-2"
-                    >
-                      <div
-                        className="flex flex-col bg-white rounded-sm shadow-lg cursor-pointer"
-                        onClick={() => {
-                          window.location.href = item.url;
-                        }}
-                      >
-                        <img
-                          src={item.img}
-                          alt="Image"
-                          className="w-full object-cover rounded-sm"
-                        />
-                        <p className="text-center p-2 absolute bottom-2 text-white font-semibold bg-indigo min-w-36 rounded-tr-md">
-                          {item.title}
-                        </p>
-                      </div>
-                    </CarouselItem>
-                  ))}
+  <CarouselItem key={index} className="pl-1 sm:basis-1/2 lg:basis-1/3 p-2">
+    <a href={item.url} target="_blank" rel="noopener noreferrer">
+      <div className="flex flex-col bg-white rounded-md shadow-md border border-gray-300">
+        <div className="w-full h-44 bg-gray-200">
+          <img
+            src={item.img}
+            alt={item.title}
+            className="w-full h-full object-contain"
+          />
+        </div>
+        <div className="p-3 bg-indigo text-center">
+          <span className="text-white font-bold block uppercase text-sm">
+            {item.title}
+          </span>
+        </div>
+      </div>
+    </a>
+  </CarouselItem>
+))}
                 </CarouselContent>
                 <CarouselPrevious className="absolute top-1/2 left-4 transform -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-200 focus:outline-none" />
                 <CarouselNext className="absolute top-1/2 right-4 transform -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-200 focus:outline-none" />
@@ -414,45 +433,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section className="p-10">
-        <div className="flex flex-col space-y-5 border border-indigo rounded-sm">
-          <h1 className="text-2xl border-b border-b-indigo p-2 bg-indigo text-white">
-            Majalah
-          </h1>
-          {majalahData !== undefined ? (
-            <Carousel autoSlide={true} interval={3000} className="w-full">
-              <CarouselContent className="-ml-1">
-                {majalahData.map((item, index) => (
-                  <CarouselItem
-                    key={index}
-                    className="pl-1 sm:basis-1/2 lg:basis-1/4 p-2"
-                  >
-                    <div
-                      className="flex flex-col bg-white rounded-sm shadow-lg cursor-pointer"
-                      onClick={() => {
-                        window.location.href = item.url;
-                      }}
-                    >
-                      <img
-                        src={item.thumbnail}
-                        alt="Image"
-                        className="w-full object-cover rounded-sm"
-                      />
-                      <p className="text-center p-2 absolute bottom-2 text-white font-semibold bg-indigo min-w-36 rounded-tr-md">
-                        {truncateText(item.title, 20)}
-                      </p>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="absolute top-1/2 left-4 transform -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-200 focus:outline-none" />
-              <CarouselNext className="absolute top-1/2 right-4 transform -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-200 focus:outline-none" />
-            </Carousel>
-          ) : (
-            ""
-          )}
-        </div>
-      </section>
+      
 
       {fullScreenImage && (
         <div
