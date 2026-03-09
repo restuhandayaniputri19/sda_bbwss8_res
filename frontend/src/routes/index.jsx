@@ -31,6 +31,7 @@ import ProtectedRoutes from "./protectedRoutes";
 import Publication from "../features/publication";
 import Sejarah from "../features/profil/Sejarah";
 import StrukturOrganisasi from "../features/profil/StrukturOrganisasi";
+import SatkerPage from "../features/satker";
 import ProfilePejabat from "../features/profil/pejabat";
 import StrukturOrganisasiAdmin from "../features/admin/struktur-organisasi";
 import Tkpsda from "../features/tkpsda";
@@ -54,6 +55,10 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <HomePage />,
+      },
+      {
+        path: "/satker",
+        element: <SatkerPage />,
       },
       {
         path: "/aplikasi",
