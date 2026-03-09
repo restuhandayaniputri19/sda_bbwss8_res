@@ -8,9 +8,9 @@ import { Link } from "react-router-dom";
 const ProfilMenu: React.FC<{ label: string }> = ({ label }) => {
   return (
     <div className="group flex items-center h-full relative">
-      <button className="font-bold flex items-center text-sm text-indigo p-3 group-hover:bg-slate-50 rounded-t-lg transition-all">
+      <button className="font-bold flex items-center text-sm text-black p-3 group-hover:bg-slate-50 rounded-t-lg transition-all hover:text-indigo">
         {label}
-        <ChevronDown className="ml-1 w-4 h-4 group-hover:rotate-180 transition-transform" />
+          <ChevronDown className="ml-1 w-4 h-4 group-hover:rotate-180 transition-transform" />
       </button>
 
       {/* Panel Mega Menu */}
@@ -97,9 +97,12 @@ const ProfilMenu: React.FC<{ label: string }> = ({ label }) => {
           <div className="p-5 bg-indigo text-white">
             <div className="flex items-center gap-2 mb-4">
               <Phone size={18} className="text-mango" />
-              <h4 className="font-bold text-xs uppercase tracking-widest text-mango">
-                Kontak &amp; Lokasi
-              </h4>
+              <Link
+  to="/kontak-lokasi"
+  className="font-bold text-xs uppercase tracking-widest text-mango hover:underline"
+>
+  Kontak &amp; Lokasi
+</Link>
             </div>
             <ul className="text-[12px] leading-relaxed mb-4 opacity-80">
               <li className="flex items-center gap-2">

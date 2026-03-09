@@ -49,19 +49,20 @@ const Dropdown: React.FC<DropdownProps> = ({ label, submenu }) => {
 
   return (
     <div
-      ref={dropdownRef}
-      className="relative flex"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+  ref={dropdownRef}
+  className="relative flex items-center self-center"
+  onMouseEnter={handleMouseEnter}
+  onMouseLeave={handleMouseLeave}
+>
       {/* Dropdown Trigger */}
-      <div
-        className={`cursor-pointer font-medium flex items-center text-center text-base transition-colors hover:underline  ${
-          isOpen ? "bg-indigo  text-white" : "text-black"
-        } p-2`}
-      >
-        {label} <ChevronDown color={isOpen ? "#ffff" : "#000"} />
-      </div>
+<div
+  className={`cursor-pointer font-bold flex items-center text-center text-sm transition-all rounded-t-lg hover:bg-slate-50 ${
+  isOpen ? "text-indigo" : "text-black"
+} p-3`}
+>
+  {label}
+  <ChevronDown className={`ml-1 w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+</div>
 
       {/* Dropdown Menu */}
       {isOpen && (

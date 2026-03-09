@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import Dropdown from "../dropdown";
 import { Link, useLocation } from "react-router-dom";
 import ProfilMenu from "./ProfilMenu";
+import PublikasiMenu from "./PublikasiMenu";
+import InformasiPublikMenu from "./InformasiPublikMenu";
 
 interface NavbarProps {
   backgroundColor?: string;
@@ -87,7 +89,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 // KONTEN KHUSUS INDEX 0 (Misal: Beranda atau Highlight)
                 if (index === 0) {
                   return (
-                    <Link key={index} to={link.path} className="font-medium flex items-center text-base text-black p-2 hover:text-indigo">
+                    <Link key={index} to={link.path} className="font-bold flex items-center self-center text-sm text-black p-3 hover:text-indigo hover:bg-slate-50 rounded-t-lg transition-all">
                       {link.label}
                     </Link>
                   );
@@ -98,6 +100,14 @@ const Navbar: React.FC<NavbarProps> = ({
                   return (
                     <ProfilMenu key={index} label={link.label} />
                   );
+                }
+
+                // Tambahan update
+                if (index === 2) {
+                  return <PublikasiMenu key={index} label={link.label} />;
+                }
+                if (index === 3) {
+                  return <InformasiPublikMenu key={index} label={link.label} />;
                 }
 
                 // LOGIKA BAWAAN (Index 2 ke atas)

@@ -45,6 +45,7 @@ import RpsdaPage from "../features/rpsda";
 import PrediksiCuacaPage from "../features/prediksi-cuaca";
 import InformasiBerkalaPage from "../features/informasi-berkala";
 import MajalahUser from "../features/majalah";
+import KontakLokasi from "../features/profil/KontakLokasi";
 
 export const router = createBrowserRouter([
   {
@@ -110,6 +111,10 @@ export const router = createBrowserRouter([
       {
         path: "/lokasi-kantor",
         element: <LokasiKantor />,
+      },
+      {
+        path: "/kontak-lokasi",
+        element: <KontakLokasi />,
       },
       {
         path: "/pola-rencana",
