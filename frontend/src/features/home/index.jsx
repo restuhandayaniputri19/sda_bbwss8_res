@@ -40,77 +40,39 @@ const SECTIONS = [
 
 // ── CSS scroll snap (inject sekali ke <head>) ─────────────────────────────────
 const snapStyles = `
-  html, body { margin: 0; padding: 0; }
-
-  .snap-container {
-    height: 100vh;
-    overflow-y: scroll;
+  html {
     scroll-snap-type: y mandatory;
+    overflow-y: scroll;
     scroll-behavior: smooth;
   }
-  .snap-container::-webkit-scrollbar { width: 5px; }
-  .snap-container::-webkit-scrollbar-thumb {
-    background: #F5A623;
-    border-radius: 99px;
-  }
+  html::-webkit-scrollbar { width: 5px; }
+  html::-webkit-scrollbar-thumb { background: #F5A623; border-radius: 99px; }
 
   .snap-section {
     scroll-snap-align: start;
     height: 100vh;
     width: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
     position: relative;
   }
 
-  /* Nav Dots */
   .nav-dots {
-    position: fixed;
-    right: 18px;
-    top: 50%;
+    position: fixed; right: 18px; top: 50%;
     transform: translateY(-50%);
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    z-index: 9999; display: flex; flex-direction: column; gap: 10px;
   }
   .nav-dot-btn {
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    border: 2px solid #CBD5E1;
-    background: #fff;
-    cursor: pointer;
-    transition: all 0.25s;
-    position: relative;
-    padding: 0;
+    width: 11px; height: 11px; border-radius: 50%;
+    border: 2px solid #CBD5E1; background: #fff;
+    cursor: pointer; transition: all 0.25s; position: relative; padding: 0;
   }
-  .nav-dot-btn:hover {
-    background: #D4881A;
-    border-color: #D4881A;
-    transform: scale(1.25);
-  }
-  .nav-dot-btn.dot-active {
-    background: #F5A623;
-    border-color: #0B3D5E;
-    transform: scale(1.3);
-  }
+  .nav-dot-btn:hover { background: #D4881A; border-color: #D4881A; transform: scale(1.25); }
+  .nav-dot-btn.dot-active { background: #F5A623; border-color: #0B3D5E; transform: scale(1.3); }
   .nav-dot-btn .dot-tooltip {
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: #0B3D5E;
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 4px;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-    font-family: sans-serif;
+    position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+    background: #0B3D5E; color: #fff; font-size: 10px; font-weight: 700;
+    padding: 3px 8px; border-radius: 4px; white-space: nowrap;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s; font-family: sans-serif;
   }
   .nav-dot-btn:hover .dot-tooltip { opacity: 1; }
 `;
@@ -140,28 +102,23 @@ const HomePage = () => {
 
   // ── Deteksi section aktif untuk nav dots ──
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const idx = sectionRefs.current.indexOf(entry.target);
-            if (idx !== -1) setActiveSection(idx);
-          }
-        });
-      },
-      { root: container, threshold: 0.4 }
-    );
-
-    sectionRefs.current.forEach((el) => el && observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const idx = sectionRefs.current.indexOf(entry.target);
+          if (idx !== -1) setActiveSection(idx);
+        }
+      });
+    },
+    { root: null, threshold: 0.5 } // root: null = pakai viewport
+  );
+  sectionRefs.current.forEach((el) => el && observer.observe(el));
+  return () => observer.disconnect();
+}, []);
   const scrollToSection = (idx) => {
-    sectionRefs.current[idx]?.scrollIntoView({ behavior: "smooth" });
-  };
+  sectionRefs.current[idx]?.scrollIntoView({ behavior: "smooth" });
+};
 
   // ── Handler asli tetap utuh ──
   const handleImageClick      = (src) => setFullScreenImage(src);
@@ -204,7 +161,6 @@ const HomePage = () => {
       </div>
 
       {/* ══════════════ SCROLL SNAP CONTAINER ══════════════ */}
-      <div className="snap-container" ref={containerRef}>
 
         {/* ── SNAP 1/7 · HERO / BANNER UTAMA ── */}
         <section
@@ -532,8 +488,6 @@ const HomePage = () => {
             </div>
           </div>
         </section>
-
-      </div>{/* ── end snap-container ── */}
 
       {/* ── Modal: Full Screen Image ── */}
       {fullScreenImage && (
