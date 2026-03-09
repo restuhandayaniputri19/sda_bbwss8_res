@@ -9,8 +9,8 @@ export default defineConfig(({mode}) => {
     base: "/balai/bbwssumatera8/",
     server: {
       proxy: {
-        "/balai/bbwssumatera8/api": {
-          target: "https://sda.pu.go.id",
+        "/api/": {
+          target: env.VITE_API_TARGET,
           changeOrigin: true,
           secure: false,
         },
