@@ -47,6 +47,7 @@ import PrediksiCuacaPage from "../features/prediksi-cuaca";
 import InformasiBerkalaPage from "../features/informasi-berkala";
 import MajalahUser from "../features/majalah";
 import KontakLokasi from "../features/profil/KontakLokasi";
+import SatuanKerja from "../features/profil/SatuanKerja";
 
 export const router = createBrowserRouter([
   {
@@ -120,6 +121,10 @@ export const router = createBrowserRouter([
       {
         path: "/kontak-lokasi",
         element: <KontakLokasi />,
+      },
+      {
+        path: "/satker",
+        element: <SatuanKerja />,
       },
       {
         path: "/pola-rencana",

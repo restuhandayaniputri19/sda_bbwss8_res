@@ -41,7 +41,7 @@ const SECTIONS = [
 // ── CSS scroll snap (inject sekali ke <head>) ─────────────────────────────────
 const snapStyles = `
   html {
-    scroll-snap-type: y mandatory;
+    scroll-snap-type: y proximity;
     overflow-y: scroll;
     scroll-behavior: smooth;
   }
@@ -459,9 +459,9 @@ const HomePage = () => {
 
         {/* ── SNAP 7/7 · YOUTUBE ── */}
         <section
-          id="youtube"
-          className="snap-section"
-          ref={(el) => (sectionRefs.current[6] = el)}
+           id="youtube"
+           className="min-h-screen w-full relative"
+           ref={(el) => (sectionRefs.current[6] = el)}
         >
           <div className="p-10 h-full flex flex-col justify-center">
             <div className="flex flex-col space-y-5 border border-indigo rounded-sm">
