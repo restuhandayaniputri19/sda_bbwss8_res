@@ -165,7 +165,7 @@ const KontakLokasi = () => {
             Berita Terkini
           </h1>
           <div className="flex flex-col">
-            {beritaData.map((item, index) => (
+            {(beritaData ?? []).map((item, index) => (
               <Card
                 key={index}
                 shadow={true}

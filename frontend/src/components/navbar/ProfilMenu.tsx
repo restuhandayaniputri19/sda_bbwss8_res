@@ -120,54 +120,34 @@ const ProfilMenu: React.FC<{ label: string }> = ({ label }) => {
                 <Mail size={14} className="text-mango" />
                 <span>bbws.sumatera8@pu.go.id</span>
               </li>
-              <li className="flex items-center gap-2 ">
-                <Instagram size={14} className="text-mango" />
-                <span>
-                  <Link
-                    to="https://www.instagram.com/pupr_sda_sumatera8/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Instagram
-                  </Link>
-                </span>
-              </li>
-              <li className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer">
-                <Youtube size={14} className="text-mango" />
-                <span>
-                  <Link
-                    to="https://www.youtube.com/@bbwssumateraviii4910"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Youtube
-                  </Link>
-                </span>
-              </li>
               <li className="flex items-center gap-2">
-                <Facebook size={14} className="text-mango" />
-                <span>
-                  <Link
-                    to="https://www.facebook.com/bbwss8"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Facebook
-                  </Link>
-                </span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Map size={14} className="text-mango" />
-                <span>
-                  <Link
-                    to="https://maps.app.goo.gl/sNibrVZf7HyLPPGU8"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Google Map
-                  </Link>
-                </span>
-              </li>
+  <Instagram size={14} className="text-mango" />
+  <Link to="https://www.instagram.com/pupr_sda_sumatera8/" target="_blank" rel="noopener noreferrer"
+    className="hover:text-mango transition-colors">
+    Instagram
+  </Link>
+</li>
+<li className="flex items-center gap-2">
+  <Youtube size={14} className="text-mango" />
+  <Link to="https://www.youtube.com/@bbwssumateraviii4910" target="_blank" rel="noopener noreferrer"
+    className="hover:text-mango transition-colors">
+    Youtube
+  </Link>
+</li>
+<li className="flex items-center gap-2">
+  <Facebook size={14} className="text-mango" />
+  <Link to="https://www.facebook.com/bbwss8" target="_blank" rel="noopener noreferrer"
+    className="hover:text-mango transition-colors">
+    Facebook
+  </Link>
+</li>
+<li className="flex items-center gap-2">
+  <Map size={14} className="text-mango" />
+  <Link to="https://maps.app.goo.gl/sNibrVZf7HyLPPGU8" target="_blank" rel="noopener noreferrer"
+    className="hover:text-mango transition-colors">
+    Google Map
+  </Link>
+</li>
             </ul>
           </div>
         </div>
