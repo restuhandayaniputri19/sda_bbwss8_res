@@ -30,7 +30,6 @@ import { useBeritaDataHighlighted } from "./hooks/useBeritaDataHighlighted";
 // ── Definisi section untuk nav dots ──────────────────────────────────────────
 const SECTIONS = [
   { id: "hero",       label: "Hero / Banner" },
-  { id: "pengumuman", label: "Pengumuman" },
   { id: "berita",     label: "Berita" },
   { id: "geoportal",  label: "Geoportal" },
   { id: "banner",     label: "Banner" },
@@ -41,7 +40,7 @@ const SECTIONS = [
 // ── CSS scroll snap (inject sekali ke <head>) ─────────────────────────────────
 const snapStyles = `
   html {
-    scroll-snap-type: y mandatory;
+    scroll-snap-type: y proximity;
     overflow-y: scroll;
     scroll-behavior: smooth;
   }
@@ -52,7 +51,7 @@ const snapStyles = `
     scroll-snap-align: start;
     height: 100vh;
     width: 100%;
-    overflow: hidden;
+    overflow: auto;
     position: relative;
   }
 
@@ -162,13 +161,9 @@ const HomePage = () => {
 
       {/* ══════════════ SCROLL SNAP CONTAINER ══════════════ */}
 
-        {/* ── SNAP 1/7 · HERO / BANNER UTAMA ── */}
-        <section
-          id="hero"
-          className="snap-section"
-          ref={(el) => (sectionRefs.current[0] = el)}
-        >
-          <div className="max-w-5xl mx-auto px-4 h-full flex items-center justify-center">
+        {/* ── SNAP 1/6 · HERO / BANNER UTAMA ── */}
+        <section id="hero" className="snap-section" ref={(el) => (sectionRefs.current[0] = el)}>
+          <div className="max-w-5xl mx-auto px-4 h-full flex flex-col justify-center">
             {beritaDataHighlighted?.length > 0 ? (
               <Carousel autoSlide={true} interval={5000} className="w-full">
                 <CarouselContent className="-ml-1">
@@ -182,7 +177,7 @@ const HomePage = () => {
                         <img
                           src={item.img}
                           alt={item.title}
-                          className="w-full h-[85vh] object-cover"
+                          className="w-full h-[calc(100vh-120px)] object-cover"
                         />
                         <div className="absolute inset-0 flex flex-col justify-end">
                           <h1 className="min-w-96 w-fit text-xl text-white bg-indigo p-5 rounded-tr-md">
@@ -199,15 +194,7 @@ const HomePage = () => {
             ) : (
               <p className="text-gray-400">No highlighted news available</p>
             )}
-          </div>
-        </section>
 
-        {/* ── SNAP 2/7 · PENGUMUMAN ── */}
-        <section
-          id="pengumuman"
-          className="snap-section flex flex-col"
-          ref={(el) => (sectionRefs.current[1] = el)}
-        >
           {/* Bar marquee asli */}
           <div className="bg-mango text-indigo hover:text-blue-950 py-1 shrink-0">
             <div className="flex flex-row items-center w-full overflow-hidden justify-between">
@@ -231,31 +218,14 @@ const HomePage = () => {
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Daftar pengumuman sebagai kartu */}
-          <div className="flex-1 overflow-y-auto p-10">
-            <h1 className="text-2xl text-indigo font-bold mb-6">PENGUMUMAN</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {pengumumanData.map((item) => (
-                <a
-                  key={item.id}
-                  href={item.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block border border-indigo rounded-md p-4 hover:bg-indigo hover:text-white transition-colors duration-200"
-                >
-                  <p className="font-semibold text-sm line-clamp-3">{item.title}</p>
-                </a>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── SNAP 3/7 · BERITA ── */}
+        {/* ── SNAP 2/6 · BERITA ── */}
         <section
           id="berita"
           className="snap-section"
-          ref={(el) => (sectionRefs.current[2] = el)}
+          ref={(el) => (sectionRefs.current[1] = el)}
         >
           <div className="p-10 space-y-8 h-full flex flex-col justify-center">
             <h1 className="text-2xl text-indigo font-bold">BERITA</h1>
@@ -308,11 +278,11 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* ── SNAP 4/7 · GEOPORTAL ── */}
+        {/* ── SNAP 3/6 · GEOPORTAL ── */}
         <section
           id="geoportal"
           className="snap-section"
-          ref={(el) => (sectionRefs.current[3] = el)}
+          ref={(el) => (sectionRefs.current[2] = el)}
         >
           <div className="p-10 h-full flex flex-col justify-center">
             <h1 className="text-2xl text-indigo font-bold mb-4">Geoportal</h1>
@@ -363,22 +333,22 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* ── SNAP 5/7 · BANNER (CustomCarousel) ── */}
+        {/* ── SNAP 4/6 · BANNER (CustomCarousel) ── */}
         <section
           id="banner"
           className="snap-section"
-          ref={(el) => (sectionRefs.current[4] = el)}
+          ref={(el) => (sectionRefs.current[3] = el)}
         >
           <div className="p-10 h-full flex items-center justify-center">
             {banners !== undefined ? <CustomCarousel items={banners} /> : null}
           </div>
         </section>
 
-        {/* ── SNAP 6/7 · INFOGRAFIS + GALERI + LAYANAN TERPADU ── */}
+        {/* ── SNAP 5/6 · INFOGRAFIS + GALERI + LAYANAN TERPADU ── */}
         <section
           id="konten"
           className="snap-section"
-          ref={(el) => (sectionRefs.current[5] = el)}
+          ref={(el) => (sectionRefs.current[4] = el)}
         >
           <div className="grid grid-cols-12 gap-4 p-10 h-full">
             {/* Infografis */}
@@ -457,11 +427,11 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* ── SNAP 7/7 · YOUTUBE ── */}
+        {/* ── SNAP 6/6 · YOUTUBE ── Footer */}
         <section
-          id="youtube"
-          className="snap-section"
-          ref={(el) => (sectionRefs.current[6] = el)}
+           id="youtube"
+           className="w-full relative"
+           ref={(el) => (sectionRefs.current[5] = el)}
         >
           <div className="p-10 h-full flex flex-col justify-center">
             <div className="flex flex-col space-y-5 border border-indigo rounded-sm">

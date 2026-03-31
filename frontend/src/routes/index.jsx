@@ -50,6 +50,7 @@ import KontakLokasi from "../features/profil/KontakLokasi";
 import PermintaanDataPage from "../features/layanan/permintaan-data";
 import AdminPermintaan from "../features/admin/permintaan-data";
 import AdminDetailPermintaanData from "../features/admin/permintaan-data/detail";
+import SatuanKerja from "../features/profil/SatuanKerja";
 
 export const router = createBrowserRouter([
   {
@@ -145,6 +146,10 @@ export const router = createBrowserRouter([
       {
         path: "/kontak-lokasi",
         element: <KontakLokasi />,
+      },
+      {
+        path: "/satker",
+        element: <SatuanKerja />,
       },
       {
         path: "/pola-rencana",

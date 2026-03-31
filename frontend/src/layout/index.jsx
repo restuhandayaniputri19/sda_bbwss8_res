@@ -120,6 +120,11 @@ const LayoutUser = () => {
 
             {
               path: "#",
+              label: "Layanan Terpadu",
+            },
+
+            {
+              path: "#",
               label: "Informasi Publik",
               submenu: [
                 // {
