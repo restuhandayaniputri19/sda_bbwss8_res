@@ -1,7 +1,7 @@
 import "react-quill/dist/quill.snow.css";
 
 import { CustomFormField, Form } from "../../../../components/form";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { editBerita, postBerita } from "../../../../services/berita/api";
 
 import { Button } from "../../../../components/button";
