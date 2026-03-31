@@ -47,6 +47,9 @@ import PrediksiCuacaPage from "../features/prediksi-cuaca";
 import InformasiBerkalaPage from "../features/informasi-berkala";
 import MajalahUser from "../features/majalah";
 import KontakLokasi from "../features/profil/KontakLokasi";
+import PermintaanDataPage from "../features/layanan/permintaan-data";
+import AdminPermintaan from "../features/admin/permintaan-data";
+import AdminDetailPermintaanData from "../features/admin/permintaan-data/detail";
 
 export const router = createBrowserRouter([
   {
@@ -56,6 +59,28 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <HomePage />,
+      },
+      {
+        path: "/layanan",
+        children: [
+          {
+            path: "permintaan-data",
+            element: <PermintaanDataPage />,
+          },
+          {
+            path: "adm-permintaan-data",
+            children: [
+              {
+                index: true, // Ini untuk /layanan/adm-permintaan-data (list)
+                element: <AdminPermintaan />,
+              },
+              {
+                path: ":id", // Ini untuk /layanan/adm-permintaan-data/<id>
+                element: <AdminDetailPermintaanData />, 
+              }
+            ]
+          }
+        ]
       },
       {
         path: "/satker",
@@ -238,6 +263,19 @@ export const router = createBrowserRouter([
             path: "prediksi-cuaca",
             element: <PrediksiCuacaAdmin />,
           },
+          {
+            path: "permintaan-data",
+            children: [
+              {
+                index: true, // Ini untuk /layanan/adm-permintaan-data (list)
+                element: <AdminPermintaan />,
+              },
+              {
+                path: ":id", // Ini untuk /layanan/adm-permintaan-data/<id>
+                element: <AdminDetailPermintaanData />, 
+              }
+            ]
+          }
         ],
       },
       {

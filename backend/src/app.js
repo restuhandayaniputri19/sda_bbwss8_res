@@ -18,6 +18,7 @@ const informasiRoutes = require("./routes/informasiRoutes");
 const pengumumanRoutes = require("./routes/pengumumanRoutes");
 const rpsdaRoutes = require("./routes/rpsdaRoutes");
 const prediksiCuacaRoutes = require("./routes/prediksiCuacaRoutes");
+const permintaanDataRoutes = require("./routes/permintaanDataRoutes");
 const cors = require("cors");
 const path = require("path"); // Import path module
 
@@ -51,6 +52,7 @@ app.use("/api/layanan-terpadu", layananTerpaduRoutes);
 app.use("/api/majalah", majalahRoutes);
 app.use("/api/berita", beritaRoutes);
 app.use("/api/struktur-organisasi", strukturOrganisasiRoutes);
+app.use("/api/permintaan-data", permintaanDataRoutes);
 app.use("/api/pola-rencana", polaRencanaRoutes);
 app.use("/api/tugas-fungsi", tugasFungsiRoutes);
 app.use("/api/dipa", dipaRoutes);
