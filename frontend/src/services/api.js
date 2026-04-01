@@ -10,7 +10,7 @@ export const setAxiosConfig = (token) => {
 };
 
 axiosWithConfig.interceptors.request.use((axiosConfig) => {
-  axiosConfig.baseURL = "";
+  axiosConfig.baseURL = import.meta.env.VITE_BASE_URL || baseSubPath;
   axiosConfig.headers.Authorization = `Bearer ${bearerToken}`;
 
   return axiosConfig;

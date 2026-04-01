@@ -15,7 +15,7 @@ interface LayananTerpaduMenuProps {
 
 const layananItems = [
   {
-    to: "/rekomtek",
+    to: "/layanan/rekomtek",
     label: "Rekomtek",
     desc: "Rekomendasi Teknis SDA",
     icon: FileText,
@@ -23,7 +23,7 @@ const layananItems = [
     bg: "bg-blue-50",
   },
   {
-    to: "/posko-banjir",
+    to: "/layanan/posko-banjir",
     label: "Posko Banjir",
     desc: "Informasi & Laporan Banjir",
     icon: AlertTriangle,
@@ -31,7 +31,7 @@ const layananItems = [
     bg: "bg-amber-50",
   },
   {
-    to: "/permintaan-data",
+    to: "/layanan/permintaan-data",
     label: "Permintaan Data",
     desc: "Ajukan Permintaan Data SDA",
     icon: Database,
