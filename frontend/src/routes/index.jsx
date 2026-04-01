@@ -51,6 +51,8 @@ import PermintaanDataPage from "../features/layanan/permintaan-data";
 import AdminPermintaan from "../features/admin/permintaan-data";
 import AdminDetailPermintaanData from "../features/admin/permintaan-data/detail";
 import SatuanKerja from "../features/profil/SatuanKerja";
+import PoskoBanjirPage from "../features/layanan/poskobanjir";
+import RekomtekPage from "../features/layanan/rekomtek";
 
 export const router = createBrowserRouter([
   {
@@ -67,6 +69,14 @@ export const router = createBrowserRouter([
           {
             path: "permintaan-data",
             element: <PermintaanDataPage />,
+          },
+          {
+            path: "posko-banjir",
+            element: <PoskoBanjirPage />,
+          },
+          {
+            path: "rekomtek",
+            element: <RekomtekPage />,
           },
           {
             path: "adm-permintaan-data",
