@@ -119,8 +119,14 @@ const LayoutUser = () => {
             },
 
             {
-              path: "#",
-              label: "Layanan Terpadu",
+                path: "#",
+                label: "Layanan Terpadu",
+                submenu: [
+                  { path: "/layanan/rekomtek", label: "Rekomtek" },
+                  { path: "/layanan/posko-banjir", label: "Posko Banjir" },
+                  { path: "/layanan/permintaan-data", label: "Permintaan Data" },
+                  { path: "/layanan/whistleblowing", label: "Whistleblowing" },
+              ],
             },
 
             {

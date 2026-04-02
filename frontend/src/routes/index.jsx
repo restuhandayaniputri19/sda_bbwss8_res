@@ -53,6 +53,7 @@ import AdminDetailPermintaanData from "../features/admin/permintaan-data/detail"
 import SatuanKerja from "../features/profil/SatuanKerja";
 import PoskoBanjirPage from "../features/layanan/poskobanjir";
 import RekomtekPage from "../features/layanan/rekomtek";
+import WhistleblowingPage from "../features/layanan/whistleblowing";
 
 export const router = createBrowserRouter([
   {
@@ -144,6 +145,10 @@ export const router = createBrowserRouter([
       {
         path: "/sejarah",
         element: <Sejarah />
+      },
+      {
+        path: "/whistleblowing",
+        element: <WhistleblowingPage />,
       },
       {
         path: "/profil-pejabat",
