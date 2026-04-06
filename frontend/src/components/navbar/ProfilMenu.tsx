@@ -14,7 +14,7 @@ const ProfilMenu: React.FC<{ label: string }> = ({ label }) => {
       </button>
 
       {/* Panel Mega Menu */}
-      <div className="absolute top-[80px] right-0 w-[900px] bg-white shadow-2xl rounded-bl-3xl rounded-br-lg border border-gray-100 hidden group-hover:block z-[70] animate-in fade-in zoom-in-95 slide-in-from-right-10 duration-300 overflow-hidden">
+      <div className="absolute top-full left-1/2 -translate-x-1/2 w-[900px] bg-white shadow-2xl rounded-b-lg border border-gray-100 hidden group-hover:block z-[70] animate-in fade-in zoom-in-95 duration-300">
         <div className="grid grid-cols-4 divide-x divide-gray-100">
           {/* Kolom 1: Data Hidrologi */}
           <div className="p-5 hover:bg-slate-50 transition-colors">

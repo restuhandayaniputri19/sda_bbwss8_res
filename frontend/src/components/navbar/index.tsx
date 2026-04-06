@@ -224,7 +224,7 @@ const Navbar: React.FC<NavbarProps> = ({
     <nav
       className={`${transparent ? "bg-transparent" : "bg-white"} ${shadow} ${positionClass} transition-colors duration-300 border-b-8 border-b-mango`}
     >
-      <div className={`w-full ${maxWidth} mx-auto px-4`}>
+      <div className={`w-full ${maxWidth} mx-auto px-4 overflow-visible`}>
         <div className="flex justify-between h-20 items-center">
           {/* Logo */}
           {logoIcon && (
@@ -253,8 +253,8 @@ const Navbar: React.FC<NavbarProps> = ({
           {/* Desktop Navigation */}
           {links && (
             <nav
-              className={`hidden min-[1021px]:flex h-full gap-5 flex-1 ${getLinksPositionClasses()} ml-4`}
-            >
+  className={`hidden min-[1021px]:flex h-full gap-5 flex-1 ${getLinksPositionClasses()} ml-4 overflow-visible`}
+>
               {links.map((link, index) => {
                 if (index === 0)
                   return (

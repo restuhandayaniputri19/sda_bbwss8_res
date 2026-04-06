@@ -87,9 +87,7 @@ const WhistleblowingPage = () => {
           >
             🚨 Buka Portal Whistleblowing
           </a>
-          <p className="text-gray-400 text-sm">
-            Akan dibuka di tab baru — wispu.pu.go.id
-          </p>
+          
         </div>
       </div>
 

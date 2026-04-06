@@ -39,7 +39,7 @@ const layananItems = [
     bg: "bg-green-50",
   },
   {
-    to: "/pengaduan-masyarakat",
+    to: "/layanan/pengaduan-masyarakat",
     label: "Pengaduan Masyarakat",
     desc: "Sampaikan Pengaduan Anda",
     icon: MessageSquare,

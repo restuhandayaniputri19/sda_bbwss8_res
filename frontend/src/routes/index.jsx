@@ -54,6 +54,7 @@ import SatuanKerja from "../features/profil/SatuanKerja";
 import PoskoBanjirPage from "../features/layanan/poskobanjir";
 import RekomtekPage from "../features/layanan/rekomtek";
 import WhistleblowingPage from "../features/layanan/whistleblowing";
+import PengaduanMasyarakatPage from "../features/layanan/pengaduan-masyarakat";
 
 export const router = createBrowserRouter([
   {
@@ -78,6 +79,10 @@ export const router = createBrowserRouter([
           {
             path: "rekomtek",
             element: <RekomtekPage />,
+          },
+          {
+            path: "pengaduan-masyarakat",
+            element: <PengaduanMasyarakatPage />,
           },
           {
             path: "adm-permintaan-data",
