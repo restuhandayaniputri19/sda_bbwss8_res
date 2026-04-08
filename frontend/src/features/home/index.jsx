@@ -39,6 +39,7 @@ const snapStyles = `
     scroll-snap-type: y proximity;
     overflow-y: scroll;
     scroll-behavior: smooth;
+    scroll-padding-top: 80px; /* Sesuaikan dengan tinggi header jika ada */
   }
   html::-webkit-scrollbar { width: 5px; }
   html::-webkit-scrollbar-thumb { background: #F5A623; border-radius: 99px; }
@@ -156,7 +157,7 @@ const HomePage = () => {
         {/* ── SNAP 1/6 · HERO / BANNER UTAMA ── */}
         <section id="hero" className="snap-section" ref={(el) => (sectionRefs.current[0] = el)}>
           <div className="w-full mx-auto flex flex-col justify-center">
-{banners !== undefined ? <CustomCarousel items={banners} /> : null}
+{banners !== undefined ? <CustomCarousel items={banners} /> : <div className="w-full aspect-video lg:aspect-[21/9] animate-pulse bg-gray-200" />}
           {/* Bar marquee asli */}
           <div className="bg-mango text-indigo hover:text-blue-950 py-1 shrink-0">
             <div className="flex flex-row items-center w-full overflow-hidden justify-between">
