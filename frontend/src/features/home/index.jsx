@@ -16,8 +16,6 @@ import { useBannerData } from "./hooks/useBannerData";
 import { useBeritaData } from "./hooks/useBeritaData";
 import { useGaleriData } from "./hooks/useGaleriData";
 import { useInfografisData } from "./hooks/useInfografisData";
-import { useLayananTerpaduData } from "./hooks/useLayananTerpaduData";
-import { useMajalahData } from "./hooks/useMajalahData";
 import { useNavigate } from "react-router-dom";
 import { usePengumumanData } from "./hooks/usePengumumanData";
 import { usePetaGeospasialData } from "./hooks/usePetaGeospasialData";
@@ -25,14 +23,12 @@ import { useEffect, useRef, useState } from "react";
 import { useYoutubeData } from "./hooks/useYoutubeData";
 import "leaflet/dist/leaflet.css";
 import RealTimeClock from "../../components/clock";
-import { useBeritaDataHighlighted } from "./hooks/useBeritaDataHighlighted";
 
 // ── Definisi section untuk nav dots ──────────────────────────────────────────
 const SECTIONS = [
-  { id: "hero",       label: "Hero / Banner" },
+  { id: "hero",       label: "Banner" },
   { id: "berita",     label: "Berita" },
   { id: "geoportal",  label: "Geoportal" },
-  { id: "banner",     label: "Banner" },
   { id: "konten",     label: "Infografis & Galeri" },
   { id: "youtube",    label: "Youtube" },
 ];
@@ -82,13 +78,10 @@ const HomePage = () => {
 
   // ── Semua hooks asli tetap utuh ──
   const { beritaData }                  = useBeritaData();
-  const { beritaDataHighlighted }       = useBeritaDataHighlighted();
   const { banners }                     = useBannerData();
   const { infografisData }              = useInfografisData();
-  const { layananTerpaduData: apiData }  = useLayananTerpaduData();
   const { galeriData }                  = useGaleriData();
   const { youtubeData }                 = useYoutubeData();
-  const { majalahData }                 = useMajalahData();
   const { pengumumanData }              = usePengumumanData();
   const { petaGeospasialData }          = usePetaGeospasialData();
 
@@ -96,7 +89,6 @@ const HomePage = () => {
   const [geoportalDialog, setGeoportalDialog] = useState(false);
   const [activeSection, setActiveSection]     = useState(0);
 
-  const containerRef = useRef(null);
   const sectionRefs  = useRef([]);
 
   // ── Deteksi section aktif untuk nav dots ──
@@ -163,38 +155,8 @@ const HomePage = () => {
 
         {/* ── SNAP 1/6 · HERO / BANNER UTAMA ── */}
         <section id="hero" className="snap-section" ref={(el) => (sectionRefs.current[0] = el)}>
-          <div className="max-w-5xl mx-auto px-4 h-full flex flex-col justify-center">
-            {beritaDataHighlighted?.length > 0 ? (
-              <Carousel autoSlide={true} interval={5000} className="w-full">
-                <CarouselContent className="-ml-1">
-                  {beritaDataHighlighted.map((item, index) => (
-                    <CarouselItem key={index} className="pl-1 relative">
-                      <Card
-                        shadow={true}
-                        rounded={true}
-                        onClick={() => navigate(`/berita?id=${item.id}${Hash.DETAIL}`)}
-                      >
-                        <img
-                          src={item.img}
-                          alt={item.title}
-                          className="w-full h-[calc(100vh-120px)] object-cover"
-                        />
-                        <div className="absolute inset-0 flex flex-col justify-end">
-                          <h1 className="min-w-96 w-fit text-xl text-white bg-indigo p-5 rounded-tr-md">
-                            {truncateText(item.title, 60)}
-                          </h1>
-                        </div>
-                      </Card>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="absolute top-1/2 left-4 transform -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-200 focus:outline-none" />
-                <CarouselNext    className="absolute top-1/2 right-4 transform -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-200 focus:outline-none" />
-              </Carousel>
-            ) : (
-              <p className="text-gray-400">No highlighted news available</p>
-            )}
-
+          <div className="w-full mx-auto flex flex-col justify-center">
+{banners !== undefined ? <CustomCarousel items={banners} /> : null}
           {/* Bar marquee asli */}
           <div className="bg-mango text-indigo hover:text-blue-950 py-1 shrink-0">
             <div className="flex flex-row items-center w-full overflow-hidden justify-between">
@@ -334,21 +296,11 @@ const HomePage = () => {
         </section>
 
         {/* ── SNAP 4/6 · BANNER (CustomCarousel) ── */}
-        <section
-          id="banner"
-          className="snap-section"
-          ref={(el) => (sectionRefs.current[3] = el)}
-        >
-          <div className="p-10 h-full flex items-center justify-center">
-            {banners !== undefined ? <CustomCarousel items={banners} /> : null}
-          </div>
-        </section>
-
         {/* ── SNAP 5/6 · INFOGRAFIS + GALERI + LAYANAN TERPADU ── */}
         <section
           id="konten"
           className="snap-section"
-          ref={(el) => (sectionRefs.current[4] = el)}
+          ref={(el) => (sectionRefs.current[3] = el)}
         >
           <div className="grid grid-cols-12 gap-4 p-10 h-full">
             {/* Infografis */}
@@ -431,7 +383,7 @@ const HomePage = () => {
         <section
            id="youtube"
            className="w-full relative"
-           ref={(el) => (sectionRefs.current[5] = el)}
+           ref={(el) => (sectionRefs.current[4] = el)}
         >
           <div className="p-10 h-full flex flex-col justify-center">
             <div className="flex flex-col space-y-5 border border-indigo rounded-sm">
