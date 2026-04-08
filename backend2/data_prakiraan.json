@@ -1,0 +1,226 @@
+{
+  "updated_at": "2026-04-08T02:47:33.151Z",
+  "items": [
+    {
+      "lokasi": "Ogan Komering Ulu",
+      "hari_ini": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "24–31 °C",
+        "kelembapan": "69–98%"
+      },
+      "besok": {
+        "kondisi": "Berawan",
+        "suhu": "24–29 °C",
+        "kelembapan": "74–98%"
+      }
+    },
+    {
+      "lokasi": "Ogan Komering Ilir",
+      "hari_ini": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "24–32 °C",
+        "kelembapan": "66–99%"
+      },
+      "besok": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "23–32 °C",
+        "kelembapan": "65–99%"
+      }
+    },
+    {
+      "lokasi": "Muara Enim",
+      "hari_ini": {
+        "kondisi": "Berawan",
+        "suhu": "24–31 °C",
+        "kelembapan": "65–99%"
+      },
+      "besok": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "24–30 °C",
+        "kelembapan": "69–99%"
+      }
+    },
+    {
+      "lokasi": "Lahat",
+      "hari_ini": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "22–28 °C",
+        "kelembapan": "69–98%"
+      },
+      "besok": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "21–28 °C",
+        "kelembapan": "71–99%"
+      }
+    },
+    {
+      "lokasi": "Musi Rawas",
+      "hari_ini": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "24–31 °C",
+        "kelembapan": "68–99%"
+      },
+      "besok": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "24–31 °C",
+        "kelembapan": "66–99%"
+      }
+    },
+    {
+      "lokasi": "Musi Banyuasin",
+      "hari_ini": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "24–30 °C",
+        "kelembapan": "73–99%"
+      },
+      "besok": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "23–31 °C",
+        "kelembapan": "67–99%"
+      }
+    },
+    {
+      "lokasi": "Banyuasin",
+      "hari_ini": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "24–31 °C",
+        "kelembapan": "68–98%"
+      },
+      "besok": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "24–32 °C",
+        "kelembapan": "66–99%"
+      }
+    },
+    {
+      "lokasi": "Ogan Komering Ulu Timur",
+      "hari_ini": {
+        "kondisi": "Hujan Petir",
+        "suhu": "24–31 °C",
+        "kelembapan": "73–97%"
+      },
+      "besok": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "23–31 °C",
+        "kelembapan": "73–99%"
+      }
+    },
+    {
+      "lokasi": "Ogan Komering Ulu Selatan",
+      "hari_ini": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "22–29 °C",
+        "kelembapan": "69–99%"
+      },
+      "besok": {
+        "kondisi": "Berawan",
+        "suhu": "22–31 °C",
+        "kelembapan": "55–99%"
+      }
+    },
+    {
+      "lokasi": "Ogan Ilir",
+      "hari_ini": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "24–31 °C",
+        "kelembapan": "71–99%"
+      },
+      "besok": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "24–31 °C",
+        "kelembapan": "67–99%"
+      }
+    },
+    {
+      "lokasi": "Empat Lawang",
+      "hari_ini": {
+        "kondisi": "Berawan",
+        "suhu": "22–28 °C",
+        "kelembapan": "67–96%"
+      },
+      "besok": {
+        "kondisi": "Berawan",
+        "suhu": "21–29 °C",
+        "kelembapan": "64–94%"
+      }
+    },
+    {
+      "lokasi": "Penukal Abab Lematang Ilir",
+      "hari_ini": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "24–30 °C",
+        "kelembapan": "76–99%"
+      },
+      "besok": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "24–31 °C",
+        "kelembapan": "65–99%"
+      }
+    },
+    {
+      "lokasi": "Musi Rawas Utara",
+      "hari_ini": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "24–31 °C",
+        "kelembapan": "69–98%"
+      },
+      "besok": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "24–31 °C",
+        "kelembapan": "68–99%"
+      }
+    },
+    {
+      "lokasi": "Kota Palembang",
+      "hari_ini": {
+        "kondisi": "Hujan Sedang",
+        "suhu": "25–32 °C",
+        "kelembapan": "66–97%"
+      },
+      "besok": {
+        "kondisi": "Hujan Petir",
+        "suhu": "24–32 °C",
+        "kelembapan": "63–99%"
+      }
+    },
+    {
+      "lokasi": "Kota Pagar Alam",
+      "hari_ini": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "18–23 °C",
+        "kelembapan": "74–91%"
+      },
+      "besok": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "17–24 °C",
+        "kelembapan": "64–93%"
+      }
+    },
+    {
+      "lokasi": "Kota Lubuk Linggau",
+      "hari_ini": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "24–30 °C",
+        "kelembapan": "71–95%"
+      },
+      "besok": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "23–30 °C",
+        "kelembapan": "72–98%"
+      }
+    },
+    {
+      "lokasi": "Kota Prabumulih",
+      "hari_ini": {
+        "kondisi": "Hujan Ringan",
+        "suhu": "24–31 °C",
+        "kelembapan": "70–99%"
+      },
+      "besok": {
+        "kondisi": "Berawan",
+        "suhu": "24–31 °C",
+        "kelembapan": "65–99%"
+      }
+    }
+  ]
+}
