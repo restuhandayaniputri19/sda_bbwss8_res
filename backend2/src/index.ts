@@ -10,12 +10,12 @@ import beritaRoute from './routes/berita';
 // import bannerRoute from './routes/banner';
 // import galeriRoute from './routes/galeri';
 
-const app = new Hono();
+const app = new Hono().basePath('/api2');
 
 // Middleware Global
 const API_TOKEN = process.env.API_TOKEN || 'slow-and-low-key';
-app.use('/api/*', bearerAuth({ token: API_TOKEN }));
-app.use('/api/*', cors({
+app.use('/api2/*', bearerAuth({ token: API_TOKEN }));
+app.use('/api2/*', cors({
   origin: (origin) => {
     const allowed = [process.env.FRONTEND_URL || 'http://localhost:5173'];
     return allowed.includes(origin) ? origin : null;
@@ -23,10 +23,10 @@ app.use('/api/*', cors({
 }));
 
 // Routing - Menghubungkan semua endpoint
-app.route('/api/prakiraan', prakiraanRoute);
-app.route('/api/berita', beritaRoute);
-// app.route('/api/banner', bannerRoute);
-// app.route('/api/galeri', galeriRoute);
+app.route('/prakiraan', prakiraanRoute);
+app.route('/berita', beritaRoute);
+// app.route('/banner', bannerRoute);
+// app.route('/galeri', galeriRoute);
 
 app.get('/', (c) => c.text('Hono Backend2 API is Active!'));
 

@@ -1,0 +1,6 @@
+node_modules
+dist
+.env
+data_prakiraan.json
+*.log
+.git
