@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import Footer from "../components/footer";
 import Navbar from "../components/navbar";
 import logo from "../assets/logo.png";
+import LoadingScreen from "../components/loading-screen";
 
 const LayoutUser = () => {
   const location = useLocation();
   const { pathname } = location;
   const [scrolled, setScrolled] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
 
   const handleScroll = () => {
     if (window.scrollY > 50) {
@@ -24,6 +26,14 @@ const LayoutUser = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+  setPageLoading(true);
+  const timer = setTimeout(() => setPageLoading(false), 800);
+  return () => clearTimeout(timer);
+}, [pathname]);
+
+if (pageLoading) return <LoadingScreen />;
 
   return (
     <div
