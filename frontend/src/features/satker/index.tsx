@@ -172,6 +172,7 @@ const InfoCard = ({
 // ============================================================
 export default function SatkerPage() {
   const sectionRefs = useRef<any>({});
+  const [showPeta, setShowPeta] = React.useState(false);
 
   const scrollToSection = (id: number) => {
     const element = sectionRefs.current[id];
@@ -313,9 +314,12 @@ export default function SatkerPage() {
 
                     {/* CTA */}
                     <div className="pt-2">
-                      <button className="bg-indigo text-white px-8 py-4 rounded-2xl font-bold text-xs uppercase tracking-[0.2em] hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100">
-                        Buka Dashboard Monitoring
-                      </button>
+                      <button
+  onClick={() => setShowPeta(true)}
+  className="bg-indigo text-white px-8 py-4 rounded-2xl font-bold text-xs uppercase tracking-[0.2em] hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
+>
+  Lihat Peta Wilayah Kerja
+</button>
                     </div>
 
                   </div>
@@ -325,6 +329,26 @@ export default function SatkerPage() {
           ))}
         </main>
 
+        {showPeta && (
+  <div
+    className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center"
+    onClick={() => setShowPeta(false)}
+  >
+    <div className="bg-white rounded-3xl p-4 max-w-3xl w-full mx-4 shadow-2xl">
+      <img
+        src="/images/peta-wilayah.png"
+        alt="Peta Wilayah Kerja"
+        className="w-full rounded-2xl object-contain"
+      />
+      <button
+        onClick={() => setShowPeta(false)}
+        className="mt-4 w-full text-center text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-indigo"
+      >
+        Tutup
+      </button>
+    </div>
+  </div>
+)}
       </div>
     </div>
   );

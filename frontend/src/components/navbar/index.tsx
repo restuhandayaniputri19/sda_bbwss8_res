@@ -28,20 +28,14 @@ interface NavbarProps {
 
 const profilSections = [
   {
-    title: "Struktur & Info",
-    items: [
-      { to: "/struktur-organisasi", label: "Struktur Organisasi", desc: "Bagan Organisasi Balai" },
-      { to: "/tugas-fungsi", label: "Informasi Organisasi", desc: "Tugas Pokok dan Fungsi" },
-      { to: "/profil-pejabat", label: "Informasi Pejabat", desc: "Nama dan Foto Pejabat" },
-    ],
-  },
-  {
-    title: "Satker & Dokumen",
-    items: [
-      { to: "/satker", label: "Informasi Satker", desc: "Alamat dan Kontak Satker" },
-      { to: "/pola-rencana", label: "Pola dan RPSDA", desc: "Dokumen Rencana Strategi Pengelolaan SDA" },
-    ],
-  },
+  title: "Struktur & Info",
+  items: [
+    { to: "/struktur-organisasi", label: "Struktur Organisasi", desc: "Bagan Organisasi Balai" },
+    { to: "/tugas-fungsi", label: "Informasi Organisasi", desc: "Tugas Pokok dan Fungsi" },
+    { to: "/profil-pejabat", label: "Informasi Pejabat", desc: "Nama dan Foto Pejabat" },
+    { to: "/satker", label: "Informasi Satker", desc: "Alamat dan Kontak Satker" },
+  ],
+},
   {
     title: "Tentang Kami",
     items: [
@@ -72,7 +66,7 @@ const publikasiSections = [
     title: "Data & Peta",
     items: [
       { to: "/geoportal", label: "Geoportal", desc: "Peta Geospasial Digital" },
-      { to: "/rpsda", label: "RPSDA", desc: "Rencana Pengelolaan SDA" },
+      { to: "/pola-rpsda", label: "Pola dan RPSDA", desc: "Pola & Rencana Pengelolaan SDA" },
     ],
   },
 ];

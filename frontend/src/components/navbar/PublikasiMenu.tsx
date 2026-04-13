@@ -99,12 +99,12 @@ const PublikasiMenu: React.FC<{ label: string }> = ({ label }) => {
                 />
               </li>
               <li>
-                <MenuLink
-                  to="/rpsda"
-                  label="RPSDA"
-                  desc="Rencana Pengelolaan SDA"
-                />
-              </li>
+  <MenuLink
+    to="/pola-rpsda"
+    label="Pola dan RPSDA"
+    desc="Pola & Rencana Pengelolaan SDA"
+  />
+</li>
             </ul>
           </div>
 

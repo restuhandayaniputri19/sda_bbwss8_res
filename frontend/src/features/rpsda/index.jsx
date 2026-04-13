@@ -3,14 +3,14 @@ import { Hash } from "../../constants";
 import ListPage from "./list";
 import { useLocation } from "react-router-dom";
 
-const DipaPage = () => {
+const DipaPage = ({ hideBanner }) => {
   const { hash } = useLocation();
 
   if (hash === Hash.DETAIL) {
     return <DetailPage />;
   }
 
-  return <ListPage />;
+  return <ListPage hideBanner={hideBanner} />;
 };
 
 export default DipaPage;

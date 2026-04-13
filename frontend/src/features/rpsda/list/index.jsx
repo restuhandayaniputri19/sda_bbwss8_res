@@ -7,7 +7,7 @@ import { useBeritaData } from "../../home/hooks/useBeritaData";
 import { useNavigate } from "react-router-dom";
 import { useRpsdaData } from "../hooks/useRpsdaData";
 
-const Rpsda = () => {
+const Rpsda = ({ hideBanner = false }) => {
   const navigate = useNavigate();
   const { beritaData } = useBeritaData();
   const { rpsdaData, setParams, params, paginationInfo } = useRpsdaData();
@@ -21,13 +21,13 @@ const Rpsda = () => {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <img
-        className="w-full h-[400px] object-cover"
-        src={
-          "https://mediabbwssviii.sgp1.cdn.digitaloceanspaces.com/image/bendung%20perjaya.jpg"
-        }
-        alt="Call center picture"
-      />
+      {!hideBanner && (
+        <img
+          className="w-full h-[400px] object-cover"
+          src="https://mediabbwssviii.sgp1.cdn.digitaloceanspaces.com/image/bendung%20perjaya.jpg"
+          alt="Call center picture"
+        />
+      )}
 
       <section className="p-10">
         <h1 className="text-2xl text-indigo font-bold">RPSDA</h1>
@@ -81,7 +81,7 @@ const Rpsda = () => {
           <h1 className="text-2xl border-b border-b-indigo p-2 bg-indigo text-white">
             Berita Terkini
           </h1>
-          <div className="flex flex-col ">
+          <div className="flex flex-col">
             {beritaData.map((item, index) => (
               <Card
                 key={index}
@@ -93,7 +93,7 @@ const Rpsda = () => {
                 <div className="flex p-2">
                   <img
                     src={item.img}
-                    alt={"photo"}
+                    alt="photo"
                     className="h-36 w-36 object-cover"
                   />
                   <div className="p-4 space-y-2">
