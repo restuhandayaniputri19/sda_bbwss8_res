@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import {
   ChevronRight, Home, MapPin, Target, Cog, Layers,
-  Building2, Wrench, Waves, Landmark, Droplets, Phone
+  Building2, Wrench, Waves, Landmark, Droplets, Phone, Mail
 } from "lucide-react";
 
 // ============================================================
@@ -40,9 +40,9 @@ const SIDEBAR_ITEMS: SatkerItem[] = [
     singkatan: "BALAI BESAR WILAYAH SUNGAI SUMATERA VIII",
     icon: <Building2 size={16} />,
     lokasi: "Jl. Soekarno-Hatta N0.869, Talang Kelapa, Kec. Alang-Alang Lebar, Kota Palembang, Sumatera Selatan, 30153.",
-    phone: "(0711) 414019",
+    phone: "balaisumatra8@gmail.com",
     wilayahKerja:
-      "Wilayah Sungai Musi yang mencakup pengelolaan Sumber Daya Air di wilayah lintas Sumatea Selatan. Bertanggung jawab atas wilayah sungai Musi, Sugihan, Banyuasin, Lemau.",
+      "Wilayah Sungai Musi, Sugihan, Banyuasin, Lemau.",
     fokusKegiatan: [
       "Perencanaan dan penyusunan program pengelolaan SDA",
       "Pengelolaan administrasi, keuangan, dan kepegawaian balai",
@@ -62,9 +62,9 @@ const SIDEBAR_ITEMS: SatkerItem[] = [
     singkatan: "OP SDA",
     icon: <Wrench size={16} />,
     lokasi: "Jl. Soekarno Hatta No. 869, Kel. Talang Kelapa, Kec. Alang-Alang Lebar, Kota Palembang, Sumatera Selatan 30153.",
-    phone: "(0711) 414019",
+    phone: "balaisumatra8@gmail.com",
     wilayahKerja:
-      "Seluruh jaringan sungai, irigasi, rawa, waduk, dan infrastruktur SDA di Wilayah Sungai Musi, Sumatera Selatan dan Bangka Belitung",
+      "Wilayah Sungai Musi, Sugihan, Banyuasin, Lemau.",
     fokusKegiatan: [
       "Operasi dan pemeliharaan infrastruktur sungai, waduk, dan danau",
       "Pemeliharaan jaringan irigasi dan rawa kewenangan pusat",
@@ -84,9 +84,9 @@ const SIDEBAR_ITEMS: SatkerItem[] = [
     singkatan: "PJSA",
     icon: <Waves size={16} />,
     lokasi: "Jl. Soekarno Hatta No. 869, Kel. Talang Kelapa, Kec. Alang-Alang Lebar, Kota Palembang, Sumatera Selatan 30153.",
-    phone: "(0711) 414019",
+    phone: "balaisumatra8@gmail.com",
     wilayahKerja:
-      "Wilayah Sungai Musi — meliputi sungai, pantai, danau, situ, embung, dan tampungan air di Sumatera Selatan dan Bangka Belitung",
+      "Wilayah Sungai Musi, Sugihan, Banyuasin, Lemau.",
     fokusKegiatan: [
       "Konservasi sumber daya air dan pengendalian sedimen",
       "Pengendalian banjir dan pengamanan pantai",
@@ -106,9 +106,9 @@ const SIDEBAR_ITEMS: SatkerItem[] = [
     singkatan: "BEND",
     icon: <Landmark size={16} />,
     lokasi: "Jl. Soekarno Hatta No. 869, Kel. Talang Kelapa, Kec. Alang-Alang Lebar, Kota Palembang, Sumatera Selatan 30153.",
-    phone: "(0711) 414019",
+    phone: "balaisumatra8@gmail.com",
     wilayahKerja:
-      "Lokasi pembangunan bendungan strategis nasional di WS Musi, termasuk Bendungan Tiga Dihaji (OKU Selatan) dan bendungan prioritas lainnya",
+      "Wilayah Sungai Musi, Sugihan, Banyuasin, Lemau.",
     fokusKegiatan: [
       "Pembangunan bendungan strategis nasional",
       "Perencanaan teknis dan desain bendungan",
@@ -128,9 +128,9 @@ const SIDEBAR_ITEMS: SatkerItem[] = [
     singkatan: "PJPA",
     icon: <Droplets size={16} />,
     lokasi: "Jl. Soekarno Hatta No. 869, Kel. Talang Kelapa, Kec. Alang-Alang Lebar, Kota Palembang, Sumatera Selatan 30153.",
-    phone: "(0711) 414019",
+    phone: "balaisumatra8@gmail.com",
     wilayahKerja:
-      "Seluruh wilayah kerja BBWS Sumatera VIII — jaringan irigasi, rawa, air tanah, dan air baku di Sumatera Selatan dan Bangka Belitung",
+      "Wilayah Sungai Musi, Sugihan, Banyuasin, Lemau.",
     fokusKegiatan: [
       "Pembangunan dan rehabilitasi jaringan irigasi permukaan",
       "Pengembangan dan pengelolaan jaringan rawa",
@@ -278,7 +278,7 @@ export default function SatkerPage() {
                           {section.lokasi}
                         </p>
                         <div className="flex items-center gap-2 text-indigo font-bold text-sm mt-3">
-                          <Phone size={14} />
+                          <Mail size={14} />
                           <span>{section.phone || "-"}</span>
                         </div>
                       </InfoCard>
@@ -318,7 +318,7 @@ export default function SatkerPage() {
   onClick={() => setShowPeta(true)}
   className="bg-indigo text-white px-8 py-4 rounded-2xl font-bold text-xs uppercase tracking-[0.2em] hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
 >
-  Lihat Peta Wilayah Kerja
+  Lihat Struktur PPK
 </button>
                     </div>
 
@@ -336,8 +336,8 @@ export default function SatkerPage() {
   >
     <div className="bg-white rounded-3xl p-4 max-w-3xl w-full mx-4 shadow-2xl">
       <img
-        src="/images/peta-wilayah.png"
-        alt="Peta Wilayah Kerja"
+        src="/images/struktur-bagan-ppk.png"
+        alt="Struktur Bagan PPK"
         className="w-full rounded-2xl object-contain"
       />
       <button

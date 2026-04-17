@@ -27,7 +27,7 @@ const ProfilMenu: React.FC<{ label: string }> = ({ label }) => {
                 <MenuLink to="/struktur-organisasi" label="Struktur Organisasi" desc="Bagan Organisasi Balai" />
               </li>
               <li>
-                <MenuLink to="/tugas-fungsi" label="Informasi Organisasi" desc="Tugas Pokok dan Fungsi" />
+                <MenuLink to="/tugas-fungsi" label="Tugas & Fungsi" desc="Tugas Pokok dan Fungsi" />
               </li>
               <li>
                 <MenuLink to="/profil-pejabat" label="Informasi Pejabat" desc="Nama dan Foto Pejabat" />
@@ -43,17 +43,20 @@ const ProfilMenu: React.FC<{ label: string }> = ({ label }) => {
             <div className="flex items-center gap-2 mb-6 text-gray-400">
               <Info size={18} />
               <h4 className="font-bold text-xs uppercase tracking-widest">
-                Tentang Kami
+                Tentang BBWS Sumatera VIII
               </h4>
             </div>
             <ul className="space-y-3">
-              <li>
-                <MenuLink to="/profil" label="Visi - Misi" desc="Visi - Misi" />
-              </li>
-              <li>
-                <MenuLink to="/sejarah" label="Sejarah" />
-              </li>
-            </ul>
+  <li>
+    <MenuLink to="/tentang-kami" label="Tentang Kami" desc="Profil BBWS Sumatera VIII" />
+  </li>
+  <li>
+    <MenuLink to="/visi-misi" label="Visi & Misi" desc="Visi dan Misi BBWS Sumatera VIII" />
+  </li>
+  <li>
+    <MenuLink to="/sejarah" label="Sejarah" desc="Sejarah BBWS Sumatera VIII" />
+  </li>
+</ul>
           </div>
 
           {/* Kolom 3: Kontak & Lokasi */}
@@ -75,30 +78,30 @@ const ProfilMenu: React.FC<{ label: string }> = ({ label }) => {
                 </Link>
               </li>
               <li className="flex items-center gap-2 text-gray-600">
-                <Mail size={14} /> bbws.sumatera8@pu.go.id
+                <Mail size={14} /> balaisumatra8@gmail.com
               </li>
               <li>
                 <Link to="https://www.instagram.com/pupr_sda_sumatera8/" target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-2 text-gray-600 hover:text-indigo transition-colors">
-                  <Instagram size={14} /> Instagram
+                  <Instagram size={14} /> @pu_sda_sumatera8
                 </Link>
               </li>
               <li>
                 <Link to="https://www.youtube.com/@bbwssumateraviii4910" target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-2 text-gray-600 hover:text-indigo transition-colors">
-                  <Youtube size={14} /> Youtube
+                  <Youtube size={14} /> BBWS Sumatera VIII
                 </Link>
               </li>
               <li>
                 <Link to="https://www.facebook.com/bbwss8" target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-2 text-gray-600 hover:text-indigo transition-colors">
-                  <Facebook size={14} /> Facebook
+                  <Facebook size={14} /> BBWS VIII
                 </Link>
               </li>
               <li>
                 <Link to="https://maps.app.goo.gl/sNibrVZf7HyLPPGU8" target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-2 text-gray-600 hover:text-indigo transition-colors">
-                  <Map size={14} /> Google Map
+                  <Map size={14} /> Alamat BBWSS VIII
                 </Link>
               </li>
             </ul>

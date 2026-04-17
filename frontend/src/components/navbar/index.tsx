@@ -31,7 +31,7 @@ const profilSections = [
   title: "Struktur & Info",
   items: [
     { to: "/struktur-organisasi", label: "Struktur Organisasi", desc: "Bagan Organisasi Balai" },
-    { to: "/tugas-fungsi", label: "Informasi Organisasi", desc: "Tugas Pokok dan Fungsi" },
+    { to: "/tugas-fungsi", label: "Tugas & Fungsi", desc: "Tugas Pokok dan Fungsi" },
     { to: "/profil-pejabat", label: "Informasi Pejabat", desc: "Nama dan Foto Pejabat" },
     { to: "/satker", label: "Informasi Satker", desc: "Alamat dan Kontak Satker" },
   ],
@@ -334,21 +334,21 @@ const Navbar: React.FC<NavbarProps> = ({
                           </Link>
                         </li>
                         <li className="flex items-center gap-2">
-                          <Mail size={12} className="text-mango" /> bbws.sumatera8@pu.go.id
+                          <Mail size={12} className="text-mango" /> balaisumatra8@gmail.com
                         </li>
                         <li>
                           <Link to="https://www.instagram.com/pupr_sda_sumatera8/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-white hover:!text-mango transition-colors">
-                            <Instagram size={12} className="text-mango" /> Instagram
+                            <Instagram size={12} className="text-mango" /> @pu_sda_sumatera8
                           </Link>
                         </li>
                         <li>
                           <Link to="https://www.youtube.com/@bbwssumateraviii4910" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-white hover:!text-mango transition-colors">
-                            <Youtube size={12} className="text-mango" /> Youtube
+                            <Youtube size={12} className="text-mango" /> BBWS Sumatera VIII
                           </Link>
                         </li>
                         <li>
                           <Link to="https://www.facebook.com/bbwss8" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-white hover:!text-mango transition-colors">
-                            <Facebook size={12} className="text-mango" /> Facebook
+                            <Facebook size={12} className="text-mango" /> BBWS VIII
                           </Link>
                         </li>
                         <li>

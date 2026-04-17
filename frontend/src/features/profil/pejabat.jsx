@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 
-// Import gambar
 import fotoKabalai from '../../assets/pejabat/ka_balai.webp'; 
 import fotoPejabat2 from '../../assets/pejabat/kabid_kpisda.webp';
 import fotoPejabat3 from '../../assets/pejabat/kabid_op2.webp';
 import fotoPejabat4 from '../../assets/pejabat/kabid_pjpa.webp';
 import fotoPejabat5 from '../../assets/pejabat/kabid_pjsa.webp';
+import fotoPejabat6 from '../../assets/pejabat/kabag_umum_tatausaha.png';
 
 const ProfilePejabat = () => {
   const [pejabatDipilih, setPejabatDipilih] = useState(null);
@@ -27,6 +27,25 @@ const ProfilePejabat = () => {
           "Kepala Seksi Perencanaan (2015 - 2019)",
         ],
         kontak: "agus.safari@pu.go.id",
+      },
+    },
+    {
+      id: 6,
+      nama: "Chairul Huda, S.T.",
+      jabatan: "Kepala Bagian Umum dan Tata Usaha",
+      foto: fotoPejabat6,
+      isSejajarKabalai: true,
+      biodata: {
+        nip: "19701121 199803 1 003",
+        pendidikan: "S1 Teknik Sipil – Universitas Bandar Lampung",
+        riwayatJabatan: [
+          "Kepala Bagian Umum dan Tata Usaha, BBWS Sumatera VIII (Juli 2025 – Sekarang)",
+          "Kepala Bidang Keterpaduan Pembangunan Infrastruktur SDA, BBWS Brantas (2021 – 2024)",
+          "Kepala Seksi Operasi dan Pemeliharaan, BWS Bangka Belitung (2020 – 2021)",
+          "Kepala Seksi Pelaksanaan Operasi dan Pemeliharaan, BBWS Sumatera VIII (2019 – 2020)",
+          "Pejabat Pembuat Komitmen (PPK), BBWS Sumatera VIII (2015 – 2019)",
+        ],
+        kontak: "chairulhuda515@gmail.com",
       },
     },
     {
@@ -92,7 +111,8 @@ const ProfilePejabat = () => {
   ];
 
   const kabalai = daftarPejabat.find((p) => p.isKabalai);
-  const pejabatLain = daftarPejabat.filter((p) => !p.isKabalai);
+  const sejajarKabalai = daftarPejabat.find((p) => p.isSejajarKabalai);
+  const pejabatLain = daftarPejabat.filter((p) => !p.isKabalai && !p.isSejajarKabalai);
 
   const KartuPejabat = ({ pejabat, ukuranFoto = "" }) => (
     <div
@@ -135,9 +155,10 @@ const ProfilePejabat = () => {
         </p>
       </div>
 
-      {/* Kepala Balai */}
-      <div className="flex justify-center mb-20">
+      {/* Kepala Balai + Kepala Bagian Umum */}
+      <div className="flex justify-center gap-10 mb-20">
         <KartuPejabat pejabat={kabalai} ukuranFoto="w-full md:w-1/2 lg:w-1/4" />
+        <KartuPejabat pejabat={sejajarKabalai} ukuranFoto="w-full md:w-1/2 lg:w-1/4" />
       </div>
 
       {/* Pejabat Lainnya */}
@@ -157,7 +178,6 @@ const ProfilePejabat = () => {
             className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 relative"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Tombol Tutup */}
             <button
               onClick={() => setPejabatDipilih(null)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors"
@@ -165,9 +185,7 @@ const ProfilePejabat = () => {
               <X size={24} />
             </button>
 
-            {/* Isi Modal */}
             <div className="flex flex-col sm:flex-row gap-6 items-start">
-              {/* Foto */}
               <div className="w-40 h-52 flex-shrink-0 rounded-xl overflow-hidden shadow-md mx-auto sm:mx-0">
                 <img
                   src={pejabatDipilih.foto}
@@ -176,7 +194,6 @@ const ProfilePejabat = () => {
                 />
               </div>
 
-              {/* Info */}
               <div className="flex-1">
                 <p className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-1">
                   {pejabatDipilih.jabatan}
@@ -186,19 +203,14 @@ const ProfilePejabat = () => {
                 </h2>
 
                 <div className="space-y-4 text-sm text-gray-700">
-                  {/* NIP */}
                   <div>
                     <p className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-1">NIP</p>
                     <p>{pejabatDipilih.biodata.nip}</p>
                   </div>
-
-                  {/* Pendidikan */}
                   <div>
                     <p className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-1">Pendidikan Terakhir</p>
                     <p>{pejabatDipilih.biodata.pendidikan}</p>
                   </div>
-
-                  {/* Riwayat Jabatan */}
                   <div>
                     <p className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-1">Riwayat Jabatan</p>
                     <ul className="list-disc list-inside space-y-1">
@@ -207,13 +219,12 @@ const ProfilePejabat = () => {
                       ))}
                     </ul>
                   </div>
-
-                  {/* Kontak */}
                   <div>
                     <p className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-1">Kontak / Email</p>
                     <a
                       href={"mailto:" + pejabatDipilih.biodata.kontak}
-                      className="text-blue-600 hover:underline">
+                      className="text-blue-600 hover:underline"
+                    >
                       {pejabatDipilih.biodata.kontak}
                     </a>
                   </div>

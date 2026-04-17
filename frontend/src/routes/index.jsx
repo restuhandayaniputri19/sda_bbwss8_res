@@ -31,6 +31,8 @@ import Profil from "../features/profil";
 import ProtectedRoutes from "./protectedRoutes";
 import Publication from "../features/publication";
 import Sejarah from "../features/profil/Sejarah";
+import TentangKami from "../features/profil/TentangKami";
+import VisiMisi from "../features/profil/VisiMisi";
 import StrukturOrganisasi from "../features/profil/StrukturOrganisasi";
 import SatkerPage from "../features/satker";
 import ProfilePejabat from "../features/profil/pejabat";
@@ -56,6 +58,7 @@ import PoskoBanjirPage from "../features/layanan/poskobanjir";
 import RekomtekPage from "../features/layanan/rekomtek";
 import WhistleblowingPage from "../features/layanan/whistleblowing";
 import PengaduanMasyarakatPage from "../features/layanan/pengaduan-masyarakat";
+import LayananTerpaduPage from "../features/layanan/layanan-terpadu";
 
 
 export const router = createBrowserRouter([
@@ -150,6 +153,14 @@ export const router = createBrowserRouter([
         element: <StrukturOrganisasi />,
       },
       {
+  path: "/tentang-kami",
+  element: <TentangKami />,
+},
+{
+  path: "/visi-misi",
+  element: <VisiMisi />,
+},
+      {
         path: "/sejarah",
         element: <Sejarah />
       },
@@ -211,8 +222,12 @@ export const router = createBrowserRouter([
       },
       {
         path: "/majalah",
-        element: <MajalahUser />, // Pakai komponen yang baru kita buat
+        element: <MajalahUser />,
       },
+      {
+  path: "/layanan-terpadu",
+  element: <LayananTerpaduPage />,
+},
     ],
   },
   {

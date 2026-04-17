@@ -127,7 +127,7 @@ const Contact = () => {
                     ></circle>
                   </g>
                 </svg>
-                <span className="text-xl font-semibold">Instagram</span>
+                <span className="text-xl font-semibold">@pu_sda_sumatera8</span>
               </a>
             </div>
             <div className="flex items-center space-x-2">
@@ -155,7 +155,7 @@ const Contact = () => {
                     d="M34.368,25H31v13h-5V25h-3v-4h3v-2.41c0.002-3.508,1.459-5.59,5.592-5.59H35v4h-2.287C31.104,17,31,17.6,31,18.723V21h4L34.368,25z"
                   ></path>
                 </svg>
-                <span className="text-xl font-semibold">Facebook</span>
+                <span className="text-xl font-semibold">BWS VIII</span>
               </a>
             </div>
             <div className="flex items-center space-x-2">
@@ -193,7 +193,7 @@ const Contact = () => {
                     points="24.45,21.721 25.355,23.01 33.136,14 31.136,14"
                   ></polygon>
                 </svg>
-                <span className="text-xl font-semibold">X (Twitter)</span>
+                <span className="text-xl font-semibold">@bbwss8</span>
               </a>
             </div>
             <div className="flex items-center space-x-2">
@@ -218,7 +218,7 @@ const Contact = () => {
                   ></path>
                   <path fill="#FFF" d="M20 31L20 17 32 24z"></path>
                 </svg>
-                <span className="text-xl font-semibold">Youtube</span>
+                <span className="text-xl font-semibold">BBWS Sumatera VIII</span>
               </a>
             </div>
           </div>

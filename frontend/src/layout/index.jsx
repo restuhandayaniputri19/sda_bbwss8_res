@@ -61,7 +61,7 @@ if (pageLoading) return <LoadingScreen />;
                 },
                 {
                   path: "/tugas-fungsi",
-                  label: "Informasi Organisasi",
+                  label: "Tugas & Fungsi",
                 },
                 {
                   path: "/profil-pejabat",
