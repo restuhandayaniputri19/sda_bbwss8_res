@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev": "NODE_ENV=development node src/server.js",
-    "start": "NODE_ENV=production node src/server.js",
+    "start": "NODE_ENV=production nodemon src/server.js",
     "test": "NODE_ENV=test node src/server.js"
   },
   "dependencies": {
