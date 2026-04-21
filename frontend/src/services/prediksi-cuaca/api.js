@@ -1,16 +1,20 @@
 import { API } from "..";
-import axios from "axios";
 
 export const getPrediksiCuaca = async () => {
-  try {
-    const response = await API.get("/api/prediksi-cuaca");
-
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw new Error("An unexpected error occurred.");
-    }
+  const BASE_URL = 'http://localhost:3000';
+  
+  const response = await fetch(`${BASE_URL}/api2/prakiraan`);
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
+  
+  const data = await response.json();
+  console.log("Data yang diterima dari API:", data); // Debug log untuk melihat data yang diterima
+  
+  // Kita bungkus dalam object 'data' agar konsisten 
+  // dengan ekspektasi 'response.data' di komponen React Anda
+  return { data }; 
 };
 
 export const editPrediksiCuaca = async (formData) => {

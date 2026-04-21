@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "user_lokal",
-    "password": "password_lokal",
-    "database": "nama_db_anda",
-    "host": "db",
+    "username": "root",
+    "password": "widoyo-id",
+    "database": "sda_bbwss8_dev",
+    "host": "localhost",
     "dialect": "mysql"
   },
   "test": {
