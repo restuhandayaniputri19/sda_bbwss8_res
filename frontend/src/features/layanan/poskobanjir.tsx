@@ -1,12 +1,12 @@
 import React, { useRef } from 'react';
-import { Phone, Database, Map, Droplets, Activity, ChevronRight, Home } from "lucide-react";
+import { Phone, MapPin, ChevronRight, Home } from "lucide-react";
 
 const SIDEBAR_ITEMS = [
   { id: 1, label: "Posko Banjir", icon: <Home size={16} />, alamat: "", phone: "" },
-  { id: 2, label: "Posko Banjir Wilayah 1", icon: <Map size={16} />, alamat: "Jl. Kapten Anwar Sastro no 3 Palembang 30113", phone: "(0711) 567890" },
-  { id: 3, label: "Posko Banjir Wilayah 2", icon: <Activity size={16} />, alamat: "Jl. Raya Kertapati no 123 Palembang 30113", phone: "(0711) 987654" },
-  { id: 4, label: "Posko Banjir Wilayah 3", icon: <Database size={16} />, alamat: "Jl. Diponegoro no 456 Palembang 30113", phone: "(0711) 456789" },
-  { id: 5, label: "Posko Banjir Wilayah 4", icon: <Phone size={16} />, alamat: "Jl. Sudirman no 789 Palembang 30113", phone: "(0711) 321654" },
+  { id: 2, label: "Posko Banjir Wilayah 1", icon: <MapPin size={16} />, alamat: "Jl. Kapten Anwar Sastro no 3 Palembang 30113", phone: "(0711) 567890" },
+  { id: 3, label: "Posko Banjir Wilayah 2", icon: <MapPin size={16} />, alamat: "Jl. Raya Kertapati no 123 Palembang 30113", phone: "(0711) 987654" },
+  { id: 4, label: "Posko Banjir Wilayah 3", icon: <MapPin size={16} />, alamat: "Jl. Diponegoro no 456 Palembang 30113", phone: "(0711) 456789" },
+  { id: 5, label: "Posko Banjir Wilayah 4", icon: <MapPin size={16} />, alamat: "Jl. Sudirman no 789 Palembang 30113", phone: "(0711) 321654" },
 ];
 
 export default function PoskoBanjirPage() {
