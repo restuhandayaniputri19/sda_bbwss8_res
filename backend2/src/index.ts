@@ -7,6 +7,7 @@ import 'dotenv/config';
 // Import Routes
 import prakiraanRoute from './routes/prakiraan';
 import beritaRoute from './routes/berita';
+import auth from './routes/auth';
 
 const app = new Hono().basePath('/api2');
 
@@ -28,6 +29,8 @@ origin: (origin, c) => {
 // Routing - Menghubungkan semua endpoint
 app.route('/prakiraan', prakiraanRoute);
 app.route('/berita', beritaRoute);
+app.route('/auth', auth);
+
 // app.route('/banner', bannerRoute);
 // app.route('/galeri', galeriRoute);
 

@@ -9,6 +9,7 @@ dist/
 
 # Local Data (Hasil Scraping)
 data.json
+*.db
 
 # Log Files
 npm-debug.log*
