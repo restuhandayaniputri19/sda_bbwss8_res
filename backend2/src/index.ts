@@ -9,7 +9,7 @@ import prakiraanRoute from './routes/prakiraan';
 import beritaRoute from './routes/berita';
 import auth from './routes/auth';
 
-const app = new Hono().basePath('/api2');
+const app = new Hono().basePath('/balai/bbwssumatera8/api2');
 
 // Middleware Global
 const API_TOKEN = process.env.API_TOKEN || 'slow-and-low-key';

@@ -1,0 +1,11 @@
+services:
+  backend:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data  # Folder 'data' di VPS akan sinkron dengan '/app/data' di container
+    environment:
+      - DATABASE_URL=/app/data/S8_web_sda.db
+      - NODE_ENV=production
+    restart: always
