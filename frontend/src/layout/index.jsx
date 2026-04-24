@@ -37,10 +37,10 @@ if (pageLoading) return <LoadingScreen />;
 
   return (
     <div
-      className={`flex flex-col w-full ${
-        pathname === "/visiting-point" ? "overflow-hidden" : ""
-      } ${scrolled ? "h-full" : "h-screen"}`}
-    >
+  className={`flex flex-col w-full min-h-screen ${
+    pathname === "/visiting-point" ? "overflow-hidden" : ""
+  }`}
+>
       {pathname !== "/login" && (
         <Navbar
           maxWidth="w-full"

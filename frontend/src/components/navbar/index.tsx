@@ -28,19 +28,20 @@ interface NavbarProps {
 
 const profilSections = [
   {
-  title: "Struktur & Info",
-  items: [
-    { to: "/struktur-organisasi", label: "Struktur Organisasi", desc: "Bagan Organisasi Balai" },
-    { to: "/tugas-fungsi", label: "Tugas & Fungsi", desc: "Tugas Pokok dan Fungsi" },
-    { to: "/profil-pejabat", label: "Informasi Pejabat", desc: "Nama dan Foto Pejabat" },
-    { to: "/satker", label: "Informasi Satker", desc: "Alamat dan Kontak Satker" },
-  ],
-},
-  {
-    title: "Tentang Kami",
+    title: "Struktur & Info",
     items: [
-      { to: "/profil", label: "Visi - Misi", desc: "Visi - Misi" },
-      { to: "/sejarah", label: "Sejarah" },
+      { to: "/struktur-organisasi", label: "Struktur Organisasi", desc: "Bagan Organisasi Balai" },
+      { to: "/tugas-fungsi", label: "Tugas & Fungsi", desc: "Tugas Pokok dan Fungsi" },
+      { to: "/profil-pejabat", label: "Informasi Pejabat", desc: "Nama dan Foto Pejabat" },
+      { to: "/satker", label: "Informasi Satker", desc: "Alamat dan Kontak Satker" },
+    ],
+  },
+  {
+    title: "Tentang Kami",       
+    items: [
+      { to: "/tentang-kami", label: "Tentang Kami", desc: "Profil BBWS Sumatera VIII" },
+      { to: "/visi-misi", label: "Visi & Misi", desc: "Visi dan Misi BBWS Sumatera VIII" },
+      { to: "/sejarah", label: "Sejarah", desc: "Sejarah BBWS Sumatera VIII" },
     ],
   },
 ];
@@ -101,10 +102,10 @@ const layananTerpaduSections = [
   {
     title: "Layanan Publik",
     items: [
-      { to: "/rekomtek", label: "Rekomtek", desc: "Rekomendasi Teknis SDA" },
-      { to: "/posko-banjir", label: "Posko Banjir", desc: "Informasi & Laporan Banjir" },
-      { to: "/permintaan-data", label: "Permintaan Data", desc: "Ajukan Permintaan Data SDA" },
-      { to: "/pengaduan-masyarakat", label: "Pengaduan Masyarakat", desc: "Sampaikan Pengaduan Anda" },
+      { to: "/layanan/rekomtek", label: "Rekomtek", desc: "Rekomendasi Teknis SDA" },
+      { to: "/layanan/posko-banjir", label: "Posko Banjir", desc: "Informasi & Laporan Banjir" },
+      { to: "/layanan/permintaan-data", label: "Permintaan Data", desc: "Ajukan Permintaan Data SDA" },
+      { to: "/layanan/pengaduan-masyarakat", label: "Pengaduan Masyarakat", desc: "Sampaikan Pengaduan Anda" },
       { to: "/whistleblowing", label: "Whistleblowing", desc: "Laporkan Pelanggaran Secara Aman" },
     ],
   },
@@ -379,17 +380,35 @@ const Navbar: React.FC<NavbarProps> = ({
 
             // Layanan Terpadu (index 3)
             if (index === 3) {
-              return (
-                <MobileSection
-                  key={index}
-                  title={link.label}
-                  sections={layananTerpaduSections}
-                  isOpen={activeSubmenu === "layanan"}
-                  onToggle={() => toggleSubmenu("layanan")}
-                  onClose={closeMenu}
-                />
-              );
-            }
+  return (
+    <div key={index} className="border-b border-gray-100">
+      <button
+        className={`flex justify-between items-center w-full px-3 py-3 text-base font-bold ${activeSubmenu === "layanan" ? "text-indigo" : "text-gray-700"}`}
+        onClick={() => toggleSubmenu("layanan")}
+      >
+        <span>{link.label}</span>
+        <ChevronDown className={`w-4 h-4 transition-transform ${activeSubmenu === "layanan" ? "rotate-180" : ""}`} />
+      </button>
+
+      {activeSubmenu === "layanan" && (
+        <div className="mx-3 mb-3">
+          <Link
+            to="/layanan-terpadu"
+            onClick={closeMenu}
+            className="block bg-indigo rounded-xl px-4 py-4 hover:brightness-110 transition-all"
+          >
+            <p className="text-white text-xs font-bold uppercase tracking-widest">
+              Layanan Terpadu
+            </p>
+            <p className="text-white/70 text-[11px] mt-0.5">
+              Pelayanan publik BBWS Sumatera VIII
+            </p>
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // Informasi Publik (index 4)
             if (index === 4) {

@@ -1,8 +1,14 @@
 import React, { useRef } from 'react';
 import {
   ChevronRight, Home, MapPin, Target, Cog, Layers,
-  Building2, Wrench, Waves, Landmark, Droplets, Phone, Mail
+  Building2, Wrench, Waves, Landmark, Droplets, Mail
 } from "lucide-react";
+
+import gambarBalai from '../../assets/SATKERJ_BALAI.jpg';
+import gambarOP from '../../assets/OP.jpg';
+import gambarPJSA from '../../assets/PJSA.jpg';
+import gambarBendungan from '../../assets/BENDUNGAN.jpg';
+import gambarPJPA from '../../assets/PJPA.jpg';
 
 // ============================================================
 // TIPE DATA
@@ -17,6 +23,7 @@ interface SatkerItem {
   wilayahKerja: string;
   fokusKegiatan: string[];
   fungsiUtama: string[];
+  gambar: string;
 }
 
 // ============================================================
@@ -33,16 +40,16 @@ const SIDEBAR_ITEMS: SatkerItem[] = [
     wilayahKerja: "",
     fokusKegiatan: [],
     fungsiUtama: [],
+    gambar: "",
   },
   {
     id: 2,
     label: "Satker Balai BWS Sumatera VIII",
     singkatan: "BALAI BESAR WILAYAH SUNGAI SUMATERA VIII",
     icon: <Building2 size={16} />,
-    lokasi: "Jl. Soekarno-Hatta N0.869, Talang Kelapa, Kec. Alang-Alang Lebar, Kota Palembang, Sumatera Selatan, 30153.",
+    lokasi: "Jl. Soekarno-Hatta No.869, Talang Kelapa, Kec. Alang-Alang Lebar, Kota Palembang, Sumatera Selatan, 30153.",
     phone: "balaisumatra8@gmail.com",
-    wilayahKerja:
-      "Wilayah Sungai Musi, Sugihan, Banyuasin, Lemau.",
+    wilayahKerja: "Wilayah Sungai Musi, Sugihan, Banyuasin, Lemau.",
     fokusKegiatan: [
       "Perencanaan dan penyusunan program pengelolaan SDA",
       "Pengelolaan administrasi, keuangan, dan kepegawaian balai",
@@ -55,6 +62,7 @@ const SIDEBAR_ITEMS: SatkerItem[] = [
       "Melaksanakan studi kelayakan dan perencanaan teknis pengembangan SDA",
       "Mengkoordinasikan seluruh kegiatan satker di lingkungan BBWS Sumatera VIII",
     ],
+    gambar: gambarBalai,
   },
   {
     id: 3,
@@ -63,8 +71,7 @@ const SIDEBAR_ITEMS: SatkerItem[] = [
     icon: <Wrench size={16} />,
     lokasi: "Jl. Soekarno Hatta No. 869, Kel. Talang Kelapa, Kec. Alang-Alang Lebar, Kota Palembang, Sumatera Selatan 30153.",
     phone: "balaisumatra8@gmail.com",
-    wilayahKerja:
-      "Wilayah Sungai Musi, Sugihan, Banyuasin, Lemau.",
+    wilayahKerja: "Wilayah Sungai Musi, Sugihan, Banyuasin, Lemau.",
     fokusKegiatan: [
       "Operasi dan pemeliharaan infrastruktur sungai, waduk, dan danau",
       "Pemeliharaan jaringan irigasi dan rawa kewenangan pusat",
@@ -77,6 +84,7 @@ const SIDEBAR_ITEMS: SatkerItem[] = [
       "Memberikan rekomendasi teknis terkait pengelolaan OP infrastruktur SDA",
       "Mengkoordinasikan kegiatan OP dengan pemerintah daerah dan TKPSDA",
     ],
+    gambar: gambarOP,
   },
   {
     id: 4,
@@ -85,8 +93,7 @@ const SIDEBAR_ITEMS: SatkerItem[] = [
     icon: <Waves size={16} />,
     lokasi: "Jl. Soekarno Hatta No. 869, Kel. Talang Kelapa, Kec. Alang-Alang Lebar, Kota Palembang, Sumatera Selatan 30153.",
     phone: "balaisumatra8@gmail.com",
-    wilayahKerja:
-      "Wilayah Sungai Musi, Sugihan, Banyuasin, Lemau.",
+    wilayahKerja: "Wilayah Sungai Musi, Sugihan, Banyuasin, Lemau.",
     fokusKegiatan: [
       "Konservasi sumber daya air dan pengendalian sedimen",
       "Pengendalian banjir dan pengamanan pantai",
@@ -99,6 +106,7 @@ const SIDEBAR_ITEMS: SatkerItem[] = [
       "Menyiapkan rencana persiapan operasi dan pemeliharaan infrastruktur sumber air",
       "Memberdayakan masyarakat dalam penyelenggaraan konstruksi SDA",
     ],
+    gambar: gambarPJSA,
   },
   {
     id: 5,
@@ -107,8 +115,7 @@ const SIDEBAR_ITEMS: SatkerItem[] = [
     icon: <Landmark size={16} />,
     lokasi: "Jl. Soekarno Hatta No. 869, Kel. Talang Kelapa, Kec. Alang-Alang Lebar, Kota Palembang, Sumatera Selatan 30153.",
     phone: "balaisumatra8@gmail.com",
-    wilayahKerja:
-      "Wilayah Sungai Musi, Sugihan, Banyuasin, Lemau.",
+    wilayahKerja: "Wilayah Sungai Musi, Sugihan, Banyuasin, Lemau.",
     fokusKegiatan: [
       "Pembangunan bendungan strategis nasional",
       "Perencanaan teknis dan desain bendungan",
@@ -121,6 +128,7 @@ const SIDEBAR_ITEMS: SatkerItem[] = [
       "Memastikan keamanan bendungan sesuai standar teknis nasional",
       "Mengkoordinasikan pembebasan lahan dan ganti rugi kepada masyarakat terdampak",
     ],
+    gambar: gambarBendungan,
   },
   {
     id: 6,
@@ -129,8 +137,7 @@ const SIDEBAR_ITEMS: SatkerItem[] = [
     icon: <Droplets size={16} />,
     lokasi: "Jl. Soekarno Hatta No. 869, Kel. Talang Kelapa, Kec. Alang-Alang Lebar, Kota Palembang, Sumatera Selatan 30153.",
     phone: "balaisumatra8@gmail.com",
-    wilayahKerja:
-      "Wilayah Sungai Musi, Sugihan, Banyuasin, Lemau.",
+    wilayahKerja: "Wilayah Sungai Musi, Sugihan, Banyuasin, Lemau.",
     fokusKegiatan: [
       "Pembangunan dan rehabilitasi jaringan irigasi permukaan",
       "Pengembangan dan pengelolaan jaringan rawa",
@@ -143,6 +150,7 @@ const SIDEBAR_ITEMS: SatkerItem[] = [
       "Menyediakan air baku untuk kebutuhan domestik, perkotaan, dan industri",
       "Mendukung ketahanan pangan nasional melalui perluasan dan rehabilitasi irigasi",
     ],
+    gambar: gambarPJPA,
   },
 ];
 
@@ -173,6 +181,7 @@ const InfoCard = ({
 export default function SatkerPage() {
   const sectionRefs = useRef<any>({});
   const [showPeta, setShowPeta] = React.useState(false);
+  const [activeSatker, setActiveSatker] = React.useState<SatkerItem | null>(null);
 
   const scrollToSection = (id: number) => {
     const element = sectionRefs.current[id];
@@ -181,8 +190,13 @@ export default function SatkerPage() {
     }
   };
 
+  const handleLihatStruktur = (section: SatkerItem) => {
+    setActiveSatker(section);
+    setShowPeta(true);
+  };
+
   return (
-    <div className="flex flex-col h-screen w-full overflow-hidden bg-slate-50 font-sans">
+    <div className="flex flex-col w-full bg-slate-50 font-sans min-h-screen">
       <div className="flex flex-1 overflow-hidden">
 
         {/* ── SIDEBAR KIRI ── */}
@@ -211,7 +225,7 @@ export default function SatkerPage() {
               key={section.id}
               ref={(el) => (sectionRefs.current[section.id] = el)}
               className="w-full snap-start flex flex-col p-10 outline-none"
-              style={{ minHeight: '100vh' }}
+              style={{ minHeight: 'calc(100vh - 64px)' }}
             >
               <div className="max-w-5xl w-full mx-auto flex-1 flex flex-col">
 
@@ -228,7 +242,7 @@ export default function SatkerPage() {
 
                 {/* ── DASHBOARD (id=1): Grid Card ── */}
                 {section.id === 1 ? (
-                  <div className="grid grid-cols-2 gap-6 mb-10">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
                     {SIDEBAR_ITEMS.filter((item) => item.id !== 1).map((satker) => (
                       <div
                         key={satker.id}
@@ -263,16 +277,13 @@ export default function SatkerPage() {
                   <div className="flex-1 mb-10 space-y-5">
 
                     {/* Baris 1: Wilayah Kerja + Lokasi Kantor */}
-                    <div className="grid grid-cols-2 gap-5">
-
-                      {/* 1. Wilayah Kerja */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                       <InfoCard icon={<Layers size={16} />} title="Wilayah Kerja">
                         <p className="text-sm text-slate-700 leading-relaxed">
                           {section.wilayahKerja}
                         </p>
                       </InfoCard>
 
-                      {/* 4. Lokasi Kantor */}
                       <InfoCard icon={<MapPin size={16} />} title="Lokasi Kantor">
                         <p className="text-sm text-slate-700 leading-relaxed mb-2">
                           {section.lokasi}
@@ -285,9 +296,7 @@ export default function SatkerPage() {
                     </div>
 
                     {/* Baris 2: Fokus Kegiatan + Fungsi Utama */}
-                    <div className="grid grid-cols-2 gap-5">
-
-                      {/* 2. Fokus Kegiatan */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                       <InfoCard icon={<Target size={16} />} title="Fokus Kegiatan">
                         <ul className="space-y-2">
                           {section.fokusKegiatan.map((item, i) => (
@@ -299,7 +308,6 @@ export default function SatkerPage() {
                         </ul>
                       </InfoCard>
 
-                      {/* 3. Fungsi Utama */}
                       <InfoCard icon={<Cog size={16} />} title="Fungsi Utama">
                         <ul className="space-y-2">
                           {section.fungsiUtama.map((item, i) => (
@@ -315,11 +323,11 @@ export default function SatkerPage() {
                     {/* CTA */}
                     <div className="pt-2">
                       <button
-  onClick={() => setShowPeta(true)}
-  className="bg-indigo text-white px-8 py-4 rounded-2xl font-bold text-xs uppercase tracking-[0.2em] hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
->
-  Lihat Struktur PPK
-</button>
+                        onClick={() => handleLihatStruktur(section)}
+                        className="bg-indigo text-white px-8 py-4 rounded-2xl font-bold text-xs uppercase tracking-[0.2em] hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
+                      >
+                        Lihat Struktur PPK
+                      </button>
                     </div>
 
                   </div>
@@ -329,26 +337,34 @@ export default function SatkerPage() {
           ))}
         </main>
 
-        {showPeta && (
-  <div
-    className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center"
-    onClick={() => setShowPeta(false)}
-  >
-    <div className="bg-white rounded-3xl p-4 max-w-3xl w-full mx-4 shadow-2xl">
-      <img
-        src="/images/struktur-bagan-ppk.png"
-        alt="Struktur Bagan PPK"
-        className="w-full rounded-2xl object-contain"
-      />
-      <button
-        onClick={() => setShowPeta(false)}
-        className="mt-4 w-full text-center text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-indigo"
-      >
-        Tutup
-      </button>
-    </div>
-  </div>
-)}
+        {/* ── MODAL STRUKTUR PPK ── */}
+        {showPeta && activeSatker && (
+          <div
+            className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center"
+            onClick={() => setShowPeta(false)}
+          >
+            <div
+              className="bg-white rounded-3xl p-4 max-w-4xl w-full mx-4 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <p className="text-center text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
+                Struktur PPK — {activeSatker.label}
+              </p>
+              <img
+                src={activeSatker.gambar}
+                alt={`Struktur PPK ${activeSatker.label}`}
+                className="w-full rounded-2xl object-contain max-h-[75vh]"
+              />
+              <button
+                onClick={() => setShowPeta(false)}
+                className="mt-4 w-full text-center text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-indigo"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

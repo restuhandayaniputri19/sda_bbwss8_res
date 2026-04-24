@@ -1,4 +1,4 @@
-import strukturorganisasi from '../../assets/struktur_organisasi.webp'; 
+import strukturorganisasi from '../../assets/BALAI.jpg'; 
 
 const StrukturOrganisasi = () => { 
   return (
