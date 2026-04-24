@@ -16,17 +16,19 @@ import { useBannerData } from "./hooks/useBannerData";
 import { useBeritaData } from "./hooks/useBeritaData";
 import { useGaleriData } from "./hooks/useGaleriData";
 import { useInfografisData } from "./hooks/useInfografisData";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { usePengumumanData } from "./hooks/usePengumumanData";
 import { usePetaGeospasialData } from "./hooks/usePetaGeospasialData";
 import { useEffect, useRef, useState } from "react";
 import { useYoutubeData } from "./hooks/useYoutubeData";
 import "leaflet/dist/leaflet.css";
 import RealTimeClock from "../../components/clock";
+import gedungbws from "../../assets/Gedungbws.jpeg";
 
 // ── Definisi section untuk nav dots ──────────────────────────────────────────
 const SECTIONS = [
   { id: "hero",       label: "Banner" },
+  { id: "tentang",    label: "Tentang Kami" },
   { id: "berita",     label: "Berita" },
   { id: "geoportal",  label: "Geoportal" },
   { id: "konten",     label: "Infografis & Galeri" },
@@ -71,6 +73,20 @@ const snapStyles = `
     opacity: 0; pointer-events: none; transition: opacity 0.2s; font-family: sans-serif;
   }
   .nav-dot-btn:hover .dot-tooltip { opacity: 1; }
+  .fade-left {
+    opacity: 0;
+    transform: translateX(-60px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .fade-right {
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .fade-in {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+  }
 `;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -111,6 +127,21 @@ const HomePage = () => {
   const scrollToSection = (idx) => {
   sectionRefs.current[idx]?.scrollIntoView({ behavior: "smooth" });
 };
+useEffect(() => {
+  const animEls = document.querySelectorAll(".fade-left, .fade-right");
+  const animObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("fade-in");
+        }
+      });
+    },
+    { threshold: 0.2 }
+  );
+  animEls.forEach((el) => animObserver.observe(el));
+  return () => animObserver.disconnect();
+}, []);
 
   // ── Handler asli tetap utuh ──
   const handleImageClick      = (src) => setFullScreenImage(src);
@@ -156,8 +187,22 @@ const HomePage = () => {
 
         {/* ── SNAP 1/6 · HERO / BANNER UTAMA ── */}
         <section id="hero" className="snap-section" ref={(el) => (sectionRefs.current[0] = el)}>
-          <div className="w-full mx-auto flex flex-col justify-center">
+          <div className="w-full flex flex-col">
 {banners !== undefined ? <CustomCarousel items={banners} /> : <div className="w-full aspect-video lg:aspect-[21/9] animate-pulse bg-gray-200" />}
+{/* Lengkungan */}
+<div className="w-full overflow-hidden leading-none -mb-1">
+  <svg
+    viewBox="0 0 1440 60"
+    xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio="none"
+    className="w-full h-[40px]"
+  >
+    <path
+      d="M0,40 C360,80 1080,0 1440,40 L1440,60 L0,60 Z"
+      fill="#F5A623"
+    />
+  </svg>
+</div>
           {/* Bar marquee asli */}
           <div className="bg-mango text-indigo hover:text-blue-950 py-1 shrink-0">
             <div className="flex flex-row items-center w-full overflow-hidden justify-between">
@@ -184,14 +229,62 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* ── TENTANG KAMI ── */}
+<section
+  id="tentang"
+  className="snap-section"
+  ref={(el) => (sectionRefs.current[1] = el)}
+>
+  <div className="h-full flex flex-col lg:flex-row items-center px-8 py-6 gap-10">
+    
+    {/* Gambar kiri */}
+    <div className="fade-left lg:w-1/2 w-full h-full max-h-[70vh]">
+      <img
+        src={gedungbws}
+        alt="BBWS Sumatera VIII"
+        className="w-full h-full object-cover rounded-xl shadow-lg"
+      />
+    </div>
+
+    {/* Teks kanan */}
+    <div className="fade-right lg:w-1/2 w-full flex flex-col gap-5">
+      <p className="text-mango text-sm font-bold uppercase tracking-widest">Tentang Kami</p>
+      <h2 className="text-3xl font-bold text-indigo leading-snug">
+        Balai Besar Wilayah Sungai Sumatera VIII
+      </h2>
+      <div className="border-l-4 border-mango pl-4 space-y-3">
+        <p className="text-gray-600 text-base leading-relaxed">
+          Adalah salah satu unit pelaksana teknis di bawah Kementerian
+          Pekerjaan Umum (PU) Republik Indonesia, yang bertanggung jawab
+          atas pengelolaan sumber daya air di wilayah Sungai yang berada
+          di wilayah Provinsi Sumatera bagian Selatan.
+        </p>
+        <p className="text-gray-600 text-base leading-relaxed">
+          Tugas utama adalah merencanakan, melaksanakan, dan mengawasi
+          pembangunan serta pengelolaan infrastruktur sumber daya air,
+          seperti bendungan, irigasi, pengendalian banjir, dan sistem drainase.
+        </p>
+      </div>
+      
+       <Link
+  to="/tentang-kami"
+  className="self-start mt-2 px-6 py-2 bg-indigo text-white font-bold rounded-md hover:brightness-110 transition-all"
+>
+  Selengkapnya →
+</Link>
+    </div>
+
+  </div>
+</section>
+
         {/* ── SNAP 2/6 · BERITA ── */}
         <section
           id="berita"
           className="snap-section"
-          ref={(el) => (sectionRefs.current[1] = el)}
+          ref={(el) => (sectionRefs.current[2] = el)}
         >
-          <div className="p-10 space-y-8 h-full flex flex-col justify-center">
-            <h1 className="text-2xl text-indigo font-bold">BERITA</h1>
+          <div className="px-8 py-6 space-y-4 h-full flex flex-col justify-center">
+            <h1 className="text-xl text-indigo font-bold border-l-4 border-mango pl-3">BERITA</h1>
             {beritaData !== undefined ? (
               <Carousel autoSlide={true} interval={3000} className="w-full">
                 <CarouselContent className="-ml-1">
@@ -245,10 +338,10 @@ const HomePage = () => {
         <section
           id="geoportal"
           className="snap-section"
-          ref={(el) => (sectionRefs.current[2] = el)}
+          ref={(el) => (sectionRefs.current[3] = el)}
         >
-          <div className="p-10 h-full flex flex-col justify-center">
-            <h1 className="text-2xl text-indigo font-bold mb-4">Geoportal</h1>
+          <div className="px-8 py-6 h-full flex flex-col justify-center">
+            <h1 className="text-xl text-indigo font-bold border-l-4 border-mango pl-3 mb-4">Geoportal</h1>
             <Carousel className="w-full">
               <CarouselContent className="-ml-1">
                 {petaGeospasialData.map((item, index) => (
@@ -301,12 +394,12 @@ const HomePage = () => {
         <section
           id="konten"
           className="snap-section"
-          ref={(el) => (sectionRefs.current[3] = el)}
+          ref={(el) => (sectionRefs.current[4] = el)}
         >
-          <div className="grid grid-cols-12 gap-4 p-10 h-full">
+          <div className="grid grid-cols-12 gap-4 px-8 py-6 h-full">
             {/* Infografis */}
             <div className="col-span-12 md:col-span-4 flex flex-col border border-indigo rounded-sm">
-              <h1 className="text-2xl border-b border-b-indigo p-2 bg-indigo text-white">Infografis</h1>
+              <h1 className="text-lg border-b border-b-indigo p-2 bg-indigo text-white">Infografis</h1>
               {infografisData !== undefined && infografisData.length > 0 ? (
                 <Carousel autoSlide={true} interval={3000} className="relative w-full h-full overflow-hidden">
                   <CarouselContent className="flex transition-transform">
@@ -331,7 +424,7 @@ const HomePage = () => {
             <div className="col-span-12 md:col-span-8 grid gap-4">
               {/* Galeri */}
               <div className="flex flex-col border border-indigo rounded-sm">
-                <h1 className="text-2xl border-b border-b-indigo p-2 bg-indigo text-white">Galeri Infrastruktur</h1>
+                <h1 className="text-lg border-b border-b-indigo p-2 bg-indigo text-white">Galeri Infrastruktur</h1>
                 {galeriData !== undefined ? (
                   <Carousel autoSlide={true} interval={3000} className="flex items-center w-full h-full overflow-hidden">
                     <CarouselContent>
@@ -354,7 +447,7 @@ const HomePage = () => {
 
               {/* Layanan Terpadu */}
               <div className="flex flex-col space-y-5 border border-indigo rounded-sm">
-                <h1 className="text-2xl border-b border-b-indigo p-2 bg-indigo text-white">Layanan Terpadu</h1>
+                <h1 className="text-lg border-b border-b-indigo p-2 bg-indigo text-white">Aplikasi Terkait</h1>
                 <Carousel className="w-full">
                   <CarouselContent className="-ml-1">
                     {layananTerpaduData.map((item, index) => (
@@ -384,11 +477,11 @@ const HomePage = () => {
         <section
            id="youtube"
            className="w-full relative"
-           ref={(el) => (sectionRefs.current[4] = el)}
+           ref={(el) => (sectionRefs.current[5] = el)}
         >
           <div className="p-10 h-full flex flex-col justify-center">
-            <div className="flex flex-col space-y-5 border border-indigo rounded-sm">
-              <h1 className="text-2xl border-b border-b-indigo p-2 bg-indigo text-white">Youtube</h1>
+            <div className="flex flex-col space-y-4 border border-indigo rounded-sm">
+              <h1 className="text-lg border-b border-b-indigo p-2 bg-indigo text-white">Youtube</h1>
               {youtubeData !== undefined ? (
                 <Carousel className="w-full">
                   <CarouselContent className="-ml-1">

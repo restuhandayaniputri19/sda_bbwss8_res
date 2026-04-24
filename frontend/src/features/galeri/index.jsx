@@ -9,6 +9,7 @@ const GaleriPage = () => {
   const [fullScreenImage, setFullScreenImage] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState("all");
   const [photoMonths, setPhotoMonths] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("Semua");
 
   // Function to extract unique months for the dropdown
   const getUniqueMonths = (photos) => {
@@ -52,22 +53,22 @@ const GaleriPage = () => {
     fetchGallery();
   }, []);
 
+  const categories = ["Semua", "Bendungan", "Irigasi & Rawa", "Sungai", "Danau", "Embung", "Air Tanah & Air Baku"];
   const handleMonthChange = (event) => {
     setSelectedMonth(event.target.value);
   };
 
   // Filter photos by selected month
-  const filteredPhotos =
-    selectedMonth === "all"
-      ? data
-      : data.filter((item) => {
-          const itemDate = new Date(item.createdAt); // Use createdAt for filtering
-          const monthYear = itemDate.toLocaleString("default", {
-            month: "long",
-            year: "numeric",
-          });
-          return monthYear === selectedMonth;
-        });
+  const filteredPhotos = selectedMonth === "all"
+  ? data
+  : data.filter((item) => {
+      const itemDate = new Date(item.createdAt);
+      const monthYear = itemDate.toLocaleString("default", {
+        month: "long",
+        year: "numeric",
+      });
+      return monthYear === selectedMonth;
+    });
 
   const handleImageClick = (src) => {
     setFullScreenImage(src);
@@ -79,14 +80,28 @@ const GaleriPage = () => {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <img
-        className="w-full h-[50vh] md:h-[60vh] object-cover"
-        src="https://mediabbwssviii.sgp1.cdn.digitaloceanspaces.com/image/WhatsApp%20Image%202024-10-25%20at%2015.11.43.jpeg"
-        alt="Call center picture"
-      />
       <section className="p-10">
-        <h1 className="text-2xl font-bold text-indigo mb-6">Galeri</h1>
-        <DropdownSelect
+  <h1 className="text-2xl font-bold text-indigo mb-6">Galeri</h1>
+
+  {/* Tombol Kategori */}
+  <div className="flex flex-wrap items-center gap-3 mb-6">
+    <span className="font-bold text-gray-700">Kategori :</span>
+    {categories.map((cat) => (
+      <button
+        key={cat}
+        onClick={() => setSelectedCategory(cat)}
+        className={`px-4 py-2 rounded-md font-semibold text-sm transition-all ${
+          selectedCategory === cat
+            ? "bg-mango text-white"
+            : "bg-gray-100 text-gray-700 hover:bg-mango hover:text-white"
+        }`}
+      >
+        {cat}
+      </button>
+    ))}
+  </div>
+
+  <DropdownSelect
           className="w-[200px] p-2 border rounded-md mb-5"
           data={[
             { value: "all", label: "All Months" },

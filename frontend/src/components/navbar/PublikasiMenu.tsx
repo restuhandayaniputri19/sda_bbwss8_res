@@ -11,7 +11,7 @@ const PublikasiMenu: React.FC<{ label: string }> = ({ label }) => {
       </button>
 
       {/* Panel Mega Menu */}
-      <div className="absolute top-[80px] right-0 w-[700px] bg-white shadow-2xl rounded-bl-3xl rounded-br-lg border border-gray-100 hidden group-hover:block z-[70] animate-in fade-in zoom-in-95 slide-in-from-right-10 duration-300 overflow-hidden">
+      <div className="absolute top-full right-0 w-[700px] bg-white shadow-2xl rounded-bl-3xl rounded-br-lg border border-gray-100 hidden group-hover:block z-[70] animate-in fade-in zoom-in-95 slide-in-from-right-10 duration-300 overflow-hidden">
         <div className="grid grid-cols-3 divide-x divide-gray-100">
 
           {/* Kolom 1: Monitoring */}

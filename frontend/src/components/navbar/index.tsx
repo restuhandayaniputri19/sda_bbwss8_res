@@ -217,19 +217,19 @@ const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <nav
-      className={`${transparent ? "bg-transparent" : "bg-white"} ${shadow} ${positionClass} transition-colors duration-300 border-b-8 border-b-mango`}
+      className={`${transparent ? "bg-transparent" : "bg-white"} ${shadow} ${positionClass} transition-colors duration-300 border-b border-b-gray-200`}
     >
-      <div className={`w-full ${maxWidth} mx-auto px-4 overflow-visible`}>
-        <div className="flex justify-between h-20 items-center">
+      <div className={`w-full ${maxWidth} mx-auto px-4 overflow-visible relative`}>
+        <div className="flex justify-between h-16 items-center">
           {/* Logo */}
           {logoIcon && (
             <Link to={"/"} className="flex items-center gap-2">
               {logoIcon}
-              <div className="flex flex-col uppercase text-indigo">
-                <span className="text-xs font-semibold">Kementerian Pekerjaan Umum</span>
-                <span className="text-xs font-semibold">Direktorat Jenderal Sumber Daya Air</span>
-                <span className="text-sm">BBWS Sumatera VIII</span>
-              </div>
+              <div className="flex flex-col uppercase text-indigo leading-tight">
+  <span className="text-[10px] font-semibold">Kementerian Pekerjaan Umum</span>
+  <span className="text-[10px] font-semibold">Direktorat Jenderal Sumber Daya Air</span>
+  <span className="text-xs font-bold">BBWS Sumatera VIII</span>
+</div>
             </Link>
           )}
           <span className="uppercase text-indigo">{logoText}</span>
@@ -248,7 +248,7 @@ const Navbar: React.FC<NavbarProps> = ({
           {/* Desktop Navigation */}
           {links && (
             <nav
-  className={`hidden min-[1021px]:flex h-full gap-5 flex-1 ${getLinksPositionClasses()} ml-4 overflow-visible`}
+  className={`hidden min-[1021px]:flex h-full gap-1 flex-1 ${getLinksPositionClasses()} ml-4 overflow-visible`}
 >
               {links.map((link, index) => {
                 if (index === 0)
@@ -278,6 +278,12 @@ const Navbar: React.FC<NavbarProps> = ({
                   </Link>
                 );
               })}
+            <a  href="https://sda.pu.go.id"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="ml-4 flex-shrink-0 flex items-center gap-2 bg-mango text-indigo font-bold text-sm px-4 py-2 rounded-md hover:brightness-95 transition-all">
+  🏠 Ditjen SDA
+</a>
             </nav>
           )}
         </div>
@@ -286,7 +292,7 @@ const Navbar: React.FC<NavbarProps> = ({
       {/* ── MOBILE MENU ── */}
       {menuOpen && (
         <div
-          className={`min-[1021px]:hidden fixed top-20 left-0 right-0 ${backgroundColor} ${shadow} w-full max-h-[calc(100vh-80px)] overflow-y-auto z-50`}
+          className={`min-[1021px]:hidden fixed top-16 left-0 right-0 ${backgroundColor} ${shadow} w-full max-h-[calc(100vh-64px)] overflow-y-auto z-50`}
         >
           {links && links.map((link, index) => {
             // Beranda

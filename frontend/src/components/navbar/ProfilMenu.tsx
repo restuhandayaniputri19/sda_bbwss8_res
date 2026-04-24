@@ -11,7 +11,7 @@ const ProfilMenu: React.FC<{ label: string }> = ({ label }) => {
         <ChevronDown className="ml-1 w-4 h-4 group-hover:rotate-180 transition-transform" />
       </button>
 
-      <div className="absolute top-full left-1/2 -translate-x-1/2 w-[900px] bg-white shadow-2xl rounded-b-lg border border-gray-100 hidden group-hover:block z-[70] animate-in fade-in zoom-in-95 duration-300">
+      <div className="fixed top-16 right-32 w-[750px] bg-white shadow-2xl rounded-b-lg border border-gray-100 hidden group-hover:block z-[70] animate-in fade-in zoom-in-95 duration-300">
         <div className="grid grid-cols-3 divide-x divide-gray-100">
 
           {/* Kolom 1: Struktur & Info */}
