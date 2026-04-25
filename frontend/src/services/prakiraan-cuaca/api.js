@@ -1,7 +1,6 @@
-import { API } from "..";
 
-export const getPrediksiCuaca = async () => {
-  const BASE_URL = 'http://localhost:3000';
+export const getPrakiraanCuaca = async () => {
+  const BASE_URL = 'http://localhost:3000/balai/bbwssumatera8';
   
   const response = await fetch(`${BASE_URL}/api2/prakiraan`);
   
@@ -17,14 +16,3 @@ export const getPrediksiCuaca = async () => {
   return { data }; 
 };
 
-export const editPrediksiCuaca = async (formData) => {
-  try {
-    const response = await API.put(`/api/prediksi-cuaca`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error updating the form:", error);
-    throw error;
-  }
-};

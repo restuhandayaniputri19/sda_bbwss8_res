@@ -33,17 +33,16 @@ const PublikasiMenu: React.FC<{ label: string }> = ({ label }) => {
               </li>
               <li>
                 <MenuLink
-                  to="https://www.windy.com/-2.989/104.757?clouds,-3.611,104.757,8"
+                  to="/prakiraan-cuaca"
                   label="Prakiraan Cuaca"
-                  desc="Windy Weather Map"
-                  external
+                  desc="Prakiraan Cuaca Terkini (BMKG)"
                 />
               </li>
               <li>
                 <MenuLink
-                  to="/prediksi-cuaca"
-                  label="Prediksi Cuaca"
-                  desc="Informasi Cuaca Terkini"
+                  to="/prakiraan-cuaca"
+                  label="Prakiraan Cuaca"
+                  desc="Prakiraan Cuaca Terkini (BMKG)"
                 />
               </li>
             </ul>

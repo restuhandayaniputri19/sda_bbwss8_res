@@ -40,18 +40,47 @@ prakiraan.get('/', async (c) => {
       // 1. Ambil data dari BMKG
       const response = await fetch(BMKG_URL);
       const html = await response.text();
-      
+
       // 2. Parsing dengan Linkedom
       const { document } = parseHTML(html);
       const rows = document.querySelectorAll('table tr');
-      
+
       const items = Array.from(rows).slice(1).map(row => {
         const cols = row.querySelectorAll('td');
+
+        const baseUrl = 'https://www.bmkg.go.id';
+
+        const cityLink = cols[0]?.querySelector('a');
+        let relativeUrl = cityLink?.getAttribute('href') || '';
+
+        if (relativeUrl && !relativeUrl.startsWith('/')) {
+          relativeUrl = '/' + relativeUrl;
+        }
+        const fullUrl = relativeUrl
+          ? new URL(relativeUrl, baseUrl).href
+          : '-';
+
+        const getIcon = (col) => {
+          const svgElement = col?.querySelector('svg');
+          if (!svgElement) return '-';
+
+          // Mengambil string HTML dari elemen SVG tersebut
+          // .toString() atau .outerHTML di Linkedom akan mengembalikan string <svg>...</svg>
+          return svgElement.toString();
+        };
+
         console.log('cols[2]:', cols[2]?.textContent);
         return {
           lokasi: cols[0]?.textContent?.trim() || 'Unknown',
-          hari_ini: cleanWeatherData(cols[1]?.textContent || '-'),
-          besok: cleanWeatherData(cols[2]?.textContent || '-')
+          url_detail: fullUrl,
+          hari_ini: {
+            kondisi: cleanWeatherData(cols[1]?.textContent || '-'),
+            ikon: getIcon(cols[1])
+          },
+          besok: {
+            kondisi: cleanWeatherData(cols[2]?.textContent || '-'),
+            ikon: getIcon(cols[2])
+          }
         };
       });
 

@@ -46,7 +46,7 @@ auth.post("/send-otp", async (c) => {
       },
       body: JSON.stringify({
         to: phoneNumber,
-        msg: `Kode OTP Anda untuk layanan Rekomtek adalah: ${otpCode}. Rahasiakan kode ini.`
+        msg: `OTP: ${otpCode}. Kadaluwarsa pada ${expiresAt.toLocaleString()}.`
       }),
     });
 
