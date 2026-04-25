@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState  } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
+
 
 const VerificationModal = ({
   isOpen,
@@ -8,14 +9,53 @@ const VerificationModal = ({
   isOpen: boolean;
   setIsOpen: (o: boolean) => void;
 }) => {
+
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
+const [timeLeft, setTimeLeft] = useState(180);
+
+useEffect(() => {
+  if (timeLeft <= 0) return;
+
+  const timer = setInterval(() => {
+    setTimeLeft((prev) => prev - 1);
+  }, 1000);
+
+  return () => clearInterval(timer);
+}, [timeLeft]);
+
+// Format detik ke MM:SS
+const formatTime = (seconds) => {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${s < 10 ? '0' : ''}${s}`;
+};
 
   const handleSendOtp = (e: React.FormEvent) => {
     e.preventDefault();
     // Di sini panggil 'sedotan' API Hono untuk kirim WA
-    
+    let response = fetch("http://localhost:3000/balai/bbwssumatera8/api2/auth/send-otp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ phoneNumber: "+62" + phoneNumber }), // Pastikan format nomor benar
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          console.log("OTP berhasil dikirim!");
+          setStep("otp"); // Pindah ke tahap OTP
+        } else {
+          console.error("Gagal mengirim OTP:", data.error);
+          alert("Gagal mengirim OTP. Coba lagi.");
+        }
+      })
+      .catch((err) => {
+        console.error("Error saat mengirim OTP:", err);
+        alert("Terjadi kesalahan. Coba lagi.");
+      });
     console.log("Mengirim OTP ke:", phoneNumber);
     setStep("otp"); // Pindah ke tahap OTP
   };
@@ -94,6 +134,18 @@ const VerificationModal = ({
                 Kode verifikasi telah dikirim ke <strong>{phoneNumber}</strong>{" "}
                 via WhatsApp.
               </Dialog.Description>
+              {/* Tampilan Countdown */}
+<div className="text-center mb-4">
+  {timeLeft > 0 ? (
+    <p className="text-sm text-gray-600">
+      Sisa waktu: <span className="font-mono font-bold text-orange-600">{formatTime(timeLeft)}</span>
+    </p>
+  ) : (
+    <p className="text-sm text-red-600 font-semibold">
+      Kode telah kadaluwarsa.
+    </p>
+  )}
+</div>
               <form onSubmit={handleVerifyOtp} className="space-y-4">
                 <input
                   type="text"
@@ -102,13 +154,18 @@ const VerificationModal = ({
                   maxLength={6}
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
+                  disabled={timeLeft <= 0} // Nonaktifkan input jika waktu habis
                   required
                 />
                 <button
                   type="submit"
-                  className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                  disabled={timeLeft <= 0} // Nonaktifkan tombol jika waktu habis
+                  className={`w-full py-2 text-white rounded-md transition 
+      ${timeLeft > 0 
+        ? 'bg-blue-600 hover:bg-blue-700' 
+        : 'bg-gray-400 cursor-not-allowed'}`}
                 >
-                  Verifikasi Sekarang
+                  {timeLeft > 0 ? "Verifikasi Sekarang" : "Waktu Habis"}
                 </button>
                 <button
                   type="button"

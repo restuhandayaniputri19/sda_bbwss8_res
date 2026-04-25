@@ -44,9 +44,8 @@ import YoutubeAdmin from "../features/admin/youtube";
 import { createBrowserRouter } from "react-router-dom";
 import GeospasialPage from "../features/geospasial";
 import RpsdaAdmin from "../features/admin/rpsda";
-import PrediksiCuacaAdmin from "../features/admin/prediksi-cuaca";
 import RpsdaPage from "../features/rpsda";
-import PrediksiCuacaPage from "../features/prediksi-cuaca";
+import PrakiraanCuacaPage from "../features/prakiraan-cuaca";
 import InformasiBerkalaPage from "../features/informasi-berkala";
 import MajalahUser from "../features/majalah";
 import KontakLokasi from "../features/profil/KontakLokasi";
@@ -213,8 +212,8 @@ export const router = createBrowserRouter([
         element: <RpsdaPage />,
       },
       {
-        path: "/prediksi-cuaca",
-        element: <PrediksiCuacaPage />,
+        path: "/prakiraan-cuaca",
+        element: <PrakiraanCuacaPage />,
       },
       {
         path: "/informasi-berkala",
@@ -304,10 +303,6 @@ export const router = createBrowserRouter([
           {
             path: "rpsda",
             element: <RpsdaAdmin />,
-          },
-          {
-            path: "prediksi-cuaca",
-            element: <PrediksiCuacaAdmin />,
           },
           {
             path: "permintaan-data",
