@@ -29,4 +29,4 @@ ENV DATABASE_URL=/app/data/S8_web_sda.db
 EXPOSE 3000
 
 # Jalankan aplikasi
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/index.mjs"]
