@@ -40,7 +40,11 @@ services:
     restart: always
     env_file:
       - ./backend2/.env
+    volumes:
+      - sqlite_api2_data:/app/data  # Volume untuk menyimpan data SQLite
     environment:
+      - DATABASE_URL=./data/S8_web_sda.db
+      - NODE_ENV=production
     ports:
       - "8009:3000"
 
@@ -63,3 +67,4 @@ services:
 
 volumes:
   mysql_data:
+  sqlite_api2_data:

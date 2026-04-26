@@ -60,7 +60,7 @@ prakiraan.get('/', async (c) => {
           ? new URL(relativeUrl, baseUrl).href
           : '-';
 
-        const getIcon = (col) => {
+        const getIcon = (col: Element | null) => {
           const svgElement = col?.querySelector('svg');
           if (!svgElement) return '-';
 
