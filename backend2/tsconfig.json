@@ -1,5 +1,17 @@
 {
   "compilerOptions": {
-    "types": ["node"]
-  }
+    "target": "ESNext",
+    "module": "ESNext",
+    "strict": false,
+    "skipLibCheck": true,
+    "lib": ["ESNext", "DOM"],
+    "types": ["node"],
+    "outDir": "dist",
+    "rootDir": "src",
+    "paths": {
+      "*": ["./node_modules/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
