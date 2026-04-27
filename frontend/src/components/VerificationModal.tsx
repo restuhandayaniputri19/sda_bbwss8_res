@@ -35,7 +35,7 @@ const formatTime = (seconds) => {
   const handleSendOtp = (e: React.FormEvent) => {
     e.preventDefault();
     // Di sini panggil 'sedotan' API Hono untuk kirim WA
-    let response = fetch("http://localhost:3000/balai/bbwssumatera8/api2/auth/send-otp", {
+    let response = fetch(`${import.meta.env.VITE_API2_BASE_URL}/auth/send-otp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
