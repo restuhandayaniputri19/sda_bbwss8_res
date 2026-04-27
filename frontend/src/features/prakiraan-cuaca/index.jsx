@@ -79,7 +79,10 @@ const PrakiraanCuaca = () => {
         {/* Seksi Kiri: Daftar Kabupaten */}
         <section className="flex flex-col gap-4">
           <h2 className="text-lg font-medium opacity-80 text-slate-700">
-            Wilayah Sumatera Selatan
+            Wilayah Sumatera Selatan <b>{new Date(prakiraanCuaca?.updated_at).toLocaleString("id-ID", {
+                  day: "2-digit",
+                  month: "long",
+                  year: "numeric"})}</b>
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[75vh] overflow-y-auto pr-2 custom-scrollbar">
@@ -97,7 +100,7 @@ const PrakiraanCuaca = () => {
                     className="card card-bordered border-rounded bg-base-100 shadow-sm border-slate-300 hover:border-indigo-400 transition-all duration-300 border-[1.5px]"
                   >
                     <div className="card-body p-4">
-                      <h3 className="card-title border-b border-rounded pb-2 mb-2 text-indigo-700 font-bold group">
+                      <h3 className="card-title border-b items-center border-rounded pb-2 mb-2 text-indigo-700 font-bold group">
                         <a
                           href={item.url_detail}
                           target="_blank"
@@ -118,43 +121,56 @@ const PrakiraanCuaca = () => {
                             Hari Ini
                           </p>
 
-                          <p className="text-lg font-semibold mt-1 text-slate-700">
-                            {item.hari_ini.kondisi.suhu}
-                          </p>
                           {item.hari_ini.ikon ? (
-                            <div className="flex justify-center mt-1">
+                            <div className="flex flex-col justify-center items-center mt-1">
                               <div
-                                className="w-9 h-9" // Atur ukuran container di sini
+                                className="w-16 h-16" // Atur ukuran container di sini
                                 dangerouslySetInnerHTML={{
                                   __html: item.hari_ini.ikon,
                                 }}
                                 title={`${item.hari_ini.kondisi.kondisi}`}
                               />
+                              <span className="text-sm">
+                                {item.hari_ini.kondisi.kondisi}
+                              </span>
                             </div>
                           ) : null}
-                          <b>{item.hari_ini.kondisi.kelembapan}</b>
+                          <div className="text-xs text-slate-700">
+                          <span className="">
+                            {item.hari_ini.kondisi.suhu}
+                          </span>
+                          <span className="ms-3">
+                            {item.hari_ini.kondisi.kelembapan}
+                          </span>
+                          </div>
                         </div>
 
                         {/* Besok */}
                         <div className="border-l border-slate-100 flex flex-col gap-1 justify-between">
                           <p className="text-xs uppercase opacity-50">Besok</p>
 
-                          <p className="text-lg font-semibold mt-1 text-slate-700">
-                            {item.besok.kondisi.suhu}
-                          </p>
                           {item.besok.ikon ? (
-                            <div className="flex justify-center mt-1">
+                            <div className="flex flex-col justify-center items-center mt-1">
                               <div
-                                className="w-9 h-9" // Atur ukuran container di sini
+                                className="w-16 h-16" // Atur ukuran container di sini
                                 dangerouslySetInnerHTML={{
                                   __html: item.besok.ikon,
                                 }}
                                 title={`${item.besok.kondisi.kondisi}`}
                               />
+                                <span className="text-sm">
+                              {item.besok.kondisi.kondisi}</span>
                             </div>
                             
                           ) : null}
-                          <b>{item.besok.kondisi.kelembapan}</b>
+                            <div className="text-xs text-slate-700">
+                          <span className="">
+                            {item.besok.kondisi.suhu}
+                          </span>
+                          <span className="ms-3">
+                            {item.besok.kondisi.kelembapan}
+                          </span>
+                            </div>
                         </div>
                       </div>
                     </div>
