@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getPrakiraanCuaca } from "../services/prakiraan-cuaca/api";
+import { getPrakiraanCuaca } from "../services/prakiraan-cuaca";
 
 export const usePrakiraanCuacaData = () => {
   const [prakiraanCuaca, setPrakiraanCuaca] = useState(null);

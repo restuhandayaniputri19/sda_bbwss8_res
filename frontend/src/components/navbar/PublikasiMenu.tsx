@@ -38,13 +38,6 @@ const PublikasiMenu: React.FC<{ label: string }> = ({ label }) => {
                   desc="Prakiraan Cuaca Terkini (BMKG)"
                 />
               </li>
-              <li>
-                <MenuLink
-                  to="/prakiraan-cuaca"
-                  label="Prakiraan Cuaca"
-                  desc="Prakiraan Cuaca Terkini (BMKG)"
-                />
-              </li>
             </ul>
           </div>
 
