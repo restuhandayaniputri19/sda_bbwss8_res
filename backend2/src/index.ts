@@ -5,6 +5,7 @@ import { bearerAuth } from 'hono/bearer-auth';
 import 'dotenv/config';
 
 // Import Routes
+import permintaanDataRoute from './routes/permintaan_data';
 import prakiraanRoute from './routes/prakiraan';
 import beritaRoute from './routes/berita';
 import auth from './routes/auth';
@@ -30,6 +31,7 @@ origin: (origin, c) => {
 app.route('/prakiraan', prakiraanRoute);
 app.route('/berita', beritaRoute);
 app.route('/auth', auth);
+app.route('/permintaan-data', permintaanDataRoute);
 
 // app.route('/banner', bannerRoute);
 // app.route('/galeri', galeriRoute);

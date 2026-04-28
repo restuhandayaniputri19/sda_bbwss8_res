@@ -25,3 +25,48 @@ export const PubAuth = sqliteTable('public_auth', {
   // Indeks untuk ULID agar fetch via URL tetap kencang
   external_idx: uniqueIndex('external_idx').on(table.ul_id),
 }));
+
+
+export const permintaanData = sqliteTable('permintaan_data', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  
+  namaLengkap: text('nama_lengkap').notNull(),
+  
+  instansi: text('instansi'),
+  
+  jenisData: text('jenis_data').notNull(),
+  
+  // DATEONLY di Sequelize cocok menggunakan text di SQLite (YYYY-MM-DD)
+  periodeDari: text('periode_dari').notNull(),
+  
+  periodeSampai: text('periode_sampai').notNull(),
+  
+  email: text('email').notNull(),
+  
+  noWa: text('no_wa').notNull(),
+  
+  tujuanPenggunaan: text('tujuan_penggunaan').notNull(),
+  
+  fileSurat: text('file_surat'),
+  
+  // SQLite tidak memiliki tipe ENUM asli, kita gunakan text dengan pengecekan di level aplikasi
+  status: text('status', { enum: ["pending", "diproses", "selesai", "ditolak"] })
+    .notNull()
+    .default('pending'),
+
+  // JSON di SQLite disimpan sebagai TEXT. 
+  // Drizzle akan membantu parsing jika kita definisikan sebagai objek/array.
+  statusLogs: text('status_logs', { mode: 'json' })
+    .$type<Array<{ status: string; timestamp: string; note?: string }>>()
+    .default(sql`'[]'`),
+
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .default(sql`(strftime('%s', 'now'))`),
+    
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .default(sql`(strftime('%s', 'now'))`),
+});
+
+// Inferensi tipe untuk digunakan di frontend/backend
+export type PermintaanData = typeof permintaanData.$inferSelect;
+export type InsertPermintaanData = typeof permintaanData.$inferInsert;
