@@ -1,47 +1,61 @@
-import { useEffect, useState  } from "react";
+import { useEffect, useState } from "react";
+import { API2 } from "../services";
 import * as Dialog from "@radix-ui/react-dialog";
 
+declare global {
+  interface ImportMetaEnv {
+    readonly VITE_API2_BASE_URL: string;
+  }
+
+  interface ImportMeta {
+    readonly env: ImportMetaEnv;
+  }
+}
 
 const VerificationModal = ({
   isOpen,
   setIsOpen,
+  onSuccess,
 }: {
   isOpen: boolean;
   setIsOpen: (o: boolean) => void;
+  onSuccess?: (phoneNumber: string) => void;
 }) => {
-
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
-const [timeLeft, setTimeLeft] = useState(180);
+  const [timeLeft, setTimeLeft] = useState(180);
 
-useEffect(() => {
-  if (timeLeft <= 0) return;
+  useEffect(() => {
+    if (timeLeft <= 0) return;
 
-  const timer = setInterval(() => {
-    setTimeLeft((prev) => prev - 1);
-  }, 1000);
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
 
-  return () => clearInterval(timer);
-}, [timeLeft]);
+    return () => clearInterval(timer);
+  }, [timeLeft]);
 
-// Format detik ke MM:SS
-const formatTime = (seconds) => {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}:${s < 10 ? '0' : ''}${s}`;
-};
+  // Format detik ke MM:SS
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s < 10 ? "0" : ""}${s}`;
+  };
 
   const handleSendOtp = (e: React.FormEvent) => {
     e.preventDefault();
     // Di sini panggil 'sedotan' API Hono untuk kirim WA
-    let response = fetch(`${import.meta.env.VITE_API2_BASE_URL}/auth/send-otp`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    let response = fetch(
+      `${API2}/auth/send-otp`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ phoneNumber: "+62" + phoneNumber }), // Pastikan format nomor benar
       },
-      body: JSON.stringify({ phoneNumber: "+62" + phoneNumber }), // Pastikan format nomor benar
-    })
+    )
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
@@ -64,8 +78,32 @@ const formatTime = (seconds) => {
     e.preventDefault();
     // Di sini verifikasi OTP ke backend
     console.log("Memverifikasi OTP:", otp);
-    // Jika sukses, bisa lanjut ke form atau tutup modal
-    setIsOpen(false);
+    let response = fetch(
+      `${API2}/auth/verify-otp`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ phoneNumber: "+62" + phoneNumber, otp }),
+      },
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          console.log("OTP valid!");
+          // Jika sukses, bisa lanjut ke form atau tutup modal
+          setIsOpen(false);
+          if (onSuccess) onSuccess("+62" + phoneNumber); // Kirim nomor yang sudah diverifikasi ke parent
+        } else {
+          console.error("OTP tidak valid:", data.error);
+          alert("OTP tidak valid atau sudah kadaluwarsa.");
+        }
+      })
+      .catch((err) => {
+        console.error("Error saat memverifikasi OTP:", err);
+        alert("Terjadi kesalahan. Coba lagi.");
+      });
   };
 
   return (
@@ -135,22 +173,25 @@ const formatTime = (seconds) => {
                 via WhatsApp.
               </Dialog.Description>
               {/* Tampilan Countdown */}
-<div className="text-center mb-4">
-  {timeLeft > 0 ? (
-    <p className="text-sm text-gray-600">
-      Sisa waktu: <span className="font-mono font-bold text-orange-600">{formatTime(timeLeft)}</span>
-    </p>
-  ) : (
-    <p className="text-sm text-red-600 font-semibold">
-      Kode telah kadaluwarsa.
-    </p>
-  )}
-</div>
+              <div className="text-center mb-4">
+                {timeLeft > 0 ? (
+                  <p className="text-sm text-gray-600">
+                    Sisa waktu:{" "}
+                    <span className="font-mono font-bold text-orange-600">
+                      {formatTime(timeLeft)}
+                    </span>
+                  </p>
+                ) : (
+                  <p className="text-sm text-red-600 font-semibold">
+                    Kode telah kadaluwarsa.
+                  </p>
+                )}
+              </div>
               <form onSubmit={handleVerifyOtp} className="space-y-4">
                 <input
                   type="text"
                   placeholder="6 digit kode"
-                  className="w-full px-4 py-2 border rounded-md text-center tracking-[1em] font-bold outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border rounded-md text-center tracking-[0.5em] font-bold outline-none focus:ring-2 focus:ring-blue-500"
                   maxLength={6}
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
@@ -161,9 +202,11 @@ const formatTime = (seconds) => {
                   type="submit"
                   disabled={timeLeft <= 0} // Nonaktifkan tombol jika waktu habis
                   className={`w-full py-2 text-white rounded-md transition 
-      ${timeLeft > 0 
-        ? 'bg-blue-600 hover:bg-blue-700' 
-        : 'bg-gray-400 cursor-not-allowed'}`}
+      ${
+        timeLeft > 0
+          ? "bg-blue-600 hover:bg-blue-700"
+          : "bg-gray-400 cursor-not-allowed"
+      }`}
                 >
                   {timeLeft > 0 ? "Verifikasi Sekarang" : "Waktu Habis"}
                 </button>

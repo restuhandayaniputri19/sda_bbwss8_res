@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { db } from "../db";
 import { PubAuth } from "../db/schema";
+import { eq, and, gt } from "drizzle-orm";
 
 const auth = new Hono();
 
@@ -38,21 +39,54 @@ auth.post("/send-otp", async (c) => {
     })
     .returning({ id_pamer: PubAuth.ul_id }); // Mengembalikan ULID untuk referensi eksternal (opsional)
 
-    // 3. Panggil container wa-webjs (Internal network)
-    const waResponse = await fetch("http://localhost:3003/send", { // Sesuaikan port/host container
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        to: phoneNumber,
-        msg: `OTP: ${otpCode}. Kadaluwarsa pada ${expiresAt.toLocaleString()}.`
-      }),
-    });
+    const isDev = process.env.NODE_ENV === "development";
+    if (isDev) {
+      console.log(`[DEV MODE] OTP untuk ${phoneNumber}: ${otpCode} (kadaluwarsa pada ${expiresAt.toLocaleString()})`);
+      return c.json({ success: true, message: "OTP terkirim (DEV MODE)", otp: otpCode }); // Kirim OTP di response untuk dev
+    } else {
+      // 3. Panggil container wa-webjs (Internal network)
+      const waResponse = await fetch("http://localhost:3003/send", { // Sesuaikan port/host container
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: phoneNumber,
+          msg: `OTP: ${otpCode}. Kadaluwarsa pada ${expiresAt.toLocaleString()}.`
+        }),
+      });
 
-    if (!waResponse.ok) throw new Error("Gagal mengirim pesan via WA");
+      if (!waResponse.ok) throw new Error("Gagal mengirim pesan via WA");
+    }
 
     return c.json({ success: true, message: "OTP terkirim" });
+  } catch (error: any) {
+    return c.json({ success: false, error: error.message }, 500);
+  }
+});
+
+auth.post("/verify-otp", async (c) => {
+  const { phoneNumber, otp } = await c.req.json();
+
+  try {
+    // Cari OTP yang valid untuk nomor tersebut
+    const record = await db.select().from(PubAuth)
+      .where(
+        and(
+          eq(PubAuth.identifier, phoneNumber),
+          eq(PubAuth.type, 'whatsapp'),
+          eq(PubAuth.otp_code, otp),
+          gt(PubAuth.expires_at, new Date()) // Pastikan OTP belum expired
+        )
+      )
+      .get();
+
+    if (record) {
+      // OTP valid, bisa lanjutkan dengan logika autentikasi atau pembuatan session
+      return c.json({ success: true, message: "OTP valid" });
+    } else {
+      return c.json({ success: false, message: "OTP tidak valid atau sudah kadaluwarsa" }, 400);
+    }
   } catch (error: any) {
     return c.json({ success: false, error: error.message }, 500);
   }
