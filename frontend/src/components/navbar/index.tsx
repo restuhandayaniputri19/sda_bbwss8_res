@@ -51,8 +51,7 @@ const publikasiSections = [
     title: "Monitoring",
     items: [
       { to: "https://sinbad.sda.pu.go.id/simadu/main/login.php", label: "Early Warning System", desc: "E-SIMADU", external: true },
-      { to: "https://www.windy.com/-2.989/104.757?clouds,-3.611,104.757,8", label: "Prakiraan Cuaca", desc: "Windy Weather Map", external: true },
-      { to: "/prediksi-cuaca", label: "Prediksi Cuaca", desc: "Informasi Cuaca Terkini" },
+      { to: "/prakiraan-cuaca", label: "Prakiraan Cuaca", desc: "BMKG Wilayah Sumatera Bagian Selatan"},
     ],
   },
   {
