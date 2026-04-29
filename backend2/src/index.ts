@@ -17,7 +17,7 @@ const API_TOKEN = process.env.API_TOKEN || 'slow-and-low-key';
 //app.use('/api2/*', bearerAuth({ token: API_TOKEN }));
 app.use('*', cors({
 origin: (origin, c) => {
-    const frontend = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const frontend = process.env.CORS_ORIGIN || 'http://localhost:5173';
     // Jika origin cocok, atau tidak ada origin (berarti dari sumber yang sama/dev), izinkan.
     if (!origin || origin === frontend) {
       return origin || frontend; 

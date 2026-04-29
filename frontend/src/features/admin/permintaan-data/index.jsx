@@ -21,7 +21,7 @@ const AdminPermintaan = () => {
 
   const fetchData = async (status) => {
     try {
-      const response = await API.get(`/api/permintaan-data?status=${status}`);
+      const response = await API.get(`/api2/permintaan-data?status=${status}`);
       setPermintaan(response.data);
     } catch (err) {
       console.error("Gagal mengambil data", err);
