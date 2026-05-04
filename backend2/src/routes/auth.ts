@@ -7,6 +7,7 @@ const auth = new Hono();
 
 auth.get("/", (c) => c.text("Auth Endpoint is Active!"));
 auth.post("/send-otp", async (c) => {
+  console.log("Endpoint /auth/send-otp diakses");
   const { phoneNumber } = await c.req.json();
   
   const now = new Date();
@@ -39,11 +40,12 @@ auth.post("/send-otp", async (c) => {
     })
     .returning({ id_pamer: PubAuth.ul_id }); // Mengembalikan ULID untuk referensi eksternal (opsional)
 
-    const isDev = process.env.NODE_ENV === "development";
+    const isDev = true;
     if (isDev) {
       console.log(`[DEV MODE] OTP untuk ${phoneNumber}: ${otpCode} (kadaluwarsa pada ${expiresAt.toLocaleString()})`);
       return c.json({ success: true, message: "OTP terkirim (DEV MODE)", otp: otpCode }); // Kirim OTP di response untuk dev
     } else {
+      console.log(`OTP untuk ${phoneNumber} disimpan di database. Mengirim pesan via WA...`);
       // 3. Panggil container wa-webjs (Internal network)
       const waResponse = await fetch("http://localhost:3003/send", { // Sesuaikan port/host container
         method: "POST",
@@ -67,6 +69,7 @@ auth.post("/send-otp", async (c) => {
 
 auth.post("/verify-otp", async (c) => {
   const { phoneNumber, otp } = await c.req.json();
+  console.log("Endpoint /auth/verify-otp diakses");
 
   try {
     // Cari OTP yang valid untuk nomor tersebut

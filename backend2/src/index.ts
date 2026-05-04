@@ -1,6 +1,7 @@
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
+import { logger } from 'hono/logger';
 import { bearerAuth } from 'hono/bearer-auth';
 import 'dotenv/config';
 
@@ -13,6 +14,8 @@ import auth from './routes/auth';
 const app = new Hono().basePath('/balai/bbwssumatera8/api2');
 
 // Middleware Global
+app.use('*', logger()) // 2. Pasang sebagai middleware global
+
 const API_TOKEN = process.env.API_TOKEN || 'slow-and-low-key';
 //app.use('/api2/*', bearerAuth({ token: API_TOKEN }));
 app.use('*', cors({

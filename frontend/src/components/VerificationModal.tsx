@@ -43,67 +43,76 @@ const VerificationModal = ({
     return `${m}:${s < 10 ? "0" : ""}${s}`;
   };
 
-  const handleSendOtp = (e: React.FormEvent) => {
+const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Di sini panggil 'sedotan' API Hono untuk kirim WA
-    let response = fetch(
-      `${API2}/auth/send-otp`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ phoneNumber: "+62" + phoneNumber }), // Pastikan format nomor benar
-      },
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          console.log("OTP berhasil dikirim!");
-          setStep("otp"); // Pindah ke tahap OTP
-        } else {
-          console.error("Gagal mengirim OTP:", data.error);
-          alert("Gagal mengirim OTP. Coba lagi.");
-        }
-      })
-      .catch((err) => {
-        console.error("Error saat mengirim OTP:", err);
-        alert("Terjadi kesalahan. Coba lagi.");
-      });
-    console.log("Mengirim OTP ke:", phoneNumber);
-    setStep("otp"); // Pindah ke tahap OTP
-  };
+    
+    // Gunakan awalan +62 sesuai logika Anda
+    const formattedPhone = "+62" + phoneNumber;
 
-  const handleVerifyOtp = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Di sini verifikasi OTP ke backend
-    console.log("Memverifikasi OTP:", otp);
-    let response = fetch(
-      `${API2}/auth/verify-otp`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ phoneNumber: "+62" + phoneNumber, otp }),
-      },
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          console.log("OTP valid!");
-          // Jika sukses, bisa lanjut ke form atau tutup modal
-          setIsOpen(false);
-          if (onSuccess) onSuccess("+62" + phoneNumber); // Kirim nomor yang sudah diverifikasi ke parent
-        } else {
-          console.error("OTP tidak valid:", data.error);
-          alert("OTP tidak valid atau sudah kadaluwarsa.");
-        }
-      })
-      .catch((err) => {
-        console.error("Error saat memverifikasi OTP:", err);
-        alert("Terjadi kesalahan. Coba lagi.");
+    try {
+      console.log("Mengirim OTP ke:", formattedPhone);
+
+      // Gunakan instance axios (API2) secara langsung
+      // Tidak perlu menuliskan full URL karena sudah ada di axiosConfig
+      const response = await API2.post("/auth/send-otp", { 
+        phoneNumber: formattedPhone 
       });
+
+      // Axios secara otomatis memparse JSON, data ada di response.data
+      if (response.data.success) {
+        console.log("OTP berhasil dikirim!");
+        setStep("otp"); // Pindah tahap HANYA jika sukses
+      } else {
+        console.error("Gagal mengirim OTP:", response.data.error);
+        alert("Gagal mengirim OTP: " + (response.data.message || "Coba lagi."));
+      }
+    } catch (err) {
+      console.error("Error saat mengirim OTP:", err);
+      alert("Terjadi kesalahan koneksi. Pastikan server API2 aktif.");
+    }
+  };
+  
+const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    console.log("Memverifikasi OTP:", otp);
+
+    try {
+      // 1. Gunakan API2.post (Instance Axios)
+      // Tidak perlu `${API2}`, cukup sub-path-nya saja.
+      const response = await API2.post("/auth/verify-otp", {
+        phoneNumber: "+62" + phoneNumber,
+        otp: otp
+      });
+
+      // 2. Axios otomatis mem-parse JSON, akses via response.data
+      const data = response.data;
+
+      if (data.success) {
+        console.log("OTP valid!");
+        
+        const now = new Date();
+        const midnight = new Date().setHours(23, 59, 59, 999);
+        
+        // Simpan status verifikasi yang akan hilang saat lewat tengah malam
+        localStorage.setItem("verified_until", midnight.toString());
+        localStorage.setItem("verified_number", "+62" + phoneNumber);
+        
+        setIsOpen(false);
+        
+        if (onSuccess) {
+          onSuccess("+62" + phoneNumber);
+        }
+      } else {
+        console.error("OTP tidak valid:", data.error);
+        alert(data.message || "OTP tidak valid atau sudah kadaluwarsa.");
+      }
+    } catch (err: any) {
+      // 3. Penanganan error yang lebih detail
+      const errorMsg = err.response?.data?.message || "Terjadi kesalahan koneksi.";
+      console.error("Error saat memverifikasi OTP:", err);
+      alert(errorMsg);
+    }
   };
 
   return (
