@@ -97,10 +97,10 @@ const PrakiraanCuaca = () => {
               : sortedItems?.map((item, index) => (
                   <div
                     key={index}
-                    className="card card-bordered border-rounded bg-base-100 shadow-sm border-slate-300 hover:border-indigo-400 transition-all duration-300 border-[1.5px]"
+                    className="card card-bordered rounded-sm shadow-sm border-gray-500 hover:border-indigo-400 transition-all duration-300 border-[1px]"
                   >
                     <div className="card-body p-4">
-                      <h3 className="card-title border-b items-center border-rounded pb-2 mb-2 text-indigo-700 font-bold group">
+                      <h3 className="card-title border-b items-center pb-2 mb-2 text-indigo-700 font-bold group">
                         <a
                           href={item.url_detail}
                           target="_blank"
@@ -146,7 +146,7 @@ const PrakiraanCuaca = () => {
                         </div>
 
                         {/* Besok */}
-                        <div className="border-l border-slate-100 flex flex-col gap-1 justify-between">
+                        <div className="border-l border-gray-500 flex flex-col gap-1 justify-between">
                           <p className="text-xs uppercase opacity-50">Besok</p>
 
                           {item.besok.ikon ? (

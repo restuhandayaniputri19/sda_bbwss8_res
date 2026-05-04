@@ -11,6 +11,7 @@ app.get('/', async (c) => {
     const noWa = c.req.query('no_wa');
 
     let results;
+    console.log(`Mencari permintaan data dengan no_wa: ${noWa}`); // Debug log untuk memastikan query parameter diterima dengan benar
     if (noWa) {
       // Jika ada param noWa, filter berdasarkan nomor telepon
       results = await db
@@ -36,6 +37,7 @@ app.get('/', async (c) => {
 app.post('/', async (c) => {
   try {
     const body = await c.req.json();
+    console.log("Data yang diterima untuk permintaan baru:", body); // Debug log untuk melihat data yang masuk
 
     // Validasi sederhana atau gunakan Zod jika diperlukan
     const result = await db.insert(permintaanData).values({

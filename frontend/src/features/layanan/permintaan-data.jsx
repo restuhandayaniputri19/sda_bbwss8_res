@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { API2 } from "../../services";
 import VerificationModal from "../../components/VerificationModal";
 
@@ -14,6 +14,7 @@ const initialFormState = {
   file: null,
 };
 
+
 const PermintaanDataPage = () => {
   // State untuk alur Verifikasi
   const [isVerified, setIsVerified] = useState(false);
@@ -25,12 +26,33 @@ const PermintaanDataPage = () => {
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
 
-  // Fungsi Ambil Riwayat (Hanya dipanggil setelah verified)
+  useEffect(() => {
+    const expiry = localStorage.getItem("verified_until");
+    const savedNumber = localStorage.getItem("verified_number");
+    
+    if (expiry && savedNumber) {
+      if (new Date().getTime() > parseInt(expiry)) {
+        // Sudah lewat tengah malam, hapus session
+        localStorage.removeItem("verified_until");
+        localStorage.removeItem("verified_number");
+        setIsVerified(false);
+      } else {
+        // Masih valid
+        setVerifiedNumber(savedNumber);
+        setIsVerified(true);
+        fetchHistory(savedNumber);
+      }
+    }
+  }, []);
+
+// Fungsi Ambil Riwayat (Hanya dipanggil setelah verified)
   const fetchHistory = async (noWa) => {
     setLoadingHistory(true);
     try {
       console.log("Mengambil riwayat untuk nomor:", noWa); // Debug log untuk memastikan nomor yang digunakan
-      const response = await API2.get(`/permintaan_data?no_wa=${noWa}`);
+      const response = await API2.get(`/permintaan-data`, {
+        params: { no_wa: noWa },
+      });
       if (response.data.success) {
         setHistory(response.data.data);
       }
@@ -51,25 +73,35 @@ const PermintaanDataPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const dataToSend = new FormData();
-    Object.keys(formData).forEach((key) => {
-      dataToSend.append(key, formData[key]);
-    });
+    console.log("Form Data yang akan dikirim:", formData); // Debug log untuk melihat data sebelum dikirim
+    const dataForBackend = {
+    namaLengkap: formData.nama,        // Pemetaan ke nama_lengkap
+    instansi: formData.instansi,
+    jenisData: formData.jenisData,
+    periodeDari: formData.periodeDari,
+    periodeSampai: formData.periodeSampai,
+    email: formData.email,
+    noWa: verifiedNumber,             // Pemetaan ke no_wa
+    tujuanPenggunaan: formData.tujuan, // Pemetaan ke tujuan_penggunaan
+    fileSurat: formData.file           // Pemetaan ke file_surat
+  };
 
     try {
-      const response = await API2.post("/permintaan_data", dataToSend, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      // Langsung kirim dataToSend tanpa header multipart
+      const response = await API2.post("/permintaan-data", dataForBackend);
 
-      if (response.status === 201) {
+      if (response.status === 201 || response.data.success) {
         alert("Permintaan berhasil dikirim!");
         setFormData({ ...initialFormState, telepon: verifiedNumber });
         fetchHistory(verifiedNumber);
       }
     } catch (error) {
-      alert("Terjadi kesalahan saat mengirim permintaan.", error);
+      // Gunakan pesan dari server jika ada agar lebih informatif
+      const msg = error.response?.data?.message || "Terjadi kesalahan saat mengirim permintaan.";
+      console.error("Detail Error:", error);
+      alert(msg);
     }
+
   };
 
   const handleChange = (e) => {
@@ -77,6 +109,7 @@ const PermintaanDataPage = () => {
     setFormData((prev) => ({
       ...prev,
       [name]: files ? files[0] : value,
+      telepon: name === "telepon" ? verifiedNumber : prev.telepon, // Pastikan telepon tetap terisi dengan nomor yang sudah diverifikasi
     }));
   };
 
