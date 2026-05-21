@@ -28,41 +28,42 @@ const TokenContext = createContext<Context>(contextValue);
 export function TokenProvider({ children }: Readonly<Props>) {
   const [token, setToken] = useState(localStorage.getItem("token") ?? "");
 
+  // Daftarkan interceptor hanya SATU KALI saat aplikasi pertama kali jalan
   useEffect(() => {
-    setAxiosConfig(token);
-  }, [token]);
-
-  axiosWithConfig.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (error.response.status === 401) {
-        changeToken("");
+    const interceptor = axiosWithConfig.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          // Jika 401, bersihkan token agar kembali ke login
+          handleLogout();
+        }
+        return Promise.reject(error);
       }
+    );
 
-      return Promise.reject(error);
+    // Cleanup function untuk menghapus interceptor jika component unmount
+    return () => axiosWithConfig.interceptors.response.eject(interceptor);
+  }, []);
+
+  const handleLogout = useCallback(() => {
+    setToken("");
+    localStorage.removeItem("token");
+  }, []);
+
+  const changeToken = useCallback((newToken?: string) => {
+    const val = newToken ?? "";
+    setToken(val);
+    if (val) {
+      localStorage.setItem("token", val);
+    } else {
+      localStorage.removeItem("token");
     }
-  );
+  }, []);
 
-  const changeToken = useCallback(
-    (token?: string) => {
-      const newToken = token ?? "";
-      setToken(newToken);
-      if (token) {
-        localStorage.setItem("token", newToken);
-      } else {
-        localStorage.removeItem("token");
-      }
-    },
-    [token]
-  );
-
-  const tokenContextValue = useMemo(
-    () => ({
-      token,
-      changeToken,
-    }),
-    [token, changeToken]
-  );
+  const tokenContextValue = useMemo(() => ({
+    token,
+    changeToken,
+  }), [token, changeToken]);
 
   return (
     <TokenContext.Provider value={tokenContextValue}>

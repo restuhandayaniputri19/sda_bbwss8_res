@@ -4,6 +4,7 @@ import { z } from "zod";
 export const gallerySchema = (isEdit) =>
   z.object({
     description: z.string(),
+    category: z.string().min(1, "Kategori harus dipilih"),
     gallery: isEdit
       ? z.any().optional() // Optional when editing
       : z
