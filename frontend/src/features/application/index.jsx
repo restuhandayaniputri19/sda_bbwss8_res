@@ -5,6 +5,7 @@ const aplikasiTerkait = [
   { id: 1, img: "public/images/wrdc.png", title: "WRDC", platform: "Web", description: "Water Resources Data Center - Pusat data sumber daya air nasional.", url: "https://pdsda.sda.pu.go.id/" },
   { id: 2, img: "public/images/visiting-point.png", title: "Visiting Point", platform: "Web", description: "Sistem informasi kunjungan dan monitoring lokasi sumber daya air.", url: "https://sda.pu.go.id/balai/bbwssumatera8/map/" },
   { id: 3, img: "public/images/e-hidrologi.png", title: "E-Hidrologi", platform: "Web", description: "Aplikasi pengelolaan dan monitoring data hidrologi wilayah sungai.", url: "https://bbwssumateraviii.co.id" },
+  { id: 4, img: "public/images/smart-bim.png", title: "Smart Bim", platform: "Web", description: "Platform digital untuk memantau, mengelola, dan mengintegrasikan data Building Information Modelling (BIM) pada proyek-proyek infrastruktur di seluruh Indonesia.", url: "https://bim.pu.go.id/" },
 ];
 
 const Application = () => {
