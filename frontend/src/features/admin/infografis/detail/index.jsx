@@ -15,6 +15,17 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "../../../../hooks/useQuery";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+
+const categories = ["Bendungan", "Irigasi & Rawa", "Sungai", "Danau", "Embung", "Air Tanah & Air Baku"];
+
+import { 
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectItem, 
+  SelectContent, 
+} from "../../../../components/select/based";
+
 const DetailPage = () => {
   const query = useQuery();
   const id = query.get("id");
@@ -101,6 +112,31 @@ const DetailPage = () => {
                 aria-disabled={isSubmitting}
               />
             )}
+          </CustomFormField>
+
+
+          <CustomFormField control={form.control} name="category" label="Category">
+            {( field ) => {
+              console.log("Status Field Category:", field);
+              return (
+              <Select 
+                onValueChange={field?.onChange} 
+                defaultValue={field?.value}
+                value={field?.value}
+                disabled={isSubmitting}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}}
           </CustomFormField>
 
           <CustomFormField

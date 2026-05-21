@@ -2,6 +2,13 @@ import { CustomFormField, Form } from "../../../../components/form";
 import React, { useEffect, useState } from "react";
 import { editGallery, postGallery } from "../../../../services/gallery";
 
+import { 
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectItem, 
+  SelectContent, 
+} from "../../../../components/select/based";
 import { Button } from "../../../../components/button";
 import { Input } from "../../../../components/input";
 import { gallerySchema } from "../../../../services/gallery/form";
@@ -11,6 +18,8 @@ import { useGalleryDetail } from "../hooks/useGalleryDetail";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "../../../../hooks/useQuery";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+const categories = ["Bendungan", "Irigasi & Rawa", "Sungai", "Danau", "Embung", "Air Tanah & Air Baku"];
 
 const DetailPage = () => {
   const query = useQuery();
@@ -27,6 +36,7 @@ const DetailPage = () => {
     resolver: zodResolver(gallerySchema(isEdit)),
     defaultValues: {
       description: "",
+      category: "",
       gallery: "",
     },
     mode: "onChange",
@@ -37,6 +47,7 @@ const DetailPage = () => {
   const onSubmit = async (data) => {
     const formData = new FormData();
     formData.append("description", data.description);
+    formData.append("category", data.category);
 
     // Only append the file if it exists
     if (data.gallery && data.gallery.length > 0) {
@@ -65,7 +76,10 @@ const DetailPage = () => {
 
   useEffect(() => {
     if (galleryDetail) {
-      form.reset(galleryDetail);
+      form.reset({
+        ...galleryDetail,
+        category: galleryDetail.category || "",
+      });
       setImgUrl(galleryDetail.url);
     }
   }, [galleryDetail, form]);
@@ -98,6 +112,30 @@ const DetailPage = () => {
                 aria-disabled={isSubmitting}
               />
             )}
+          </CustomFormField>
+
+          <CustomFormField control={form.control} name="category" label="Category">
+            {( field ) => {
+              console.log("Status Field Category:", field);
+              return (
+              <Select 
+                onValueChange={field?.onChange} 
+                defaultValue={field?.value}
+                value={field?.value}
+                disabled={isSubmitting}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}}
           </CustomFormField>
 
           <CustomFormField control={form.control} name="gallery" label="Image">

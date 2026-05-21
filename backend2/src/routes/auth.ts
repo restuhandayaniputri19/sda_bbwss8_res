@@ -1,11 +1,86 @@
 import { Hono } from "hono";
 import { db } from "../db";
-import { PubAuth } from "../db/schema";
-import { eq, and, gt } from "drizzle-orm";
+import { PubAuth, users } from "../db/schema";
+import { eq, and, gt, or } from "drizzle-orm";
+import { sign } from 'hono/jwt';
+import bcrypt from "bcryptjs";
 
 const auth = new Hono();
 
+const JWT_SECRET = process.env.JWT_SECRET || 'secret';
+
 auth.get("/", (c) => c.text("Auth Endpoint is Active!"));
+
+// --- 1. REGISTER ---
+auth.post('/register', async (c) => {
+  try {
+    const { username, email, password } = await c.req.json();
+
+    // Cek apakah user/email sudah ada
+    const existingUser = await db
+      .select()
+      .from(users)
+      .where(or(eq(users.username, username), eq(users.email, email)))
+      .limit(1);
+
+    if (existingUser.length > 0) {
+      return c.json({ message: "Username atau email sudah terdaftar" }, 400);
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Simpan ke PostgreSQL
+    const [newUser] = await db.insert(users).values({
+      username,
+      email,
+      password: hashedPassword,
+    }).returning();
+
+    return c.json({ message: "User berhasil dibuat", user: { id: newUser.id, username: newUser.username } }, 201);
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+// --- 2. LOGIN ---
+auth.post('/login', async (c) => {
+  try {
+    const { username, password } = await c.req.json();
+
+    // Cari user
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.username, username))
+      .limit(1);
+
+    // Validasi user & password
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return c.json({ message: "Kredensial tidak valid" }, 401);
+    }
+
+    // Update lastLogin
+    await db.update(users)
+      .set({ lastLogin: new Date() })
+      .where(eq(users.id, user.id));
+
+    // Buat JWT Token (Expire 12 jam sesuai request Bapak)
+    const payload = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 12, // 12 jam
+    };
+
+    const token = await sign(payload, JWT_SECRET, 'HS256');
+
+    return c.json({ token });
+  } catch (error: any) {
+    return c.json({ error: error.message }, 500);
+  }
+});
+
 auth.post("/send-otp", async (c) => {
   console.log("Endpoint /auth/send-otp diakses");
   const { phoneNumber } = await c.req.json();
