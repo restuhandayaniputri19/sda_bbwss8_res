@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsup src/index.ts --format esm --clean --minify --entry.index=src/index.ts",
+    "build": "tsup src/index.ts --format esm --clean --minify --external drizzle-orm --external better-sqlite3 --entry.index=src/index.ts",
     "start": "node dist/index.mjs",
-    "test": "vitest"
+    "test": "vitest",
+    "db:push": "drizzle-kit push --preview",
   },
   "keywords": [],
   "author": "",

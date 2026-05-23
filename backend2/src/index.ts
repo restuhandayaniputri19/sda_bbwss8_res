@@ -20,15 +20,11 @@ app.use('*', logger()) // 2. Pasang sebagai middleware global
 
 const API_TOKEN = process.env.API_TOKEN || 'slow-and-low-key';
 //app.use('/api2/*', bearerAuth({ token: API_TOKEN }));
+
+const origins = (process.env.CORS_ORIGIN || 'http://localhost:5173').split(',').map(origin => origin.trim());
+
 app.use('*', cors({
-  origin: (origin, c) => {
-    const frontend = process.env.CORS_ORIGIN || 'http://localhost:5173';
-    // Jika origin cocok, atau tidak ada origin (berarti dari sumber yang sama/dev), izinkan.
-    if (!origin || origin === frontend) {
-      return origin || frontend;
-    }
-    return null;
-  },
+  origin: origins,
   credentials: true,
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
@@ -49,6 +45,65 @@ app.get('/debug-routes', (c) => {
     total: allRoutes.length,
     routes: allRoutes,
   });
+});
+
+// Letakkan di bawah app.get('/debug-routes', ...) Bapak
+
+app.post('/test-send-wa', async (c) => {
+  try {
+    // 1. Ambil datetime saat ini dengan format lokal Indonesia yang rapi
+    const currentDateTime = new Date().toLocaleString('id-ID', {
+      timeZone: 'Asia/Jakarta',
+      dateStyle: 'long',
+      timeStyle: 'medium'
+    });
+
+    // 2. Siapkan payload data sesuai kebutuhan backend WA Bapak
+    const payload = {
+      to: "628997895139",
+      msg: `Test OTP / Notification via Hono API2 - ${currentDateTime}`
+    };
+
+    console.log('--- Mencoba Mengirim WA Gateway ---');
+    console.log('Target:', 'http://localhost:3003/send');
+    console.log('Payload:', payload);
+
+    // 3. Kirim HTTP POST menggunakan fetch bawaan
+    const response = await fetch('http://localhost:3003/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    // Ambil respon dari server WA (jika ada kembalian teks/json)
+    const responseText = await response.text();
+    console.log('Respon Server WA:', responseText);
+
+    if (!response.ok) {
+      return c.json({
+        status: false,
+        message: `Server WA merespon dengan status: ${response.status}`,
+        detail: responseText
+      }, response.status);
+    }
+
+    return c.json({
+      status: true,
+      message: "Request kirim WA berhasil diteruskan ke gateway.",
+      sentData: payload,
+      gatewayResponse: responseText
+    }, 200);
+
+  } catch (error: any) {
+    console.error('Gagal menghubungi WA Gateway:', error.message);
+    return c.json({
+      status: false,
+      message: "Gagal menghubungkan ke service WA lokal",
+      error: error.message
+    }, 500);
+  }
 });
 
 app.use('/uploads/*', serveStatic({ 
