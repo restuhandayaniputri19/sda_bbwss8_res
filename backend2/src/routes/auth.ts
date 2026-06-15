@@ -3,7 +3,7 @@ import { db } from "../db";
 import { PubAuth, users } from "../db/schema";
 import { eq, and, gt, or } from "drizzle-orm";
 import { sign } from 'hono/jwt';
-import bcrypt from "bcryptjs";
+import { hash, compare } from "bcrypt-ts";
 
 const auth = new Hono();
 
@@ -28,7 +28,7 @@ auth.post('/register', async (c) => {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hash(password, 10);
 
     // Simpan ke PostgreSQL
     const [newUser] = await db.insert(users).values({
@@ -56,7 +56,7 @@ auth.post('/login', async (c) => {
       .limit(1);
 
     // Validasi user & password
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user || !(await compare(password, user.password))) {
       return c.json({ message: "Kredensial tidak valid" }, 401);
     }
 
@@ -89,8 +89,8 @@ auth.post("/send-otp", async (c) => {
   const expiresAt = new Date(now.getTime() + 3 * 60000); // +3 Menit (3 * 60 detik * 1000ms)
   const lastRequest = now; // Waktu sekarang untuk rate limit
   
-  // 1. Generate 6 digit OTP sederhana
-  const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+  // 1. Generate 4 digit OTP sederhana
+  const otpCode = Math.floor(1000 + Math.random() * 9000).toString().slice(0, 4);
 
   try {
     // 2. Simpan ke SQLite
@@ -115,7 +115,10 @@ auth.post("/send-otp", async (c) => {
     })
     .returning({ id_pamer: PubAuth.ul_id }); // Mengembalikan ULID untuk referensi eksternal (opsional)
 
-    const isDev = true;
+    const urlObj = new URL(c.req.url);
+    const host = urlObj.hostname; // localhost:3000 atau domain.com
+
+    const isDev = host === "localhost" || host === "127.0.0.1";
     if (isDev) {
       console.log(`[DEV MODE] OTP untuk ${phoneNumber}: ${otpCode} (kadaluwarsa pada ${expiresAt.toLocaleString()})`);
       return c.json({ success: true, message: "OTP terkirim (DEV MODE)", otp: otpCode }); // Kirim OTP di response untuk dev
@@ -133,7 +136,27 @@ auth.post("/send-otp", async (c) => {
         }),
       });
 
+      // Kirim ke group WA khusus admin untuk monitoring (opsional)
+      const responseText = await waResponse.text();
+      console.log('Respon Server WA:', responseText);
+
       if (!waResponse.ok) throw new Error("Gagal mengirim pesan via WA");
+
+      const waResponse2 = await fetch("http://localhost:3003/send", { // Sesuaikan port/host container
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: "120363427359958027@g.us",
+          msg: `Permintaan OTP dari ${phoneNumber}. Kadaluwarsa pada ${expiresAt.toLocaleString()}.`
+        }),
+      });
+
+      const responseText2 = await waResponse2.text();
+      console.log('Respon Server WA:', responseText2);
+
+      if (!waResponse2.ok) throw new Error("Gagal mengirim pesan via WA");
     }
 
     return c.json({ success: true, message: "OTP terkirim" });

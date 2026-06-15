@@ -114,4 +114,31 @@ app.patch('/:id', async (c) => {
   }
 });
 
+app.get('/:id', async (c) => {
+  try {
+    const id = parseInt(c.req.param('id'));
+
+    if (isNaN(id)) {
+      return c.json({ success: false, message: 'ID tidak valid' }, 400);
+    }
+
+    const result = await db
+      .select()
+      .from(permintaanData)
+      .where(eq(permintaanData.id, id))
+      .get(); // Mengambil satu objek langsung di SQLite
+
+    if (!result) {
+      return c.json({ success: false, message: 'Data tidak ditemukan' }, 404);
+    }
+
+    return c.json({
+      success: true,
+      data: result
+    });
+  } catch (error) {
+    return c.json({ success: false, message: (error as Error).message }, 500);
+  }
+});
+
 export default app;
