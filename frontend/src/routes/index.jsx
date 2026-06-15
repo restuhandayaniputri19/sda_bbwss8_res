@@ -58,6 +58,7 @@ import RekomtekPage from "../features/layanan/rekomtek";
 import WhistleblowingPage from "../features/layanan/whistleblowing";
 import PengaduanMasyarakatPage from "../features/layanan/pengaduan-masyarakat";
 import LayananTerpaduPage from "../features/layanan/layanan-terpadu";
+import WaGwAdmin from "../features/admin/whatsapp-gw";
 import InformasiSertaMertaPage from "../features/informasi-serta-merta";
 import InformasiSetiapSaatPage from "../features/informasi-tersedia";
 
@@ -326,6 +327,10 @@ export const router = createBrowserRouter([
                 element: <AdminDetailPermintaanData />, 
               }
             ]
+          },
+          {
+            path: "wa-gw",
+            element: <WaGwAdmin />,
           }
         ],
       },

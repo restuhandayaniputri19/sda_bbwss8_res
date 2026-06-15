@@ -54,7 +54,10 @@ app.post('send-wa', async (c) => {
     const { to, msg } = await c.req.json();
     console.log("Endpoint /auth/send-wa diakses dengan data:", { to, msg });
 
-     const isDev = true
+    const urlObj = new URL(c.req.url);
+    const host = urlObj.hostname; // localhost:3000 atau domain.com
+
+    const isDev = host === "localhost" || host === "127.0.0.1";
      if (isDev) {
        console.log(`[DEV MODE] Pesan untuk ${to}: ${msg}`);
        return c.json({ success: true, message: "Pesan terkirim (DEV MODE)" }); // Kirim OTP di response untuk dev

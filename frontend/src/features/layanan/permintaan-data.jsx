@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { API2 } from "../../services";
-import VerificationModal from "../../components/VerificationModal";
+import VerificationForm from "../../components/VerificationForm";
 
 const initialFormState = {
   nama: "",
@@ -18,6 +18,7 @@ const initialFormState = {
 const PermintaanDataPage = () => {
   // State untuk alur Verifikasi
   const [isVerified, setIsVerified] = useState(false);
+  const [showAuthForm, setShowAuthForm] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [verifiedNumber, setVerifiedNumber] = useState("");
 
@@ -149,16 +150,27 @@ const PermintaanDataPage = () => {
               Cek Status
             </div>
             <div className="p-6 bg-gray-50 flex-grow">
-              <p className="text-sm text-gray-500 mb-4">
-                Lihat riwayat permohonan Anda.
-              </p>
-              <button
-                onClick={() => setShowAuthModal(true)}
-                className="w-full bg-blue-700 text-white font-bold py-2 rounded-md hover:bg-blue-800 transition"
-              >
-                Masuk ke Sistem
-              </button>
-            </div>
+{!showAuthForm ? (
+                /* Tampilan Awal Sebelum Tombol Masuk Diklik */
+                <div className="w-full">
+                  <p className="text-sm text-gray-500 mb-6">
+                    Lihat riwayat permohonan Anda melalui verifikasi nomor WhatsApp.
+                  </p>
+                  <button
+                    onClick={() => setShowAuthForm(true)}
+                    className="w-full bg-blue-700 text-white font-bold py-2 rounded-md hover:bg-blue-800 transition text-sm"
+                  >
+                    Masuk ke Sistem
+                  </button>
+                </div>
+              ) : (
+                /* Tampilan Form OTP Tertanam Langsung di Sini */
+                <VerificationForm
+                  onSuccess={handleVerificationSuccess}
+                  onCancel={() => setShowAuthForm(false)}
+                />
+              )}
+                          </div>
           </div>
         </div>
       ) : (
@@ -364,12 +376,6 @@ const PermintaanDataPage = () => {
         </div>
       )}
 
-      {/* Modal Verifikasi */}
-      <VerificationModal
-        isOpen={showAuthModal}
-        setIsOpen={setShowAuthModal}
-        onSuccess={handleVerificationSuccess}
-      />
     </div>
   );
 };
