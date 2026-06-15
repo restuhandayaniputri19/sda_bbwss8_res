@@ -200,20 +200,45 @@ const Footer = () => {
   ];
 
   const rightColumns = [
-    {
-      title: "Contact Us",
-      items: [
-        {
-          content: (
-            <p className="max-w-xs">
-              Jl. Soekarno Hatta No.869, Talang Klp., Kec. Alang-Alang Lebar,
-              Kota Palembang, Sumatera Selatan 30153
-            </p>
-          ),
-        },
-        { content: <p>Phone: {`(0711) 414019`}</p> },
-      ],
-    },
+  {
+    title: "Contact Us",
+    items: [
+      {
+        content: (
+          <p className="max-w-xs">
+            Jl. Soekarno Hatta No.869, Talang Klp., Kec. Alang-Alang Lebar,
+            Kota Palembang, Sumatera Selatan 30153
+          </p>
+        ),
+      },
+      {
+        content: (
+          <div className="flex flex-col gap-1">
+            <p className="font-bold">CP SISDA BBWS Sumatera VIII :</p>
+            <p>0811 - 7887 - 443 <span className="italic">(Whatsapp Only)</span></p>
+          </div>
+        ),
+      },
+      {
+        content: (
+          <div className="flex flex-col gap-1">
+            <p className="font-bold">Jam Kerja :</p>
+            <p>Senin - Kamis = 07:30 - 16:00</p>
+            <p>Jum'at = 07:30 - 16:30</p>
+            <p>Sabtu - Minggu Libur</p>
+          </div>
+        ),
+      },
+      {
+        content: (
+          <div className="flex flex-col gap-1">
+            <p className="font-bold">Email SISDA :</p>
+            <p>sisdasumatera8@gmail.com</p>
+          </div>
+        ),
+      },
+    ],
+  },
     // {
     //   title: "Privacy & Security",
     //   items: [

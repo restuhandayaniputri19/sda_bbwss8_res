@@ -5,7 +5,8 @@ import { useBeritaData } from "../home/hooks/useBeritaData";
 import { useNavigate } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import MapComponent from "../../components/locationMap";
-import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaInstagram, FaYoutube, FaTiktok, FaWhatsapp, FaFacebook } from "react-icons/fa";
+import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaInstagram, FaYoutube, FaWhatsapp, FaFacebook } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 const infoKontak = [
   {
@@ -28,8 +29,7 @@ const infoKontak = [
     label: "ALAMAT",
     title: "Kantor Kami",
     lines: [
-      "Jl. Demang Lebar Daun No. 1",
-      "Palembang, Sumatera Selatan 30137",
+      "Jl. Soekarno Hatta No.869, Talang Klp., Kec. Alang-Alang Lebar, Kota Palembang, Sumatera Selatan 30153",
     ],
   },
 ];
@@ -72,14 +72,14 @@ const sosmedLinks = [
     hoverBg: "hover:bg-blue-700",
   },
   {
-    id: "tiktok",
-    icon: <FaTiktok className="text-2xl" />,
-    label: "TikTok",
-    handle: "@bbws_sumatera8",
-    href: "https://tiktok.com/@bbws_sumatera8",
-    bg: "bg-gray-900",
-    hoverBg: "hover:bg-black",
-  },
+  id: "x",
+  icon: <FaXTwitter className="text-2xl" />,
+  label: "X",
+  handle: "@bbws_sumatera8",
+  href: "https://x.com/bbwss8",
+  bg: "bg-black",
+  hoverBg: "hover:bg-gray-900",
+},
 ];
 
 const KontakLokasi = () => {

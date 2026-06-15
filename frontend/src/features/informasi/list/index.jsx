@@ -1,10 +1,3 @@
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "../../../components/carousel";
 import { Button } from "../../../components/button";
 import Card from "../../../components/card";
 import CustomPagination from "../../../components/pagination";
@@ -13,7 +6,6 @@ import { Input } from "../../../components/input";
 import { isPDF } from "../../../utils/isPdf";
 import { truncateText } from "../../../utils/truncate-text";
 import { useBeritaData } from "../../home/hooks/useBeritaData";
-import { useMajalahData } from "../../home/hooks/useMajalahData";
 import { useInformasiData } from "../hooks/useInformasiData";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -21,7 +13,6 @@ import { useState } from "react";
 const BeritaTerkini = () => {
   const navigate = useNavigate();
   const { beritaData } = useBeritaData();
-  const { majalahData } = useMajalahData();
   const { informasiData, setParams, params, paginationInfo } =
     useInformasiData();
   const [keyword, setKeyword] = useState("");
@@ -82,7 +73,6 @@ const BeritaTerkini = () => {
                 rounded={true}
                 className="transition-transform transform hover:scale-105 hover:shadow-lg"
               >
-                {/* Render iframe for PDF or image for other types */}
                 {isPDF(item.url) ? (
                   <iframe
                     src={item.url}
@@ -161,46 +151,6 @@ const BeritaTerkini = () => {
           </div>
         </div>
       </section>
-      <section className="p-10">
-        <div className="flex flex-col space-y-5 border border-indigo rounded-sm">
-          <h1 className="text-2xl border-b border-b-indigo p-2 bg-indigo text-white">
-            Majalah
-          </h1>
-          {majalahData !== undefined ? (
-            <Carousel autoSlide={true} interval={3000} className="w-full">
-              <CarouselContent className="-ml-1">
-                {majalahData.map((item, index) => (
-                  <CarouselItem
-                    key={index}
-                    className="pl-1 sm:basis-1/2 lg:basis-1/4 p-2"
-                  >
-                    <div
-                      className="flex flex-col bg-white rounded-sm shadow-lg cursor-pointer"
-                      onClick={() => {
-                        window.location.href = item.url;
-                      }}
-                    >
-                      <img
-                        src={item.thumbnail}
-                        alt="Image"
-                        className="w-full object-cover rounded-sm"
-                      />
-                      <p className="text-center p-2 absolute bottom-2 text-white font-semibold bg-indigo min-w-36 rounded-tr-md">
-                        {truncateText(item.title, 20)}
-                      </p>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="absolute top-1/2 left-4 transform -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-200 focus:outline-none" />
-              <CarouselNext className="absolute top-1/2 right-4 transform -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-200 focus:outline-none" />
-            </Carousel>
-          ) : (
-            ""
-          )}
-        </div>
-      </section>
-
     </div>
   );
 };

@@ -90,12 +90,13 @@ const InformasiPublikMenu: React.FC<{ label: string }> = ({ label }) => {
             </div>
             <ul className="space-y-3">
               <li>
-                <MenuLink
-                  to="/peraturan"
-                  label="Peraturan"
-                  desc="Regulasi & Peraturan Terkait"
-                />
-              </li>
+  <MenuLink
+    to="https://peraturan.bpk.go.id/"
+    label="Peraturan"
+    desc="Regulasi & Peraturan Terkait"
+    external={true}
+  />
+</li>
               <li>
                 <MenuLink
                   to="/informasi"
@@ -116,21 +117,36 @@ const MenuLink = ({
   to,
   label,
   desc,
+  external,
 }: {
   to: string;
   label: string;
   desc?: string;
-}) => (
-  <Link to={to} className="group/link block">
-    <div className="text-sm font-semibold text-gray-800 group-hover/link:text-indigo transition-colors">
-      {label}
-    </div>
-    {desc && (
-      <div className="text-[12px] text-gray-400 leading-tight group-hover/link:text-gray-500">
-        {desc}
+  external?: boolean;
+}) => {
+  const className = "group/link block";
+  const content = (
+    <>
+      <div className="text-sm font-semibold text-gray-800 group-hover/link:text-indigo transition-colors">
+        {label}
       </div>
-    )}
-  </Link>
-);
+      {desc && (
+        <div className="text-[12px] text-gray-400 leading-tight group-hover/link:text-gray-500">
+          {desc}
+        </div>
+      )}
+    </>
+  );
+
+  return external ? (
+    <a href={to} target="_blank" rel="noopener noreferrer" className={className}>
+      {content}
+    </a>
+  ) : (
+    <Link to={to} className={className}>
+      {content}
+    </Link>
+  );
+};
 
 export default InformasiPublikMenu;

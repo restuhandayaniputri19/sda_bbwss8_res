@@ -91,7 +91,7 @@ const informasiPublikSections = [
   {
     title: "Dokumen & Hukum",
     items: [
-      { to: "/peraturan", label: "Peraturan", desc: "Regulasi & Peraturan Terkait" },
+      { to: "https://peraturan.bpk.go.id/", label: "Peraturan", desc: "Regulasi & Peraturan Terkait", external: true },
       { to: "/informasi", label: "Informasi", desc: "Dokumen Informasi Publik" },
     ],
   },
