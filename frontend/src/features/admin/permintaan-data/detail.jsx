@@ -1,7 +1,7 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { API } from '../../../services';
+import { API2 as API } from '../../../services';
 
 const AdminDetailPermintaanData = () => {
   const { id } = useParams();
@@ -17,7 +17,7 @@ const AdminDetailPermintaanData = () => {
       try {
         setLoading(true);
         // Sesuaikan URL API dengan endpoint backend Anda
-        const response = await API.get(`/api/permintaan-data/${id}`);
+        const response = await API.get(`/permintaan-data/${id}`);
         console.log("Response from API:", response);
         const result = await response.data;
 
@@ -35,7 +35,7 @@ const AdminDetailPermintaanData = () => {
 
   const handleUpdate = async () => {
     try {
-      const response = await API.patch(`/api/permintaan-data/${id}/status`, {
+      const response = await API.patch(`/permintaan-data/${id}/status`, {
         status: statusValue,
         catatan: note
       });

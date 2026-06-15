@@ -58,17 +58,23 @@ const GaleriPage = () => {
     setSelectedMonth(event.target.value);
   };
 
-  // Filter photos by selected month
-  const filteredPhotos = selectedMonth === "all"
-  ? data
-  : data.filter((item) => {
-      const itemDate = new Date(item.createdAt);
-      const monthYear = itemDate.toLocaleString("default", {
-        month: "long",
-        year: "numeric",
-      });
-      return monthYear === selectedMonth;
-    });
+// Filter foto berdasarkan bulan DAN kategori secara bersamaan
+const filteredPhotos = data.filter((item) => {
+  // 1. Logika Pemeriksaan Bulan
+  const itemDate = new Date(item.createdAt);
+  const monthYear = itemDate.toLocaleString("default", {
+    month: "long",
+    year: "numeric",
+  });
+  const matchMonth = selectedMonth === "all" || monthYear === selectedMonth;
+
+  // 2. Logika Pemeriksaan Kategori
+  // Karena di tombol Anda menggunakan "Semua", sesuaikan dengan data database
+  const matchCategory = selectedCategory === "Semua" || item.category === selectedCategory;
+
+  // Kedua kondisi harus bernilai true
+  return matchMonth && matchCategory;
+});
 
   const handleImageClick = (src) => {
     setFullScreenImage(src);
@@ -130,7 +136,7 @@ const GaleriPage = () => {
               />
             ))
           ) : (
-            <p>No photos available for the selected month.</p>
+            <p>No photos available for the selected month and category.</p>
           )}
         </div>
 

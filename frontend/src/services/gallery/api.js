@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const getGallery = async (params) => {
   try {
-    const response = await API2.get("/gallery", {
+    const response = await API2.get("/galeri", {
       params: params,
     });
 
@@ -17,7 +17,7 @@ export const getGallery = async (params) => {
 
 export const deleteGallery = async (id) => {
   try {
-    const response = await API2.delete(`/gallery/${id}`);
+    const response = await API2.delete(`/galeri/${id}`);
 
     return response.data;
   } catch (error) {
@@ -27,7 +27,7 @@ export const deleteGallery = async (id) => {
 
 export const postGallery = async (formData) => {
   try {
-    const response = await API2.post(`/gallery/upload`, formData, {
+    const response = await API2.post(`/galeri/upload`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
@@ -39,7 +39,7 @@ export const postGallery = async (formData) => {
 
 export const editGallery = async (id, formData) => {
   try {
-    const response = await API2.put(`/gallery/${id}`, formData, {
+    const response = await API2.put(`/galeri/${id}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
@@ -51,7 +51,7 @@ export const editGallery = async (id, formData) => {
 
 export const getGalleryDetail = async (id) => {
   try {
-    const response = await API2.get(`/gallery/${id}`);
+    const response = await API2.get(`/galeri/${id}`);
 
     return response.data;
   } catch (error) {
