@@ -8,7 +8,7 @@
     "build": "tsup src/index.ts --format esm --clean --minify --external drizzle-orm --external better-sqlite3 --entry.index=src/index.ts",
     "start": "node dist/index.mjs",
     "test": "vitest",
-    "db:push": "drizzle-kit push --preview",
+    "db:push": "drizzle-kit push --preview"
   },
   "keywords": [],
   "author": "",
@@ -16,7 +16,7 @@
   "type": "commonjs",
   "dependencies": {
     "@hono/node-server": "^1.19.14",
-    "bcryptjs": "^3.0.3",
+    "bcrypt-ts": "^8.0.1",
     "better-sqlite3": "^12.9.0",
     "dotenv": "^17.4.1",
     "drizzle-orm": "^0.45.2",
@@ -25,7 +25,6 @@
     "ulidx": "^2.4.1"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^25.5.2",
     "drizzle-kit": "^0.31.10",

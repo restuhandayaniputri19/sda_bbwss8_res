@@ -49,6 +49,41 @@ app.get('/debug-routes', (c) => {
 
 // Letakkan di bawah app.get('/debug-routes', ...) Bapak
 
+app.post('send-wa', async (c) => {
+  try {
+    const { to, msg } = await c.req.json();
+    console.log("Endpoint /auth/send-wa diakses dengan data:", { to, msg });
+
+     const isDev = true
+     if (isDev) {
+       console.log(`[DEV MODE] Pesan untuk ${to}: ${msg}`);
+       return c.json({ success: true, message: "Pesan terkirim (DEV MODE)" }); // Kirim OTP di response untuk dev
+     } else {
+       console.log(`Pesan untuk ${to} disimpan di database. Mengirim pesan via WA...`);
+       // 3. Panggil container wa-webjs (Internal network)
+       const waResponse = await fetch("http://localhost:3003/send", { // Sesuaikan port/host container
+         method: "POST",
+         headers: {
+           "Content-Type": "application/json",
+         },
+         body: JSON.stringify({
+           to: to,
+           msg: msg
+         }),
+       });
+ 
+       const responseText = await waResponse.text();
+       console.log('Respon Server WA:', responseText);
+ 
+       if (!waResponse.ok) throw new Error("Gagal mengirim pesan via WA");
+     }
+ 
+     return c.json({ success: true, message: "Pesan terkirim" });
+   } catch (error: any) {
+     return c.json({ success: false, error: error.message }, 500);
+   }
+});
+
 app.post('/test-send-wa', async (c) => {
   try {
     // 1. Ambil datetime saat ini dengan format lokal Indonesia yang rapi
@@ -108,7 +143,7 @@ app.post('/test-send-wa', async (c) => {
 
 app.use('/uploads/*', serveStatic({ 
   root: process.cwd(), // Menunjuk ke root project Bapak
-  rewriteRequestPath: (path) => path.replace(/^\/uploads/, '/uploads') 
+  rewriteRequestPath: (path) => path.replace(/^\/balai\/bbwssumatera8\/api2/, '')
 }))
 
 // Routing - Menghubungkan semua endpoint
@@ -116,7 +151,7 @@ app.route('/prakiraan', prakiraanRoute);
 app.route('/berita', beritaRoute);
 app.route('/auth', auth);
 app.route('/permintaan-data', permintaanDataRoute);
-app.route('/gallery', galeriRoute);
+app.route('/galeri', galeriRoute);
 
 // app.route('/banner', bannerRoute);
 // app.route('/galeri', galeriRoute);

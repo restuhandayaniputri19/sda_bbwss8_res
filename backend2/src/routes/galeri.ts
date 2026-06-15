@@ -6,7 +6,7 @@ import { authentication } from '../middleware/authentication';
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-const uploadDir = join(process.cwd(), 'uploads', 'gallery');
+const uploadDir = join(process.cwd(), 'uploads', 'galeri');
 if (!existsSync(uploadDir)) {
     mkdirSync(uploadDir, { recursive: true });
 }
@@ -20,13 +20,21 @@ galeri.get('/', async (c) => {
     const limit = Number(c.req.query('limit')) || 10;
     const offset = (page - 1) * limit;
 
+    const categoryFilter = c.req.query('category');
+
+    // 2. Susun Kondisi Query secara fleksibel
+    // Jika parameter 'category' dikirim oleh frontend, buat kondisi pencocokannya
+    const whereCondition = categoryFilter 
+        ? eq(galleries.category, categoryFilter as Category) 
+        : undefined;
+    
     // 2. Eksekusi Query (Ambil data dan Total untuk pagination)
-    const galleryList = await db.select().from(galleries).limit(limit).offset(offset).all();
+    const galleryList = await db.select().from(galleries).where(whereCondition).limit(limit).offset(offset).all();
 
     // Untuk Meta, kita butuh jumlah total item
     // Catatan: Jika ingin sederhana, bisa gunakan .all().length, 
     // namun untuk efisiensi di database besar biasanya menggunakan count()
-    const allData = await db.select().from(galleries).all();
+    const allData = await db.select().from(galleries).where(whereCondition).all();
     const count = allData.length;
     const totalPages = Math.ceil(count / limit);
 
@@ -79,8 +87,16 @@ galeri.post('/upload', authentication, async (c) => {
         return c.json({ message: "File tidak ditemukan" }, 400);
     }
 
+    const d = new Date();
+    const tahun = d.getFullYear(); // 2026
+    const bulan = String(d.getMonth() + 1).padStart(2, '0'); // Bulan dimulai dari 0, maka ditambah 1
+    const tanggal = String(d.getDate()).padStart(2, '0');
+
+    // 2. Gabungkan menjadi format YYYYMMDD (misal: 20260613)
+    const dateFormatted = `${tahun}${bulan}${tanggal}`;
+
     // 1. Buat Nama File Unik (Slow and Low: sederhana tapi unik)
-    const fileName = `${Date.now()}-${file.name.replaceAll(' ', '-')}`;
+    const fileName = `${dateFormatted}-${file.name.replaceAll(' ', '-')}`;
     const filePath = join(uploadDir, fileName);
 
     // 2. Simpan File ke Disk
@@ -92,7 +108,11 @@ galeri.post('/upload', authentication, async (c) => {
     const protocol = urlObj.protocol; // http: atau https:
     const host = urlObj.host;         // localhost:3000 atau domain.com
 
-    const generatedUrl = `${protocol}//${host}/uploads/gallery/${fileName}`;
+    const currentRoutePath = '/galeri/upload';
+    const basePath = c.req.path.split(currentRoutePath)[0]; // Hasil: '/balai/bbwssumatera8/api2'
+
+    // Susun URL penuh dengan menyisipkan basePath sebelum '/uploads'
+    const generatedUrl = `${protocol}//${host}${basePath}/uploads/galeri/${fileName}`;
 
     const newItem = await db.insert(galleries).values({
         url: generatedUrl,
