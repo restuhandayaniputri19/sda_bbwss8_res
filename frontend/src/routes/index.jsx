@@ -59,6 +59,8 @@ import WhistleblowingPage from "../features/layanan/whistleblowing";
 import PengaduanMasyarakatPage from "../features/layanan/pengaduan-masyarakat";
 import LayananTerpaduPage from "../features/layanan/layanan-terpadu";
 import WaGwAdmin from "../features/admin/whatsapp-gw";
+import InformasiSertaMertaPage from "../features/informasi-serta-merta";
+import InformasiSetiapSaatPage from "../features/informasi-tersedia";
 
 
 export const router = createBrowserRouter([
@@ -220,6 +222,14 @@ export const router = createBrowserRouter([
         path: "/informasi-berkala",
         element: <InformasiBerkalaPage />,
       },
+      {
+  path: "/informasi-serta-merta",
+  element: <InformasiSertaMertaPage />,
+},
+      {
+  path: "/informasi-tersedia",
+  element: <InformasiSetiapSaatPage />,
+},
       {
         path: "/majalah",
         element: <MajalahUser />,

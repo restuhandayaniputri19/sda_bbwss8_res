@@ -37,7 +37,11 @@ const MajalahUser = () => {
                       className="flex flex-col bg-white rounded-sm shadow-lg cursor-pointer border border-gray-200"
                       onClick={() => { window.open(item.url, "_blank"); }}
                     >
-                      <img src={item.thumbnail} alt={item.title} className="w-full h-64 object-cover rounded-t-sm" />
+                      <img 
+  src={item.thumbnail} 
+  alt={item.title} 
+  className="w-full object-contain rounded-t-sm bg-gray-100" 
+/>
                       <div className="p-4 bg-indigo text-white">
                           <p className="font-semibold">{truncateText(item.title, 25)}</p>
                       </div>

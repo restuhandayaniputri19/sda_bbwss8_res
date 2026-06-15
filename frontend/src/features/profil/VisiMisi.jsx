@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Card from "../../components/card";
 import { Hash } from "../../constants";
 import { truncateText } from "../../utils/truncate-text";
+import visiMisiImg from "../../assets/3.png";
 
 const misiData = [
   { periode: "01", deskripsi: "Konservasi sumber daya air secara konsisten dan berkelanjutan." },
@@ -21,8 +22,8 @@ const VisiMisi = () => {
   return (
     <div className="flex min-h-screen flex-col">
       <img
-        className="w-full h-[50vh] md:h-[60vh] object-cover"
-        src="https://mediabbwssviii.sgp1.cdn.digitaloceanspaces.com/image/WhatsApp%20Image%202024-10-25%20at%2015.09.11.jpeg"
+        className="w-full object-contain"
+        src={visiMisiImg}
         alt="Visi Misi picture"
       />
 
