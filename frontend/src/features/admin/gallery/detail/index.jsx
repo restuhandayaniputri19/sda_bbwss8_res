@@ -2,12 +2,12 @@ import { CustomFormField, Form } from "../../../../components/form";
 import React, { useEffect, useState } from "react";
 import { editGallery, postGallery } from "../../../../services/gallery";
 
-import { 
+import {
   Select,
   SelectTrigger,
   SelectValue,
-  SelectItem, 
-  SelectContent, 
+  SelectItem,
+  SelectContent,
 } from "../../../../components/select/based";
 import { Button } from "../../../../components/button";
 import { Input } from "../../../../components/input";
@@ -19,7 +19,14 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "../../../../hooks/useQuery";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const categories = ["Bendungan", "Irigasi & Rawa", "Sungai", "Danau", "Embung", "Air Tanah & Air Baku"];
+const categories = [
+  "Bendungan",
+  "Irigasi & Rawa",
+  "Sungai",
+  "Danau",
+  "Embung",
+  "Air Tanah & Air Baku",
+];
 
 const DetailPage = () => {
   const query = useQuery();
@@ -27,6 +34,9 @@ const DetailPage = () => {
   const navigate = useNavigate();
 
   const galleryDetail = useGalleryDetail(id);
+
+  console.log("ID dari URL:", id);
+  console.log("Data Gallery Detail saat ini:", galleryDetail);
 
   const [imgUrl, setImgUrl] = useState("");
 
@@ -114,28 +124,33 @@ const DetailPage = () => {
             )}
           </CustomFormField>
 
-          <CustomFormField control={form.control} name="category" label="Category">
-            {( field ) => {
+          <CustomFormField
+            control={form.control}
+            name="category"
+            label="Category"
+          >
+            {(field) => {
               console.log("Status Field Category:", field);
               return (
-              <Select 
-                onValueChange={field?.onChange} 
-                defaultValue={field?.value}
-                value={field?.value}
-                disabled={isSubmitting}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Pilih kategori" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}}
+                <Select
+                  onValueChange={field?.onChange}
+                  defaultValue={field?.value}
+                  value={field?.value}
+                  disabled={isSubmitting}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih kategori" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat} value={cat}>
+                        {cat}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              );
+            }}
           </CustomFormField>
 
           <CustomFormField control={form.control} name="gallery" label="Image">

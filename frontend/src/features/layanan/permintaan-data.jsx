@@ -19,7 +19,6 @@ const PermintaanDataPage = () => {
   // State untuk alur Verifikasi
   const [isVerified, setIsVerified] = useState(false);
   const [showAuthForm, setShowAuthForm] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [verifiedNumber, setVerifiedNumber] = useState("");
 
   // State untuk Data
@@ -153,8 +152,8 @@ const PermintaanDataPage = () => {
 {!showAuthForm ? (
                 /* Tampilan Awal Sebelum Tombol Masuk Diklik */
                 <div className="w-full">
-                  <p className="text-sm text-gray-500 mb-6">
-                    Lihat riwayat permohonan Anda melalui verifikasi nomor WhatsApp.
+                  <p className="mb-6">
+                    Lakukan verifikasi nomor Whatsapp.
                   </p>
                   <button
                     onClick={() => setShowAuthForm(true)}

@@ -86,21 +86,18 @@ const VerificationForm = ({ onSuccess, onCancel }: VerificationFormProps) => {
     <div className="w-full space-y-4">
       {step === "phone" ? (
         <>
-          <h3 className="text-base font-bold text-gray-800">Verifikasi WhatsApp</h3>
-          <p className="text-xs text-gray-500">
-            Masukkan nomor WhatsApp Anda untuk mulai memverifikasi data.
-          </p>
+          <h3 className="text-base font-bold text-gray-800">Nomor WhatsApp</h3>
           <form onSubmit={handleSendOtp} className="space-y-3">
             <div className="relative flex items-center shadow-sm">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none border-r border-gray-200 pr-2 my-2">
                 <span className="text-lg mr-1" role="img" aria-label="ID Flag">🇮🇩</span>
-                <span className="text-gray-600 font-medium text-xs">+62</span>
+                <span className="text-gray-600 font-medium">+62</span>
               </div>
 
               <input
                 type="tel"
                 placeholder="812xxxx"
-                className="block w-full pl-16 pr-3 py-2 text-sm border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                className="block w-full pl-20 pr-3 py-2 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 value={phoneNumber}
                 onChange={(e) => {
                   const val = e.target.value.replace(/\D/g, "");
@@ -113,13 +110,13 @@ const VerificationForm = ({ onSuccess, onCancel }: VerificationFormProps) => {
               <button
                 type="button"
                 onClick={onCancel}
-                className="w-1/3 py-2 text-xs border border-gray-300 text-gray-600 rounded-md hover:bg-gray-50 transition"
+                className="w-1/3 py-2 border border-gray-300 text-gray-600 rounded-md hover:bg-gray-50 transition"
               >
                 Batal
               </button>
               <button
                 type="submit"
-                className="w-2/3 py-2 text-xs bg-green-600 text-white font-bold rounded-md hover:bg-green-700 transition"
+                className="w-2/3 py-2 bg-green-600 text-white font-bold rounded-md hover:bg-green-700 transition"
               >
                 Kirim OTP
               </button>
@@ -147,7 +144,7 @@ const VerificationForm = ({ onSuccess, onCancel }: VerificationFormProps) => {
             <input
               type="text"
               placeholder="4 digit"
-              className="w-full px-3 py-2 text-sm border rounded-md text-center tracking-[0.3em] font-bold outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 text-sm border rounded-md text-center tracking-[0.3em] pl-[0.4em] font-bold outline-none focus:ring-2 focus:ring-blue-500"
               maxLength={4}
               value={otp}
               onChange={(e) => setOtp(e.target.value)}

@@ -50,9 +50,10 @@ export const editGallery = async (id, formData) => {
 };
 
 export const getGalleryDetail = async (id) => {
+  console.log("Fetching gallery detail for ID:", id);
   try {
     const response = await API2.get(`/galeri/${id}`);
-
+    console.log("Gallery detail response:", response.data);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
