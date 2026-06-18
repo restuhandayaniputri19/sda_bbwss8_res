@@ -23,6 +23,11 @@ const ListPage = () => {
       headerClassName: "text-left font-bold",
     },
     {
+      header: "Category",
+      accessor: "category",
+      headerClassName: "text-left font-bold",
+    },
+    {
       header: "Image",
       accessor: "url",
       headerClassName: "text-left font-bold",

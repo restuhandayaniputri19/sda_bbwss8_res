@@ -1,9 +1,9 @@
+import 'dotenv/config';
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { bearerAuth } from 'hono/bearer-auth';
-import 'dotenv/config';
 import { serveStatic } from '@hono/node-server/serve-static'
 
 // Import Routes
@@ -57,7 +57,7 @@ app.post('send-wa', async (c) => {
     const urlObj = new URL(c.req.url);
     const host = urlObj.hostname; // localhost:3000 atau domain.com
 
-    const isDev = host === "localhost" || host === "127.0.0.1";
+    const isDev = process.env.NODE_ENV === "production" || true;
      if (isDev) {
        console.log(`[DEV MODE] Pesan untuk ${to}: ${msg}`);
        return c.json({ success: true, message: "Pesan terkirim (DEV MODE)" }); // Kirim OTP di response untuk dev
