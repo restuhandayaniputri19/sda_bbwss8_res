@@ -81,6 +81,8 @@ auth.post('/login', async (c) => {
   }
 });
 
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 auth.post("/send-otp", async (c) => {
   console.log("Endpoint /auth/send-otp diakses");
   const { phoneNumber } = await c.req.json();
@@ -118,38 +120,41 @@ auth.post("/send-otp", async (c) => {
     const urlObj = new URL(c.req.url);
     const host = urlObj.hostname; // localhost:3000 atau domain.com
 
-    const isDev = host === "localhost" || host === "127.0.0.1";
+    const isDev = false;
     if (isDev) {
       console.log(`[DEV MODE] OTP untuk ${phoneNumber}: ${otpCode} (kadaluwarsa pada ${expiresAt.toLocaleString()})`);
       return c.json({ success: true, message: "OTP terkirim (DEV MODE)", otp: otpCode }); // Kirim OTP di response untuk dev
     } else {
       console.log(`OTP untuk ${phoneNumber} disimpan di database. Mengirim pesan via WA...`);
       // 3. Panggil container wa-webjs (Internal network)
-      const waResponse = await fetch("http://localhost:3003/send", { // Sesuaikan port/host container
+      const waResponse = await fetch(`${process.env.WA_GATEWAY_URL}/send`, { // Sesuaikan port/host container
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.WA_TOKEN}`
         },
         body: JSON.stringify({
-          to: phoneNumber,
-          msg: `OTP: ${otpCode}. Kadaluwarsa pada ${expiresAt.toLocaleString()}.`
+          to: phoneNumber.startsWith('+') ? phoneNumber.slice(1) : phoneNumber,
+          msg: `[BBWS Sumatera VIII] OTP: *${otpCode}*, akan kadaluwarsa pada ${expiresAt.toLocaleString()}.`
         }),
       });
-
       // Kirim ke group WA khusus admin untuk monitoring (opsional)
       const responseText = await waResponse.text();
       console.log('Respon Server WA:', responseText);
 
       if (!waResponse.ok) throw new Error("Gagal mengirim pesan via WA");
 
-      const waResponse2 = await fetch("http://localhost:3003/send", { // Sesuaikan port/host container
+      await delay(3000);
+
+      const waResponse2 = await fetch(`${process.env.WA_GATEWAY_URL}/send`, { // Sesuaikan port/host container
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.WA_TOKEN}`,
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           to: "120363427359958027@g.us",
-          msg: `Permintaan OTP dari ${phoneNumber}. Kadaluwarsa pada ${expiresAt.toLocaleString()}.`
+          msg: `[BBWS Sumatera VIII] Permintaan OTP dari ${phoneNumber}, akan kadaluwarsa pada ${expiresAt.toLocaleString()}.`
         }),
       });
 
@@ -157,6 +162,7 @@ auth.post("/send-otp", async (c) => {
       console.log('Respon Server WA:', responseText2);
 
       if (!waResponse2.ok) throw new Error("Gagal mengirim pesan via WA");
+
     }
 
     return c.json({ success: true, message: "OTP terkirim" });
