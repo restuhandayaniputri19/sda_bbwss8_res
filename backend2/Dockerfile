@@ -22,7 +22,7 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 
 # Jika Anda menggunakan SQLite, pastikan folder database tersedia
-ENV DATABASE_URL=/app/data/S8_web_sda.db
+ENV DATABASE_URL=/app/data/S8_sda_web.db
 
 # RUN mkdir -p data
 
