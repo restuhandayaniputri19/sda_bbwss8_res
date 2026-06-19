@@ -68,6 +68,7 @@ app.post('send-wa', async (c) => {
          method: "POST",
          headers: {
            "Content-Type": "application/json",
+            "Authorization": `Bearer ${process.env.WA_TOKEN}`
          },
          body: JSON.stringify({
            to: to,
