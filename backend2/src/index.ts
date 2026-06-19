@@ -57,14 +57,14 @@ app.post('send-wa', async (c) => {
     const urlObj = new URL(c.req.url);
     const host = urlObj.hostname; // localhost:3000 atau domain.com
 
-    const isDev = process.env.NODE_ENV === "production" || true;
+    const isDev = process.env.NODE_ENV !== "production";
      if (isDev) {
        console.log(`[DEV MODE] Pesan untuk ${to}: ${msg}`);
        return c.json({ success: true, message: "Pesan terkirim (DEV MODE)" }); // Kirim OTP di response untuk dev
      } else {
        console.log(`Pesan untuk ${to} disimpan di database. Mengirim pesan via WA...`);
        // 3. Panggil container wa-webjs (Internal network)
-       const waResponse = await fetch("http://localhost:3003/send", { // Sesuaikan port/host container
+       const waResponse = await fetch(`${process.env.WA_GATEWAY_URL}/send`, { // Sesuaikan port/host container
          method: "POST",
          headers: {
            "Content-Type": "application/json",

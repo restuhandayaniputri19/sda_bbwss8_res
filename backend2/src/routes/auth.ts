@@ -86,11 +86,11 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 auth.post("/send-otp", async (c) => {
   console.log("Endpoint /auth/send-otp diakses");
   const { phoneNumber } = await c.req.json();
-  
+
   const now = new Date();
   const expiresAt = new Date(now.getTime() + 3 * 60000); // +3 Menit (3 * 60 detik * 1000ms)
   const lastRequest = now; // Waktu sekarang untuk rate limit
-  
+
   // 1. Generate 4 digit OTP sederhana
   const otpCode = Math.floor(1000 + Math.random() * 9000).toString().slice(0, 4);
 
@@ -103,24 +103,24 @@ auth.post("/send-otp", async (c) => {
       expires_at: expiresAt,
       last_request: lastRequest,
     })
-    .onConflictDoUpdate({
-      // Jika terjadi tabrakan pada index unik (identifier + type)
-      target: [PubAuth.identifier, PubAuth.type], 
-      set: {
-        // Update dengan data OTP yang baru
-        otp_code: otpCode,
-        expires_at: expiresAt,
-        last_request: now,
-        // Kita biarkan ul_id tetap yang lama (opsional) 
-        // atau update jika ingin ganti karakter "sulit" nya
-      },
-    })
-    .returning({ id_pamer: PubAuth.ul_id }); // Mengembalikan ULID untuk referensi eksternal (opsional)
+      .onConflictDoUpdate({
+        // Jika terjadi tabrakan pada index unik (identifier + type)
+        target: [PubAuth.identifier, PubAuth.type],
+        set: {
+          // Update dengan data OTP yang baru
+          otp_code: otpCode,
+          expires_at: expiresAt,
+          last_request: now,
+          // Kita biarkan ul_id tetap yang lama (opsional) 
+          // atau update jika ingin ganti karakter "sulit" nya
+        },
+      })
+      .returning({ id_pamer: PubAuth.ul_id }); // Mengembalikan ULID untuk referensi eksternal (opsional)
 
     const urlObj = new URL(c.req.url);
     const host = urlObj.hostname; // localhost:3000 atau domain.com
 
-    const isDev = false;
+    const isDev = process.env.NODE_ENV !== "production";
     if (isDev) {
       console.log(`[DEV MODE] OTP untuk ${phoneNumber}: ${otpCode} (kadaluwarsa pada ${expiresAt.toLocaleString()})`);
       return c.json({ success: true, message: "OTP terkirim (DEV MODE)", otp: otpCode }); // Kirim OTP di response untuk dev
@@ -142,7 +142,16 @@ auth.post("/send-otp", async (c) => {
       const responseText = await waResponse.text();
       console.log('Respon Server WA:', responseText);
 
-      if (!waResponse.ok) throw new Error("Gagal mengirim pesan via WA");
+      if (!waResponse.ok) {
+        // Ambil detail pesan eror dari response gateway jika ada
+        const errorText = await waResponse.text();
+
+        // 1. Cetak ke console.error agar masuk ke `docker logs`
+        console.error(`[WA_ERROR] Gagal mengirim pesan via WA. Status: ${waResponse.status}, Detail: ${errorText}`);
+
+        // 2. Lempar eror untuk ditangkap oleh blok catch utama
+        throw new Error(`Gagal mengirim pesan via WA: ${errorText}`);
+      }
 
       await delay(3000);
 
@@ -161,7 +170,16 @@ auth.post("/send-otp", async (c) => {
       const responseText2 = await waResponse2.text();
       console.log('Respon Server WA:', responseText2);
 
-      if (!waResponse2.ok) throw new Error("Gagal mengirim pesan via WA");
+      if (!waResponse2.ok) {
+        // Ambil detail pesan eror dari response gateway jika ada
+        const errorText = await waResponse.text();
+
+        // 1. Cetak ke console.error agar masuk ke `docker logs`
+        console.error(`[WA_ERROR] Gagal mengirim pesan via WA. Status: ${waResponse.status}, Detail: ${errorText}`);
+
+        // 2. Lempar eror untuk ditangkap oleh blok catch utama
+        throw new Error(`Gagal mengirim pesan via WA: ${errorText}`);
+      }
 
     }
 
