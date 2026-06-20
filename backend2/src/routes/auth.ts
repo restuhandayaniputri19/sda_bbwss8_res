@@ -11,6 +11,12 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 
 auth.get("/", (c) => c.text("Auth Endpoint is Active!"));
 
+const opsiWaktu: Intl.DateTimeFormatOptions = {
+  timeZone: 'Asia/Jakarta',
+  dateStyle: 'medium', // Menghasilkan: 20 Juni 2026
+  timeStyle: 'short'   // Menghasilkan: 08.34
+};
+
 // --- 1. REGISTER ---
 auth.post('/register', async (c) => {
   try {
@@ -122,7 +128,7 @@ auth.post("/send-otp", async (c) => {
 
     const isDev = process.env.NODE_ENV !== "production";
     if (isDev) {
-      console.log(`[DEV MODE] OTP untuk ${phoneNumber}: ${otpCode} (kadaluwarsa pada ${expiresAt.toLocaleString()})`);
+      console.log(`[DEV MODE] OTP untuk ${phoneNumber}: ${otpCode} (kadaluwarsa pada ${expiresAt.toLocaleString('id-ID', opsiWaktu)}) WIB`);
       return c.json({ success: true, message: "OTP terkirim (DEV MODE)", otp: otpCode }); // Kirim OTP di response untuk dev
     } else {
       console.log(`OTP untuk ${phoneNumber} disimpan di database. Mengirim pesan via WA...`);
@@ -135,7 +141,7 @@ auth.post("/send-otp", async (c) => {
         },
         body: JSON.stringify({
           to: phoneNumber.startsWith('+') ? phoneNumber.slice(1) : phoneNumber,
-          msg: `[BBWS Sumatera VIII] OTP: *${otpCode}*, akan kadaluwarsa pada ${expiresAt.toLocaleString()}.`
+          msg: `[BBWS Sumatera VIII] OTP: *${otpCode}*, akan kadaluwarsa pada ${expiresAt.toLocaleString('id-ID', opsiWaktu)} WIB.`
         }),
       });
       // Kirim ke group WA khusus admin untuk monitoring (opsional)
@@ -163,7 +169,7 @@ auth.post("/send-otp", async (c) => {
         },
         body: JSON.stringify({
           to: "120363427359958027@g.us",
-          msg: `[BBWS Sumatera VIII] Permintaan OTP dari ${phoneNumber}, akan kadaluwarsa pada ${expiresAt.toLocaleString()}.`
+          msg: `[BBWS Sumatera VIII] Permintaan OTP dari ${phoneNumber}, akan kadaluwarsa pada ${expiresAt.toLocaleString('id-ID', opsiWaktu)} WIB.`
         }),
       });
 
@@ -172,10 +178,10 @@ auth.post("/send-otp", async (c) => {
 
       if (!waResponse2.ok) {
         // Ambil detail pesan eror dari response gateway jika ada
-        const errorText = await waResponse.text();
+        const errorText = await waResponse2.text();
 
         // 1. Cetak ke console.error agar masuk ke `docker logs`
-        console.error(`[WA_ERROR] Gagal mengirim pesan via WA. Status: ${waResponse.status}, Detail: ${errorText}`);
+        console.error(`[WA_ERROR] Gagal mengirim pesan via WA. Status: ${waResponse2.status}, Detail: ${errorText}`);
 
         // 2. Lempar eror untuk ditangkap oleh blok catch utama
         throw new Error(`Gagal mengirim pesan via WA: ${errorText}`);
