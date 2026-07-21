@@ -1,4 +1,5 @@
 import rekomtekFlow from '../../assets/Perizinanrekomtek.jpeg';
+import pengumuman from '../../assets/PENGUMUMAN.png';
 
 const KONTAK_WA = [
   { nama: 'Tim 1 Yayan', nomor: '628974444492' },
@@ -31,7 +32,14 @@ const RekomtekPage = () => {
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
           Prosedur Rekomtek
         </h2>
-        <img src={rekomtekFlow} alt="Rekomtek" className="mx-auto my-8 w-full max-w-md rounded-lg shadow-md" />
+        <div className="flex flex-col md:flex-row justify-center items-start gap-6 my-8">
+          <img src={rekomtekFlow} alt="Rekomtek" className="mx-auto my-8 w-full max-w-md rounded-lg shadow-md" />
+          <img
+            src={pengumuman}
+            alt="PengumumanRekomtek"
+            className="w-full max-w-md rounded-lg shadow-md"
+          />
+        </div>
         <p>Prosedur rekomendasi teknis (rekomtek) sumber daya air melibatkan</p>
         <ol className="list-decimal list-inside text-left mt-4 space-y-2 max-w-3xl mx-auto">
           <li>Permohonan izin/persetujuan kepada Menteri c.q Dirjen SDA,</li>

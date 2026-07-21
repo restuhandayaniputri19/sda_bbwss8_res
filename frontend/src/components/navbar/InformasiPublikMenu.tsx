@@ -91,7 +91,7 @@ const InformasiPublikMenu: React.FC<{ label: string }> = ({ label }) => {
             <ul className="space-y-3">
               <li>
   <MenuLink
-    to="https://peraturan.bpk.go.id/"
+    to="https://jdih.pu.go.id/"
     label="Peraturan"
     desc="Regulasi & Peraturan Terkait"
     external={true}

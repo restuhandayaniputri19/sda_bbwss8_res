@@ -88,7 +88,7 @@ const SIDEBAR_ITEMS: SatkerItem[] = [
   },
   {
     id: 4,
-    label: "Satker NVT PJSA",
+    label: "Satker PJSA",
     singkatan: "PJSA",
     icon: <Waves size={16} />,
     lokasi: "Jl. Soekarno Hatta No. 869, Kel. Talang Kelapa, Kec. Alang-Alang Lebar, Kota Palembang, Sumatera Selatan 30153.",
@@ -110,7 +110,7 @@ const SIDEBAR_ITEMS: SatkerItem[] = [
   },
   {
     id: 5,
-    label: "Satker NVT Pembangunan Bendungan",
+    label: "Satker Pembangunan Bendungan",
     singkatan: "BEND",
     icon: <Landmark size={16} />,
     lokasi: "Jl. Soekarno Hatta No. 869, Kel. Talang Kelapa, Kec. Alang-Alang Lebar, Kota Palembang, Sumatera Selatan 30153.",
@@ -132,7 +132,7 @@ const SIDEBAR_ITEMS: SatkerItem[] = [
   },
   {
     id: 6,
-    label: "Satker NVT PJPA",
+    label: "Satker PJPA",
     singkatan: "PJPA",
     icon: <Droplets size={16} />,
     lokasi: "Jl. Soekarno Hatta No. 869, Kel. Talang Kelapa, Kec. Alang-Alang Lebar, Kota Palembang, Sumatera Selatan 30153.",

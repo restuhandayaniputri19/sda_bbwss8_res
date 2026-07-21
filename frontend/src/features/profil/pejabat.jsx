@@ -19,7 +19,6 @@ const ProfilePejabat = () => {
       foto: fotoKabalai,
       isKabalai: true,
       biodata: {
-        nip: "19700101 199703 1 001",
         pendidikan: "S2 Teknik Sipil - Institut Teknologi Bandung",
         riwayatJabatan: [
           "Kepala Balai Besar Wilayah Sungai Sumatera VIII (2022 - Sekarang)",
@@ -34,9 +33,7 @@ const ProfilePejabat = () => {
       nama: "Chairul Huda, S.T.",
       jabatan: "Kepala Bagian Umum dan Tata Usaha",
       foto: fotoPejabat6,
-      isSejajarKabalai: true,
       biodata: {
-        nip: "19701121 199803 1 003",
         pendidikan: "S1 Teknik Sipil – Universitas Bandar Lampung",
         riwayatJabatan: [
           "Kepala Bagian Umum dan Tata Usaha, BBWS Sumatera VIII (Juli 2025 – Sekarang)",
@@ -54,7 +51,6 @@ const ProfilePejabat = () => {
       jabatan: "KaBid Keterpaduan Pembangunan Infrastruktur SDA",
       foto: fotoPejabat2,
       biodata: {
-        nip: "19800202 200501 1 002",
         pendidikan: "S2 Teknik Sumber Daya Air - Universitas Gadjah Mada",
         riwayatJabatan: [
           "Kabid Keterpaduan Pembangunan Infrastruktur SDA (2021 - Sekarang)",
@@ -69,7 +65,6 @@ const ProfilePejabat = () => {
       jabatan: "Kabid Operasi dan Pemeliharaan",
       foto: fotoPejabat3,
       biodata: {
-        nip: "19750303 200003 1 003",
         pendidikan: "S2 Manajemen Teknik - Universitas Indonesia",
         riwayatJabatan: [
           "Kabid Operasi dan Pemeliharaan (2020 - Sekarang)",
@@ -84,7 +79,6 @@ const ProfilePejabat = () => {
       jabatan: "Kabid Pelaksanaan Jaringan Pemanfaatan Air",
       foto: fotoPejabat4,
       biodata: {
-        nip: "19820404 200604 1 004",
         pendidikan: "S2 Teknik Sipil - Universitas Diponegoro",
         riwayatJabatan: [
           "Kabid Pelaksanaan Jaringan Pemanfaatan Air (2021 - Sekarang)",
@@ -99,7 +93,6 @@ const ProfilePejabat = () => {
       jabatan: "Kabid Pelaksanaan Jaringan Sumber Air",
       foto: fotoPejabat5,
       biodata: {
-        nip: "19830505 200705 1 005",
         pendidikan: "S2 Pengelolaan Sumber Daya Air - Institut Teknologi Bandung",
         riwayatJabatan: [
           "Kabid Pelaksanaan Jaringan Sumber Air (2022 - Sekarang)",
@@ -111,8 +104,7 @@ const ProfilePejabat = () => {
   ];
 
   const kabalai = daftarPejabat.find((p) => p.isKabalai);
-  const sejajarKabalai = daftarPejabat.find((p) => p.isSejajarKabalai);
-  const pejabatLain = daftarPejabat.filter((p) => !p.isKabalai && !p.isSejajarKabalai);
+  const pejabatLain = daftarPejabat.filter((p) => !p.isKabalai);
 
   const KartuPejabat = ({ pejabat, ukuranFoto = "" }) => (
     <div
@@ -155,14 +147,13 @@ const ProfilePejabat = () => {
         </p>
       </div>
 
-      {/* Kepala Balai + Kepala Bagian Umum */}
-      <div className="flex justify-center gap-10 mb-20">
+      {/* Kepala Balai */}
+      <div className="flex justify-center mb-20">
         <KartuPejabat pejabat={kabalai} ukuranFoto="w-full md:w-1/2 lg:w-1/4" />
-        <KartuPejabat pejabat={sejajarKabalai} ukuranFoto="w-full md:w-1/2 lg:w-1/4" />
       </div>
 
-      {/* Pejabat Lainnya */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+      {/* Pejabat Lainnya (termasuk Kepala Bagian Umum dan Tata Usaha) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         {pejabatLain.map((pejabat) => (
           <KartuPejabat key={pejabat.id} pejabat={pejabat} />
         ))}
@@ -203,10 +194,6 @@ const ProfilePejabat = () => {
                 </h2>
 
                 <div className="space-y-4 text-sm text-gray-700">
-                  <div>
-                    <p className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-1">NIP</p>
-                    <p>{pejabatDipilih.biodata.nip}</p>
-                  </div>
                   <div>
                     <p className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-1">Pendidikan Terakhir</p>
                     <p>{pejabatDipilih.biodata.pendidikan}</p>
