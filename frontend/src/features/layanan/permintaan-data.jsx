@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { API2 } from "../../services";
 import VerificationForm from "../../components/VerificationForm";
+import heroImage from "../../assets/Permintaan-data-gambar.jpeg";
 
 const initialFormState = {
   nama: "",
@@ -124,6 +125,11 @@ const PermintaanDataPage = () => {
                <p className="text-gray-500 text-lg">
           Layanan permintaan data hidrologi, klimatologi, dan sumber daya air wilayah BBWS Sumatera VIII
         </p>
+        <img
+          src={heroImage}
+          alt="Ilustrasi Permintaan Data"
+          className="mx-auto mt-6 w-full h-auto block"
+        />
       </div>
 
       {!isVerified ? (
@@ -146,20 +152,21 @@ const PermintaanDataPage = () => {
           </div>
           <div className="md:col-span-3 flex flex-col border border-gray-200 rounded-xl overflow-hidden shadow-sm">
             <div className="bg-[#ffbe0b] py-4 px-6 text-gray-900 font-bold text-lg">
-              Cek Status
+              Permohonan & Cek Status Data
             </div>
             <div className="p-6 bg-gray-50 flex-grow">
 {!showAuthForm ? (
                 /* Tampilan Awal Sebelum Tombol Masuk Diklik */
                 <div className="w-full">
                   <p className="mb-6">
+                    Untuk layanan Permintaan Data
                     Lakukan verifikasi nomor Whatsapp.
                   </p>
                   <button
                     onClick={() => setShowAuthForm(true)}
                     className="w-full bg-blue-700 text-white font-bold py-2 rounded-md hover:bg-blue-800 transition text-sm"
                   >
-                    Masuk ke Sistem
+                    Masukkan Nomor WA
                   </button>
                 </div>
               ) : (

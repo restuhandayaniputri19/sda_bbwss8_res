@@ -1,4 +1,3 @@
-import alurImage from "../../../assets/alur_permintaan_data.jpg";
 import { Link } from "react-router-dom";
 import {
   FileText,
@@ -20,7 +19,7 @@ const layananItems = [
   {
     to: "/layanan/posko-banjir",
     label: "Posko Banjir",
-    desc: "Informasi & Laporan Banjir",
+    desc: "Informasi Posko Banjir",
     icon: AlertTriangle,
     color: "text-amber-500",
     bg: "bg-amber-50",
@@ -54,28 +53,6 @@ const layananItems = [
 const LayananTerpaduPage = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 py-16 bg-white">
-
-      {/* Infografis Alur */}
-<div className="mb-12">
-  <div className="text-center mb-6">
-    <p className="text-sm font-semibold uppercase tracking-widest text-gray-400 mb-2">
-      Infografis
-    </p>
-    <h2 className="text-2xl font-extrabold text-gray-900">
-      Alur Prosedur Layanan
-    </h2>
-    <p className="text-gray-500 mt-2">
-      Panduan langkah-langkah pengajuan layanan publik BBWS Sumatera VIII
-    </p>
-    <div className="h-1 w-16 bg-indigo mx-auto mt-4"></div>
-  </div>
-  <img
-    src={alurImage}
-    alt="Prosedur Permintaan Informasi Publik"
-    className="w-full rounded-xl shadow-md"
-  />
-</div>
-
       {/* Header */}
       <div className="text-center mb-16">
         <p className="text-sm font-semibold uppercase tracking-widest text-gray-400 mb-2">

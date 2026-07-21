@@ -1,4 +1,5 @@
 import { useState } from "react";
+import heroImage from "../../assets/Pengaduan-masyarakat-gambar.jpeg";
 
 const PengaduanMasyarakat = () => {
   const [nomorTiket, setNomorTiket] = useState("");
@@ -27,33 +28,26 @@ const PengaduanMasyarakat = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-
-      {/* Hero Header */}
-      <div className="bg-[#1A3A6B] text-white px-6 py-8">
-        <h1 className="text-2xl font-semibold mb-2">Pengaduan Masyarakat</h1>
-        <p className="text-sm text-blue-200 max-w-xl leading-relaxed">
-          Sampaikan pengaduan Anda terkait pengelolaan sumber daya air, irigasi,
-          serta prasarana pengairan di wilayah BWS Sumatera VIII. Kami akan
-          menindaklanjuti setiap pengaduan dalam 5 hari kerja.
-        </p>
-      </div>
-
-      {/* Stats Bar */}
-      <div className="bg-[#2E6DB4] grid grid-cols-3 text-white">
-        <div className="px-6 py-3 border-r border-white/20">
-          <p className="text-lg font-semibold">247</p>
-          <p className="text-xs text-blue-200">Total Pengaduan</p>
+      {/* Heading */}
+        <div className="max-w-2xl mx-auto text-center pt-8 pb-2 px-4">
+          <h1 className="text-3xl font-semibold text-gray-900 mb-3">
+            Pengaduan Masyarakat
+          </h1>
+        <div className="w-16 h-1 bg-[#2E6DB4] mx-auto mb-4"></div>
+          <p className="text-sm text-gray-500 leading-relaxed">
+            Sampaikan pengaduan Anda terkait pengelolaan sumber daya air, irigasi,
+            serta prasarana pengairan di wilayah BWS Sumatera VIII.
+          </p>
         </div>
-        <div className="px-6 py-3 border-r border-white/20">
-          <p className="text-lg font-semibold">12</p>
-          <p className="text-xs text-blue-200">Sedang Diproses</p>
-        </div>
-        <div className="px-6 py-3">
-          <p className="text-lg font-semibold">218</p>
-          <p className="text-xs text-blue-200">Selesai Ditangani</p>
-        </div>
-      </div>
 
+        {/* Gambar */}
+        <div className="max-w-3xl mx-auto px-4 py-4">
+          <img
+            src={heroImage}
+            alt="Alur Prosedur Pengaduan"
+            className="w-full rounded-xl"
+          />
+</div>
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
 
         {/* Cek Status */}
@@ -71,24 +65,6 @@ const PengaduanMasyarakat = () => {
           <button className="bg-[#1A3A6B] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#2E6DB4] transition-colors">
             Cek Sekarang
           </button>
-        </div>
-
-        {/* Kategori Chips */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { icon: "🌊", label: "Banjir & Genangan" },
-            { icon: "🏗️", label: "Kerusakan Infrastruktur" },
-            { icon: "💧", label: "Kualitas Air" },
-            { icon: "📋", label: "Pelayanan Administrasi" },
-          ].map((item) => (
-            <div
-              key={item.label}
-              className="bg-white border border-gray-200 rounded-xl p-3 text-center hover:border-[#2E6DB4] hover:bg-blue-50 cursor-pointer transition-colors"
-            >
-              <div className="text-xl mb-1">{item.icon}</div>
-              <p className="text-xs text-gray-600 leading-tight">{item.label}</p>
-            </div>
-          ))}
         </div>
 
         {/* Form Pengaduan */}
@@ -132,14 +108,13 @@ const PengaduanMasyarakat = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email <span className="text-red-500">*</span>
+                  Email <span className="text-gray-400 font-normal">(opsional)</span>
                 </label>
                 <input
                   type="email"
                   name="email"
                   value={form.email}
                   onChange={handleChange}
-                  required
                   placeholder="email@contoh.com"
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2E6DB4]"
                 />
@@ -156,10 +131,9 @@ const PengaduanMasyarakat = () => {
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2E6DB4] bg-white"
                 >
                   <option value="">Pilih kategori...</option>
-                  <option value="banjir">Banjir & Genangan</option>
+                  <option value="banjir">Banjir</option>
                   <option value="infrastruktur">Kerusakan Infrastruktur</option>
-                  <option value="air">Kualitas Air</option>
-                  <option value="administrasi">Pelayanan Administrasi</option>
+                  <option value="perizinan">Perizinan</option>
                   <option value="lainnya">Lainnya</option>
                 </select>
               </div>
