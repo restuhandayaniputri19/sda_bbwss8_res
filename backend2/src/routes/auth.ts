@@ -133,6 +133,7 @@ auth.post("/send-otp", async (c) => {
     } else {
       console.log(`OTP untuk ${phoneNumber} disimpan di database. Mengirim pesan via WA...`);
       // 3. Panggil container wa-webjs (Internal network)
+      console.log(`Mengirim pesan via WA melalui ${process.env.WA_GATEWAY_URL}/send dengan OTP: ${otpCode}`);
       const waResponse = await fetch(`${process.env.WA_GATEWAY_URL}/send`, { // Sesuaikan port/host container
         method: "POST",
         headers: {
