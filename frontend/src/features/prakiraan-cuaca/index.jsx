@@ -197,6 +197,21 @@ const PrakiraanCuaca = () => {
               loading="lazy"
             />
           </div>
+
+                    <div className="flex justify-between items-end">
+            <h2 className="text-lg font-medium opacity-80 text-slate-700">
+              Prakiraan Angin Lapisan 3000 feet
+            </h2>
+          </div>
+
+          <div className="rounded-xl overflow-hidden shadow-xl border border-slate-200 bg-black">
+            <img
+              className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700 cursor-zoom-in"
+              src="https://dataweb.bmkg.go.id/cuaca/angin/streamline-d10.jpg"
+              alt="Prakiraan Angin Lapisan 3000 feet"
+              loading="lazy"
+            />
+          </div>
         </section>
       </div>
     </div>
