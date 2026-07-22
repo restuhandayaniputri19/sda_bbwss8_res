@@ -7,6 +7,9 @@ node_modules/
 .env.local
 .env.production
 
+backend2/data_prakiraan.json
+
+*/uploads
 # Docker data (Jika MySQL menyimpan data di folder lokal)
 mysql_data/
 
