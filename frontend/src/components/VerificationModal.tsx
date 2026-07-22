@@ -199,9 +199,9 @@ const handleVerifyOtp = async (e: React.FormEvent) => {
               <form onSubmit={handleVerifyOtp} className="space-y-4">
                 <input
                   type="text"
-                  placeholder="6 digit kode"
+                  placeholder="4 digit kode"
                   className="w-full px-4 py-2 border rounded-md text-center tracking-[0.5em] font-bold outline-none focus:ring-2 focus:ring-blue-500"
-                  maxLength={6}
+                  maxLength={4}
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                   disabled={timeLeft <= 0} // Nonaktifkan input jika waktu habis
