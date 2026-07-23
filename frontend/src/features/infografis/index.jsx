@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import DropdownSelect from "../../components/select";
 import PhotoCard from "../../components/photo-card";
 import { getInfoGrafis } from "../../services/infografis/api";
+import bendungPerjaya from "../../assets/11.png";
+
 
 const InfografisPage = () => {
   const [data, setData] = useState([]);
@@ -66,7 +68,7 @@ const InfografisPage = () => {
     <div className="flex min-h-screen flex-col">
       <img
         className="w-full h-[50vh] md:h-[60vh] object-cover"
-        src="https://mediabbwssviii.sgp1.cdn.digitaloceanspaces.com/image/WhatsApp%20Image%202024-10-25%20at%2015.11.43.jpeg"
+        src={bendungPerjaya}
         alt="Call center picture"
       />
       <section className="p-10">

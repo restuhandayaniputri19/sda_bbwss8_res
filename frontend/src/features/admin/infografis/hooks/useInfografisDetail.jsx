@@ -11,8 +11,8 @@ export const useInfografisDetail = (id) => {
         try {
           const response = await getInfoGrafisDetail(id);
 
-          if (response.data) {
-            setInfografisDetail(response.data);
+          if (response) {
+            setInfografisDetail(response);
           }
         } catch (error) {
           console.error("Error fetching user data:", error);

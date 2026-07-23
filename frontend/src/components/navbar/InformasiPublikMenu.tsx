@@ -1,5 +1,13 @@
 import React from "react";
-import { ChevronDown, BookOpen, Newspaper, Info, Scale, Phone, FileSearch } from "lucide-react";
+import {
+  ChevronDown,
+  BookOpen,
+  Newspaper,
+  Info,
+  Scale,
+  Phone,
+  FileSearch,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 const InformasiPublikMenu: React.FC<{ label: string }> = ({ label }) => {
@@ -13,7 +21,6 @@ const InformasiPublikMenu: React.FC<{ label: string }> = ({ label }) => {
       {/* Panel Mega Menu */}
       <div className="absolute top-full right-0 w-[700px] bg-white shadow-2xl rounded-bl-3xl rounded-br-lg border border-gray-100 hidden group-hover:block z-[70] animate-in fade-in zoom-in-95 slide-in-from-right-10 duration-300 overflow-hidden">
         <div className="grid grid-cols-3 divide-x divide-gray-100">
-
           {/* Kolom 1: Media & Berita */}
           <div className="p-5 hover:bg-slate-50 transition-colors">
             <div className="flex items-center gap-2 mb-6 text-gray-400">
@@ -90,13 +97,13 @@ const InformasiPublikMenu: React.FC<{ label: string }> = ({ label }) => {
             </div>
             <ul className="space-y-3">
               <li>
-  <MenuLink
-    to="https://jdih.pu.go.id/"
-    label="Peraturan"
-    desc="Regulasi & Peraturan Terkait"
-    external={true}
-  />
-</li>
+                <MenuLink
+                  to="https://jdih.pu.go.id/"
+                  label="Peraturan"
+                  desc="Regulasi & Peraturan Terkait"
+                  external={true}
+                />
+              </li>
               <li>
                 <MenuLink
                   to="/informasi"
@@ -106,7 +113,6 @@ const InformasiPublikMenu: React.FC<{ label: string }> = ({ label }) => {
               </li>
             </ul>
           </div>
-
         </div>
       </div>
     </div>
@@ -139,7 +145,12 @@ const MenuLink = ({
   );
 
   return external ? (
-    <a href={to} target="_blank" rel="noopener noreferrer" className={className}>
+    <a
+      href={to}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={className}
+    >
       {content}
     </a>
   ) : (
