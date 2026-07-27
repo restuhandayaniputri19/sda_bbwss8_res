@@ -11,7 +11,7 @@ const SIDEBAR_ITEMS = [
 ];
 
 export default function PoskoBanjirPage() {
-  const sectionRefs = useRef({});
+  const sectionRefs = useRef<Record<number, HTMLElement | null>>({});
 
   const scrollToSection = (id: number) => {
     const element: HTMLElement | null = sectionRefs.current[id];
