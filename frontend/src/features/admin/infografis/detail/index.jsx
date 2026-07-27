@@ -15,16 +15,23 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "../../../../hooks/useQuery";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-
-const categories = ["Bendungan", "Irigasi & Rawa", "Sungai", "Danau", "Embung", "Air Tanah & Air Baku"];
-
-import { 
+import {
   Select,
   SelectTrigger,
   SelectValue,
-  SelectItem, 
-  SelectContent, 
+  SelectItem,
+  SelectContent,
 } from "../../../../components/select/based";
+
+// Ubah value kategori agar presisi dengan enum/string di database (lowercase)
+const categories = [
+  { label: "Bendungan", value: "bendungan" },
+  { label: "Irigasi & Rawa", value: "irigasi & rawa" },
+  { label: "Sungai", value: "sungai" },
+  { label: "Danau", value: "danau" },
+  { label: "Embung", value: "embung" },
+  { label: "Air Tanah & Air Baku", value: "air tanah & air baku" },
+];
 
 const DetailPage = () => {
   const query = useQuery();
@@ -42,6 +49,7 @@ const DetailPage = () => {
     defaultValues: {
       description: "",
       infografis: "",
+      category: "",
     },
     mode: "onChange",
   });
@@ -51,8 +59,8 @@ const DetailPage = () => {
   const onSubmit = async (data) => {
     const formData = new FormData();
     formData.append("description", data.description);
+    formData.append("category", data.category);
 
-    // Only append the file if it exists
     if (data.infografis && data.infografis.length > 0) {
       formData.append("infografis", data.infografis[0]);
     }
@@ -74,26 +82,51 @@ const DetailPage = () => {
 
   const {
     handleSubmit,
+    reset,
+    setValue,
     formState: { isSubmitting },
   } = form;
 
+  // 1. Perbaikan Effect Reset Data
   useEffect(() => {
     if (infografisDetail) {
-      form.reset(infografisDetail);
-      setImgUrl(infografisDetail.url);
-    }
-  }, [infografisDetail, form]);
+      // Pastikan mengekstrak objek data utama (antisipasi jika di-wrap oleh Axios/React Query)
+      const data = infografisDetail.data || infografisDetail;
 
+      if (data && data.id) {
+        reset({
+          description: data.description || "",
+          category: data.category ? String(data.category).toLowerCase() : "",
+          infografis: "", // Kosongkan file input di form state
+        });
+
+        // Set gambar preview dari URL database
+        if (data.url) {
+          setImgUrl(data.url);
+        }
+      }
+    }
+  }, [infografisDetail, reset]);
+
+  // 2. Effect Preview jika ada file baru yang di-upload
   useEffect(() => {
-    if (fileWatcher?.length > 0) {
-      setImgUrl(URL.createObjectURL(fileWatcher[0]));
+    if (
+      fileWatcher &&
+      fileWatcher.length > 0 &&
+      fileWatcher[0] instanceof File
+    ) {
+      const newImgUrl = URL.createObjectURL(fileWatcher[0]);
+      setImgUrl(newImgUrl);
+
+      // Cleanup object URL untuk mencegah memory leak
+      return () => URL.revokeObjectURL(newImgUrl);
     }
   }, [fileWatcher]);
 
   return (
     <div className="flex flex-col gap-5">
       <h1 className="text-2xl font-bold">
-        {isEdit ? "Edit Berita" : "Tambah Berita"}
+        {isEdit ? "Edit Infografis" : "Tambah Infografis"}
       </h1>
 
       <Form {...form}>
@@ -114,15 +147,21 @@ const DetailPage = () => {
             )}
           </CustomFormField>
 
-
-          <CustomFormField control={form.control} name="category" label="Category">
-            {( field ) => {
-              console.log("Status Field Category:", field);
-              return (
-              <Select 
-                onValueChange={field?.onChange} 
-                defaultValue={field?.value}
-                value={field?.value}
+          <CustomFormField
+            control={form.control}
+            name="category"
+            label="Category"
+          >
+            {({ field }) => (
+              <Select
+                onValueChange={(value) => {
+                  // Langsung set nilai ke react-hook-form secara eksplisit
+                  setValue("category", value, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  });
+                }}
+                value={field?.value || form.watch("category") || ""}
                 disabled={isSubmitting}
               >
                 <SelectTrigger>
@@ -130,15 +169,14 @@ const DetailPage = () => {
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((cat) => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat}
+                    <SelectItem key={cat.value} value={cat.value}>
+                      {cat.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-            )}}
+            )}
           </CustomFormField>
-
           <CustomFormField
             control={form.control}
             name="infografis"
@@ -147,8 +185,12 @@ const DetailPage = () => {
             {() => (
               <>
                 {imgUrl && (
-                  <div className="flex w-full justify-center">
-                    <img src={imgUrl} className="max-h-72" alt="Preview" />
+                  <div className="flex w-full justify-center mb-3">
+                    <img
+                      src={imgUrl}
+                      className="max-h-72 rounded border object-contain"
+                      alt="Preview"
+                    />
                   </div>
                 )}
 
@@ -166,6 +208,7 @@ const DetailPage = () => {
 
           <div className="flex flex-row gap-5 mt-4 justify-end">
             <Button
+              type="button"
               variant="secondary"
               onClick={() => navigate("/admin/infografis", { replace: true })}
             >

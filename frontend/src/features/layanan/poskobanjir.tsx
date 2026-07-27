@@ -28,7 +28,7 @@ export default function PoskoBanjirPage() {
       <div className="flex flex-1 overflow-hidden">
         
         {/* SISI KIRI: Sidebar */}
-        <aside className="w-[240px] bg-white border-r border-slate-200 flex flex-col shrink-0">
+        <aside className="w-[240px] bg-white border-r border-slate-200 flex flex-col shrink-0 hidden md:flex">
           <div className="p-4 overflow-y-auto">
             <nav className="space-y-1">
               {SIDEBAR_ITEMS.map((item) => (
@@ -81,7 +81,7 @@ export default function PoskoBanjirPage() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-6 mb-10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
                       {SIDEBAR_ITEMS.filter(item => item.id !== 1).map((satker) => (
                         <div 
                           key={satker.id}

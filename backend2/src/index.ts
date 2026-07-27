@@ -7,6 +7,8 @@ import { bearerAuth } from 'hono/bearer-auth';
 import { serveStatic } from '@hono/node-server/serve-static'
 
 // Import Routes
+import pengaduanMasyarakatRoute from './routes/pengaduan_masyarakat';
+import infografisRoute from './routes/infografis';
 import permintaanDataRoute from './routes/permintaan_data';
 import prakiraanRoute from './routes/prakiraan';
 import beritaRoute from './routes/berita';
@@ -151,6 +153,8 @@ app.use('/uploads/*', serveStatic({
 }))
 
 // Routing - Menghubungkan semua endpoint
+app.route('/pengaduan-masyarakat', pengaduanMasyarakatRoute);
+app.route('/infografis', infografisRoute);
 app.route('/prakiraan', prakiraanRoute);
 app.route('/berita', beritaRoute);
 app.route('/auth', auth);

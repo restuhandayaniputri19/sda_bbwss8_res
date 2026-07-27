@@ -4,6 +4,7 @@ import { z } from "zod";
 export const infografisSchema = (isEdit) =>
   z.object({
     description: z.string(),
+    category: z.string().min(1, "Category is required"),
     infografis: isEdit
       ? z.any().optional() // Optional when editing
       : z

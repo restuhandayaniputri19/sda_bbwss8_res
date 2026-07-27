@@ -87,10 +87,11 @@ const DetailPage = () => {
   useEffect(() => {
     if (galleryDetail) {
       form.reset({
-        ...galleryDetail,
+        description: galleryDetail.description || "",
         category: galleryDetail.category || "",
+        gallery: undefined, // Reset the gallery field to empty since we don't want to pre-fill it with a file
       });
-      setImgUrl(galleryDetail.url);
+      setImgUrl(galleryDetail.url || ""); // Set the image URL for preview
     }
   }, [galleryDetail, form]);
 

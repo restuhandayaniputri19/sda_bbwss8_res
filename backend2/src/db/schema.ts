@@ -147,6 +147,51 @@ export const permintaanData = sqliteTable('permintaan_data', {
     .default(sql`(strftime('%s', 'now'))`),
 });
 
+// Tabel Pengaduan Masyarakat
+export const KATEGORI_PENGADUAN = [
+  'banjir',
+  'infrastruktur',
+  'perizinan',
+  'lainnya'
+] as const;
+
+export type KategoriPengaduan = (typeof KATEGORI_PENGADUAN)[number];
+
+export const pengaduanMasyarakat = sqliteTable('pengaduan_masyarakat', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  
+  namaPelapor: text('nama_pelapor').notNull(),
+  
+  noWa: text('no_wa').notNull(),
+  
+  email: text('email'),
+  
+  kategori: text('kategori', { enum: KATEGORI_PENGADUAN }).notNull(),
+  
+  lokasi: text('lokasi').notNull(),
+  
+  deskripsi: text('deskripsi').notNull(),
+  
+  fileLampiran: text('file_lampiran'), // Path / URL foto atau dokumen pendukung
+  
+  status: text('status', { enum: ["pending", "diproses", "selesai", "ditolak"] })
+    .notNull()
+    .default('pending'),
+
+  statusLogs: text('status_logs', { mode: 'json' })
+    .$type<Array<{ status: string; timestamp: string; note?: string }>>()
+    .default(sql`'[]'`),
+
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .default(sql`(strftime('%s', 'now'))`),
+    
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .default(sql`(strftime('%s', 'now'))`),
+});
+
 // Inferensi tipe untuk digunakan di frontend/backend
 export type PermintaanData = typeof permintaanData.$inferSelect;
 export type InsertPermintaanData = typeof permintaanData.$inferInsert;
+export type PengaduanMasyarakat = typeof pengaduanMasyarakat.$inferSelect;
+export type InsertPengaduanMasyarakat = typeof pengaduanMasyarakat.$inferInsert;
+

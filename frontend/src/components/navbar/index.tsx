@@ -1,5 +1,13 @@
 import { MenuIcon, XIcon, ChevronDown } from "lucide-react";
-import { Instagram, Youtube, Facebook, Mail, Map as MapIcon, MessageCircle, Phone } from "lucide-react";
+import {
+  Instagram,
+  Youtube,
+  Facebook,
+  Mail,
+  Map as MapIcon,
+  MessageCircle,
+  Phone,
+} from "lucide-react";
 import React, { useEffect, useState } from "react";
 import Dropdown from "../dropdown";
 import { Link, useLocation } from "react-router-dom";
@@ -30,17 +38,41 @@ const profilSections = [
   {
     title: "Struktur & Info",
     items: [
-      { to: "/struktur-organisasi", label: "Struktur Organisasi", desc: "Bagan Organisasi Balai" },
-      { to: "/tugas-fungsi", label: "Tugas & Fungsi", desc: "Tugas Pokok dan Fungsi" },
-      { to: "/profil-pejabat", label: "Informasi Pejabat", desc: "Nama dan Foto Pejabat" },
-      { to: "/satker", label: "Informasi Satker", desc: "Alamat dan Kontak Satker" },
+      {
+        to: "/struktur-organisasi",
+        label: "Struktur Organisasi",
+        desc: "Bagan Organisasi Balai",
+      },
+      {
+        to: "/tugas-fungsi",
+        label: "Tugas & Fungsi",
+        desc: "Tugas Pokok dan Fungsi",
+      },
+      {
+        to: "/profil-pejabat",
+        label: "Informasi Pejabat",
+        desc: "Nama dan Foto Pejabat",
+      },
+      {
+        to: "/satker",
+        label: "Informasi Satker",
+        desc: "Alamat dan Kontak Satker",
+      },
     ],
   },
   {
-    title: "Tentang Kami",       
+    title: "Tentang Kami",
     items: [
-      { to: "/tentang-kami", label: "Tentang Kami", desc: "Profil BBWS Sumatera VIII" },
-      { to: "/visi-misi", label: "Visi & Misi", desc: "Visi dan Misi BBWS Sumatera VIII" },
+      {
+        to: "/tentang-kami",
+        label: "Tentang Kami",
+        desc: "Profil BBWS Sumatera VIII",
+      },
+      {
+        to: "/visi-misi",
+        label: "Visi & Misi",
+        desc: "Visi dan Misi BBWS Sumatera VIII",
+      },
       { to: "/sejarah", label: "Sejarah", desc: "Sejarah BBWS Sumatera VIII" },
     ],
   },
@@ -50,15 +82,28 @@ const publikasiSections = [
   {
     title: "Monitoring",
     items: [
-      { to: "https://sinbad.sda.pu.go.id/simadu/main/login.php", label: "Early Warning System", desc: "E-SIMADU", external: true },
-      { to: "/prakiraan-cuaca", label: "Prakiraan Cuaca", desc: "BMKG Wilayah Sumatera Bagian Selatan"},
+      {
+        to: "https://sinbad.sda.pu.go.id/simadu/main/login.php",
+        label: "Early Warning System",
+        desc: "E-SIMADU",
+        external: true,
+      },
+      {
+        to: "/prakiraan-cuaca",
+        label: "Prakiraan Cuaca",
+        desc: "BMKG Wilayah Sumatera Bagian Selatan",
+      },
     ],
   },
   {
     title: "Media",
     items: [
       { to: "/galeri", label: "Galeri", desc: "Foto & Dokumentasi Kegiatan" },
-      { to: "/infografis", label: "Infografis", desc: "Data Visual & Statistik" },
+      {
+        to: "/infografis",
+        label: "Infografis",
+        desc: "Data Visual & Statistik",
+      },
       { to: "/aplikasi", label: "Aplikasi", desc: "Layanan Aplikasi Digital" },
     ],
   },
@@ -66,7 +111,11 @@ const publikasiSections = [
     title: "Data & Peta",
     items: [
       { to: "/geoportal", label: "Geoportal", desc: "Peta Geospasial Digital" },
-      { to: "/pola-rpsda", label: "Pola dan RPSDA", desc: "Pola & Rencana Pengelolaan SDA" },
+      {
+        to: "/pola-rpsda",
+        label: "Pola dan RPSDA",
+        desc: "Pola & Rencana Pengelolaan SDA",
+      },
     ],
   },
 ];
@@ -77,22 +126,47 @@ const informasiPublikSections = [
     items: [
       { to: "/majalah", label: "Majalah", desc: "Majalah Digital BBWS" },
       { to: "/berita", label: "Berita", desc: "Berita & Kegiatan Terkini" },
-      { to: "/kontak-kami", label: "Kontak Kami", desc: "Hubungi BBWS Sumatera VIII" },
+      {
+        to: "/kontak-kami",
+        label: "Kontak Kami",
+        desc: "Hubungi BBWS Sumatera VIII",
+      },
     ],
   },
   {
     title: "Informasi",
     items: [
-      { to: "/informasi-berkala", label: "Informasi Berkala", desc: "Laporan & Data Berkala" },
-      { to: "/informasi-serta-merta", label: "Informasi Serta Merta", desc: "Informasi Darurat & Mendesak" },
-      { to: "/informasi-tersedia", label: "Informasi Tersedia", desc: "Dokumen Tersedia Setiap Saat" },
+      {
+        to: "/informasi-berkala",
+        label: "Informasi Berkala",
+        desc: "Laporan & Data Berkala",
+      },
+      {
+        to: "/informasi-serta-merta",
+        label: "Informasi Serta Merta",
+        desc: "Informasi Darurat & Mendesak",
+      },
+      {
+        to: "/informasi-tersedia",
+        label: "Informasi Tersedia",
+        desc: "Dokumen Tersedia Setiap Saat",
+      },
     ],
   },
   {
     title: "Dokumen & Hukum",
     items: [
-      { to: "https://peraturan.bpk.go.id/", label: "Peraturan", desc: "Regulasi & Peraturan Terkait", external: true },
-      { to: "/informasi", label: "Informasi", desc: "Dokumen Informasi Publik" },
+      {
+        to: "https://peraturan.bpk.go.id/",
+        label: "Peraturan",
+        desc: "Regulasi & Peraturan Terkait",
+        external: true,
+      },
+      {
+        to: "/informasi",
+        label: "Informasi",
+        desc: "Dokumen Informasi Publik",
+      },
     ],
   },
 ];
@@ -101,11 +175,31 @@ const layananTerpaduSections = [
   {
     title: "Layanan Publik",
     items: [
-      { to: "/layanan/rekomtek", label: "Rekomtek", desc: "Rekomendasi Teknis SDA" },
-      { to: "/layanan/posko-banjir", label: "Posko Banjir", desc: "Informasi & Laporan Banjir" },
-      { to: "/layanan/permintaan-data", label: "Permintaan Data", desc: "Ajukan Permintaan Data SDA" },
-      { to: "/layanan/pengaduan-masyarakat", label: "Pengaduan Masyarakat", desc: "Sampaikan Pengaduan Anda" },
-      { to: "/whistleblowing", label: "Whistleblowing", desc: "Laporkan Pelanggaran Secara Aman" },
+      {
+        to: "/layanan/rekomtek",
+        label: "Rekomtek",
+        desc: "Rekomendasi Teknis SDA",
+      },
+      {
+        to: "/layanan/posko-banjir",
+        label: "Posko Banjir",
+        desc: "Informasi & Laporan Banjir",
+      },
+      {
+        to: "/layanan/permintaan-data",
+        label: "Permintaan Data",
+        desc: "Ajukan Permintaan Data SDA",
+      },
+      {
+        to: "/layanan/pengaduan-masyarakat",
+        label: "Pengaduan Masyarakat",
+        desc: "Sampaikan Pengaduan Anda",
+      },
+      {
+        to: "/whistleblowing",
+        label: "Whistleblowing",
+        desc: "Laporkan Pelanggaran Secara Aman",
+      },
     ],
   },
 ];
@@ -113,7 +207,10 @@ const layananTerpaduSections = [
 // ── Komponen MobileSection: accordion per grup ──
 const MobileSection: React.FC<{
   title: string;
-  sections: { title: string; items: { to: string; label: string; desc?: string; external?: boolean }[] }[];
+  sections: {
+    title: string;
+    items: { to: string; label: string; desc?: string; external?: boolean }[];
+  }[];
   isOpen: boolean;
   onToggle: () => void;
   onClose: () => void;
@@ -127,7 +224,9 @@ const MobileSection: React.FC<{
         onClick={onToggle}
       >
         <span>{title}</span>
-        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        <ChevronDown
+          className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
+        />
       </button>
 
       {isOpen && (
@@ -152,7 +251,9 @@ const MobileSection: React.FC<{
                 >
                   <span className="text-sm font-semibold">{item.label}</span>
                   {item.desc && (
-                    <span className="block text-[11px] text-gray-400">{item.desc}</span>
+                    <span className="block text-[11px] text-gray-400">
+                      {item.desc}
+                    </span>
                   )}
                 </Link>
               ))}
@@ -203,9 +304,12 @@ const Navbar: React.FC<NavbarProps> = ({
 
   const getLinksPositionClasses = () => {
     switch (linksPosition) {
-      case "center": return "justify-center";
-      case "right": return "justify-end";
-      default: return "justify-start";
+      case "center":
+        return "justify-center";
+      case "right":
+        return "justify-end";
+      default:
+        return "justify-start";
     }
   };
 
@@ -218,17 +322,23 @@ const Navbar: React.FC<NavbarProps> = ({
     <nav
       className={`${transparent ? "bg-transparent" : "bg-white"} ${shadow} ${positionClass} transition-colors duration-300 border-b border-b-gray-200`}
     >
-      <div className={`w-full ${maxWidth} mx-auto px-4 overflow-visible relative`}>
+      <div
+        className={`w-full ${maxWidth} mx-auto px-4 overflow-visible relative`}
+      >
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
           {logoIcon && (
             <Link to={"/"} className="flex items-center gap-2">
               {logoIcon}
               <div className="flex flex-col uppercase text-indigo leading-tight">
-  <span className="text-[10px] font-semibold">Kementerian Pekerjaan Umum</span>
-  <span className="text-[10px] font-semibold">Direktorat Jenderal Sumber Daya Air</span>
-  <span className="text-xs font-bold">BBWS Sumatera VIII</span>
-</div>
+                <span className="text-[10px] font-semibold">
+                  Kementerian Pekerjaan Umum
+                </span>
+                <span className="text-[10px] font-semibold">
+                  Direktorat Jenderal Sumber Daya Air
+                </span>
+                <span className="text-xs font-bold">BBWS Sumatera VIII</span>
+              </div>
             </Link>
           )}
           <span className="uppercase text-indigo">{logoText}</span>
@@ -247,8 +357,8 @@ const Navbar: React.FC<NavbarProps> = ({
           {/* Desktop Navigation */}
           {links && (
             <nav
-  className={`hidden min-[1021px]:flex h-full gap-1 flex-1 ${getLinksPositionClasses()} ml-4 overflow-visible`}
->
+              className={`hidden min-[1021px]:flex h-full gap-1 flex-1 ${getLinksPositionClasses()} ml-4 overflow-visible`}
+            >
               {links.map((link, index) => {
                 if (index === 0)
                   return (
@@ -260,13 +370,21 @@ const Navbar: React.FC<NavbarProps> = ({
                       {link.label}
                     </Link>
                   );
-                if (index === 1) return <ProfilMenu key={index} label={link.label} />;
-                if (index === 2) return <PublikasiMenu key={index} label={link.label} />;
-                if (index === 3) return <LayananTerpaduMenu key={index} label={link.label} />;
-                if (index === 4) return <InformasiPublikMenu key={index} label={link.label} />;
-                
+                if (index === 1)
+                  return <ProfilMenu key={index} label={link.label} />;
+                if (index === 2)
+                  return <PublikasiMenu key={index} label={link.label} />;
+                if (index === 3)
+                  return <LayananTerpaduMenu key={index} label={link.label} />;
+                if (index === 4)
+                  return <InformasiPublikMenu key={index} label={link.label} />;
+
                 return link.submenu ? (
-                  <Dropdown key={index} label={link.label} submenu={link.submenu} />
+                  <Dropdown
+                    key={index}
+                    label={link.label}
+                    submenu={link.submenu}
+                  />
                 ) : (
                   <Link
                     key={index}
@@ -277,12 +395,14 @@ const Navbar: React.FC<NavbarProps> = ({
                   </Link>
                 );
               })}
-            <a  href="https://sda.pu.go.id"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="ml-4 flex-shrink-0 flex items-center gap-2 bg-mango text-indigo font-bold text-sm px-4 py-2 rounded-md hover:brightness-95 transition-all">
-  🏠 Ditjen SDA
-</a>
+              <a
+                href="https://sda.pu.go.id"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-4 flex-shrink-0 flex items-center gap-2 bg-mango text-indigo font-bold text-sm px-4 py-2 rounded-md hover:brightness-95 transition-all"
+              >
+                🏠 Ditjen SDA
+              </a>
             </nav>
           )}
         </div>
@@ -293,181 +413,217 @@ const Navbar: React.FC<NavbarProps> = ({
         <div
           className={`min-[1021px]:hidden fixed top-16 left-0 right-0 ${backgroundColor} ${shadow} w-full max-h-[calc(100vh-64px)] overflow-y-auto z-50`}
         >
-          {links && links.map((link, index) => {
-            // Beranda
-            if (index === 0) {
-              return (
-                <div key={index} className="border-b border-gray-100">
-                  <Link
-                    to={link.path}
-                    onClick={closeMenu}
-                    className="block px-3 py-3 text-base font-bold text-gray-700 hover:text-indigo"
-                  >
-                    {link.label}
-                  </Link>
-                </div>
-              );
-            }
+          {links &&
+            links.map((link, index) => {
+              // Beranda
+              if (index === 0) {
+                return (
+                  <div key={index} className="border-b border-gray-100">
+                    <Link
+                      to={link.path}
+                      onClick={closeMenu}
+                      className="block px-3 py-3 text-base font-bold text-gray-700 hover:text-indigo"
+                    >
+                      {link.label}
+                    </Link>
+                  </div>
+                );
+              }
 
-            // Profil (index 1)
-            if (index === 1) {
-              return (
-                <div key={index}>
+              // Profil (index 1)
+              if (index === 1) {
+                return (
+                  <div key={index}>
+                    <MobileSection
+                      title={link.label}
+                      sections={profilSections}
+                      isOpen={activeSubmenu === "profil"}
+                      onToggle={() => toggleSubmenu("profil")}
+                      onClose={closeMenu}
+                    />
+                    {/* Kontak & Lokasi khusus di bawah Profil */}
+                    {activeSubmenu === "profil" && (
+                      <div className="mx-3 mb-3 rounded-xl bg-indigo text-white p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Phone size={14} className="text-mango" />
+                          <Link
+                            to="/kontak-lokasi"
+                            onClick={closeMenu}
+                            className="text-xs font-bold uppercase tracking-widest text-mango hover:underline"
+                          >
+                            Kontak &amp; Lokasi
+                          </Link>
+                        </div>
+                        <ul className="space-y-1.5 text-xs opacity-90">
+                          <li>
+                            <Link
+                              to="https://wa.me/628117887443"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 hover:text-mango"
+                            >
+                              <MessageCircle size={12} className="text-mango" />{" "}
+                              Whatsapp
+                            </Link>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <Mail size={12} className="text-mango" />{" "}
+                            balaisumatra8@gmail.com
+                          </li>
+                          <li>
+                            <Link
+                              to="https://www.instagram.com/pupr_sda_sumatera8/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 text-white hover:!text-mango transition-colors"
+                            >
+                              <Instagram size={12} className="text-mango" />{" "}
+                              @pu_sda_sumatera8
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
+                              to="https://www.youtube.com/@bbwssumateraviii4910"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 text-white hover:!text-mango transition-colors"
+                            >
+                              <Youtube size={12} className="text-mango" /> BBWS
+                              Sumatera VIII
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
+                              to="https://www.facebook.com/bbwss8"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 text-white hover:!text-mango transition-colors"
+                            >
+                              <Facebook size={12} className="text-mango" /> BBWS
+                              VIII
+                            </Link>
+                          </li>
+                          <li>
+                            <Link
+                              to="https://maps.app.goo.gl/sNibrVZf7HyLPPGU8"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 text-white hover:!text-mango transition-colors"
+                            >
+                              <MapIcon size={12} className="text-mango" />{" "}
+                              Google Map
+                            </Link>
+                          </li>
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              // Publikasi (index 2)
+              if (index === 2) {
+                return (
                   <MobileSection
+                    key={index}
                     title={link.label}
-                    sections={profilSections}
-                    isOpen={activeSubmenu === "profil"}
-                    onToggle={() => toggleSubmenu("profil")}
+                    sections={publikasiSections}
+                    isOpen={activeSubmenu === "publikasi"}
+                    onToggle={() => toggleSubmenu("publikasi")}
                     onClose={closeMenu}
                   />
-                  {/* Kontak & Lokasi khusus di bawah Profil */}
-                  {activeSubmenu === "profil" && (
-                    <div className="mx-3 mb-3 rounded-xl bg-indigo text-white p-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Phone size={14} className="text-mango" />
+                );
+              }
+
+              // Layanan Terpadu (index 3)
+              if (index === 3) {
+                return (
+                  <div key={index} className="border-b border-gray-100">
+                    <button
+                      className={`flex justify-between items-center w-full px-3 py-3 text-base font-bold ${activeSubmenu === "layanan" ? "text-indigo" : "text-gray-700"}`}
+                      onClick={() => toggleSubmenu("layanan")}
+                    >
+                      <span>{link.label}</span>
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform ${activeSubmenu === "layanan" ? "rotate-180" : ""}`}
+                      />
+                    </button>
+
+                    {activeSubmenu === "layanan" && (
+                      <div className="mx-3 mb-3">
                         <Link
-                          to="/kontak-lokasi"
+                          to="/layanan-terpadu"
                           onClick={closeMenu}
-                          className="text-xs font-bold uppercase tracking-widest text-mango hover:underline"
+                          className="block bg-indigo rounded-xl px-4 py-4 hover:brightness-110 transition-all"
                         >
-                          Kontak &amp; Lokasi
+                          <p className="text-white text-xs font-bold uppercase tracking-widest">
+                            Layanan Terpadu
+                          </p>
+                          <p className="text-white/70 text-[11px] mt-0.5">
+                            Pelayanan publik BBWS Sumatera VIII
+                          </p>
                         </Link>
                       </div>
-                      <ul className="space-y-1.5 text-xs opacity-90">
-                        <li>
-                          <Link to="https://wa.me/628117887443" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-mango">
-                            <MessageCircle size={12} className="text-mango" /> Whatsapp
-                          </Link>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <Mail size={12} className="text-mango" /> balaisumatra8@gmail.com
-                        </li>
-                        <li>
-                          <Link to="https://www.instagram.com/pupr_sda_sumatera8/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-white hover:!text-mango transition-colors">
-                            <Instagram size={12} className="text-mango" /> @pu_sda_sumatera8
-                          </Link>
-                        </li>
-                        <li>
-                          <Link to="https://www.youtube.com/@bbwssumateraviii4910" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-white hover:!text-mango transition-colors">
-                            <Youtube size={12} className="text-mango" /> BBWS Sumatera VIII
-                          </Link>
-                        </li>
-                        <li>
-                          <Link to="https://www.facebook.com/bbwss8" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-white hover:!text-mango transition-colors">
-                            <Facebook size={12} className="text-mango" /> BBWS VIII
-                          </Link>
-                        </li>
-                        <li>
-                          <Link to="https://maps.app.goo.gl/sNibrVZf7HyLPPGU8" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-white hover:!text-mango transition-colors">
-                            <MapIcon size={12} className="text-mango" /> Google Map
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
+                    )}
+                  </div>
+                );
+              }
+
+              // Informasi Publik (index 4)
+              if (index === 4) {
+                return (
+                  <MobileSection
+                    key={index}
+                    title={link.label}
+                    sections={informasiPublikSections}
+                    isOpen={activeSubmenu === "informasi"}
+                    onToggle={() => toggleSubmenu("informasi")}
+                    onClose={closeMenu}
+                  />
+                );
+              }
+
+              // Link biasa
+              return (
+                <div key={index} className="border-b border-gray-100">
+                  {link.submenu ? (
+                    <>
+                      <button
+                        className={`flex justify-between items-center w-full px-3 py-3 text-base font-bold ${activeSubmenu === String(index) ? "text-indigo" : "text-gray-700"}`}
+                        onClick={() => toggleSubmenu(String(index))}
+                      >
+                        <span>{link.label}</span>
+                        <ChevronDown
+                          className={`w-4 h-4 transition-transform ${activeSubmenu === String(index) ? "rotate-180" : ""}`}
+                        />
+                      </button>
+                      {activeSubmenu === String(index) && (
+                        <div className="ml-4 bg-gray-50 rounded-lg mb-2">
+                          {link.submenu.map((sub, si) => (
+                            <Link
+                              key={si}
+                              to={sub.path}
+                              onClick={closeMenu}
+                              className={`block px-4 py-2 text-sm font-medium hover:text-indigo ${location.pathname === sub.path ? "text-indigo font-bold" : "text-gray-600"}`}
+                            >
+                              {sub.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <Link
+                      to={link.path}
+                      onClick={closeMenu}
+                      className="block px-3 py-3 text-base font-bold text-gray-700 hover:text-indigo"
+                    >
+                      {link.label}
+                    </Link>
                   )}
                 </div>
               );
-            }
-
-            // Publikasi (index 2)
-            if (index === 2) {
-              return (
-                <MobileSection
-                  key={index}
-                  title={link.label}
-                  sections={publikasiSections}
-                  isOpen={activeSubmenu === "publikasi"}
-                  onToggle={() => toggleSubmenu("publikasi")}
-                  onClose={closeMenu}
-                />
-              );
-            }
-
-            // Layanan Terpadu (index 3)
-            if (index === 3) {
-  return (
-    <div key={index} className="border-b border-gray-100">
-      <button
-        className={`flex justify-between items-center w-full px-3 py-3 text-base font-bold ${activeSubmenu === "layanan" ? "text-indigo" : "text-gray-700"}`}
-        onClick={() => toggleSubmenu("layanan")}
-      >
-        <span>{link.label}</span>
-        <ChevronDown className={`w-4 h-4 transition-transform ${activeSubmenu === "layanan" ? "rotate-180" : ""}`} />
-      </button>
-
-      {activeSubmenu === "layanan" && (
-        <div className="mx-3 mb-3">
-          <Link
-            to="/layanan-terpadu"
-            onClick={closeMenu}
-            className="block bg-indigo rounded-xl px-4 py-4 hover:brightness-110 transition-all"
-          >
-            <p className="text-white text-xs font-bold uppercase tracking-widest">
-              Layanan Terpadu
-            </p>
-            <p className="text-white/70 text-[11px] mt-0.5">
-              Pelayanan publik BBWS Sumatera VIII
-            </p>
-          </Link>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Informasi Publik (index 4)
-            if (index === 4) {
-              return (
-                <MobileSection
-                  key={index}
-                  title={link.label}
-                  sections={informasiPublikSections}
-                  isOpen={activeSubmenu === "informasi"}
-                  onToggle={() => toggleSubmenu("informasi")}
-                  onClose={closeMenu}
-                />
-              );
-            }
-
-            // Link biasa
-            return (
-              <div key={index} className="border-b border-gray-100">
-                {link.submenu ? (
-                  <>
-                    <button
-                      className={`flex justify-between items-center w-full px-3 py-3 text-base font-bold ${activeSubmenu === String(index) ? "text-indigo" : "text-gray-700"}`}
-                      onClick={() => toggleSubmenu(String(index))}
-                    >
-                      <span>{link.label}</span>
-                      <ChevronDown className={`w-4 h-4 transition-transform ${activeSubmenu === String(index) ? "rotate-180" : ""}`} />
-                    </button>
-                    {activeSubmenu === String(index) && (
-                      <div className="ml-4 bg-gray-50 rounded-lg mb-2">
-                        {link.submenu.map((sub, si) => (
-                          <Link
-                            key={si}
-                            to={sub.path}
-                            onClick={closeMenu}
-                            className={`block px-4 py-2 text-sm font-medium hover:text-indigo ${location.pathname === sub.path ? "text-indigo font-bold" : "text-gray-600"}`}
-                          >
-                            {sub.label}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <Link
-                    to={link.path}
-                    onClick={closeMenu}
-                    className="block px-3 py-3 text-base font-bold text-gray-700 hover:text-indigo"
-                  >
-                    {link.label}
-                  </Link>
-                )}
-              </div>
-            );
-          })}
+            })}
         </div>
       )}
     </nav>

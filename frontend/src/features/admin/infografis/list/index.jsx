@@ -29,9 +29,14 @@ const ListPage = () => {
       headerClassName: "text-left font-bold",
     },
     {
+      header: "Category",
+      accessor: "category",
+      headerClassName: "text-left font-bold",
+    },
+    {
       header: "Action",
       accessor: "action",
-    },
+    }
   ];
 
   // Table Data
