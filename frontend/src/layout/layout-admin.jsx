@@ -34,6 +34,14 @@ const LayoutAdmin = () => {
       label: "Gallery",
     },
     {
+      path: "/admin/kesiapsiagaan-bencana",
+      label: "Kesiapsiagaan Bencana",
+    },
+    {
+      path: "/admin/permintaan-data",
+      label: "Permintaan Data",
+    },
+    {
       path: "/admin/layanan-terpadu",
       label: "Layanan Terpadu",
     },
