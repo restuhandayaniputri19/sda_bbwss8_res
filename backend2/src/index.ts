@@ -7,6 +7,7 @@ import { bearerAuth } from 'hono/bearer-auth';
 import { serveStatic } from '@hono/node-server/serve-static'
 
 // Import Routes
+import kesiapsiagaanBencanaRoute from './routes/kesiapsiagaan_bencana';
 import pengaduanMasyarakatRoute from './routes/pengaduan_masyarakat';
 import infografisRoute from './routes/infografis';
 import permintaanDataRoute from './routes/permintaan_data';
@@ -127,7 +128,7 @@ app.post('/test-send-wa', async (c) => {
         status: false,
         message: `Server WA merespon dengan status: ${response.status}`,
         detail: responseText
-      }, response.status);
+      }, 400);
     }
 
     return c.json({
@@ -155,6 +156,7 @@ app.use('/uploads/*', serveStatic({
 // Routing - Menghubungkan semua endpoint
 app.route('/pengaduan-masyarakat', pengaduanMasyarakatRoute);
 app.route('/infografis', infografisRoute);
+app.route('/kesiapsiagaan-bencana', kesiapsiagaanBencanaRoute);
 app.route('/prakiraan', prakiraanRoute);
 app.route('/berita', beritaRoute);
 app.route('/auth', auth);

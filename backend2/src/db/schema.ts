@@ -42,6 +42,28 @@ export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 
 
+export const kesiapsiagaan_bencana = sqliteTable("kesiapsiagaan_bencana", {
+  // Primary Key
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  
+  // url: DataTypes.STRING, allowNull: false
+  url: text("url").notNull(),
+  
+  // description: DataTypes.STRING, allowNull: true
+  description: text("description"),
+
+  // releaseDate: allowNull true
+  releaseDate: text("release_date"),
+
+  // Timestamp untuk pencatatan alamiah (opsional namun manfaat)
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date()),
+});
+
+// Type definitions untuk kemudahan coding
+export type KesiapsiagaanBencana = typeof kesiapsiagaan_bencana.$inferSelect;
+export type NewKesiapsiagaanBencana = typeof kesiapsiagaan_bencana.$inferInsert;
+
 export const infografis = sqliteTable("infografis", {
   // Primary Key
   id: integer("id").primaryKey({ autoIncrement: true }),

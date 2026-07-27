@@ -1,21 +1,21 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-
 import { useToken } from "../hooks/useToken";
 
 const ProtectedRoutes = () => {
   const { pathname } = useLocation();
-
   const { token } = useToken();
 
-  const authProtected = ["/login", "/register"];
-  const tokenProtected = ["/admin"];
+  const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/register");
+  const isAdminRoute = pathname.startsWith("/admin");
 
-  if (authProtected.includes(pathname)) {
-    if (token) return <Navigate to="/admin" />;
+  // Jika sudah login tapi mencoba akses /login atau /register
+  if (isAuthRoute && token) {
+    return <Navigate to="/admin" replace />;
   }
 
-  if (tokenProtected.includes(pathname)) {
-    if (!token) return <Navigate to="/login" />;
+  // Jika belum login tapi mencoba akses /admin atau sub-halamannya (/admin/...)
+  if (isAdminRoute && !token) {
+    return <Navigate to="/login" replace />;
   }
 
   return <Outlet />;
