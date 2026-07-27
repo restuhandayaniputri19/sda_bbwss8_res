@@ -25,6 +25,7 @@ import PeraturanPage from "../features/peraturan";
 import PetaGeospasialAdmin from "../features/admin/peta-geospasial";
 import PolaRencana from "../features/profil/PolaRencana";
 import PolaRpsda from "../features/pola-rpsda";
+import KesiapsiagaanBencana from "../features/kesiapsiagaan-bencana/KesiapsiagaanBencana";
 import PolaRencanaAdmin from "../features/admin/pola-rencana";
 import Product from "../features/product";
 import Profil from "../features/profil";
@@ -193,6 +194,10 @@ export const router = createBrowserRouter([
       {
   path: "/pola-rpsda",
   element: <PolaRpsda />,
+},
+{
+  path: "/kesiapsiagaan-bencana",
+  element: <KesiapsiagaanBencana />,
 },
       {
         path: "/dipa",
