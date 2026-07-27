@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Phone, MapPin, ChevronRight, Home } from "lucide-react";
+import alurPoskoBanjir from '../../assets/infoPoskobanjir.jpeg';
 
 const SIDEBAR_ITEMS = [
   { id: 1, label: "Posko Banjir", icon: <Home size={16} />, alamat: "", phone: "" },
@@ -51,15 +52,15 @@ export default function PoskoBanjirPage() {
             <section 
               key={section.id}
               ref={(el) => (sectionRefs.current[section.id] = el)}
-              className="w-full h-full snap-start flex flex-col p-10 outline-none"
-              style={{ minHeight: '100vh' }}
+              className={`w-full snap-start flex flex-col p-10 outline-none bg-slate-50 overflow-y-auto relative ${section.id === 1 ? 'min-h-fit' : 'h-full'}`}
+              style={section.id === 1 ? {} : { minHeight: '100vh' }}
             >
               <div className="max-w-5xl w-full mx-auto flex-1 flex flex-col">
                 
                 {/* Header Section */}
                 <div className="mb-8">
                   <span className="text-mango font-bold uppercase tracking-[0.3em] text-[10px] block mb-2">
-                    {section.id === 1 ? "Dashboard Utama" : `Detail Satker 0${section.id - 1}`}
+                    {section.id === 1 ? "Dashboard Utama" : `Detail Posko 0${section.id - 1}`}
                   </span>
                   <h2 className="text-3xl font-black text-indigo leading-tight uppercase tracking-tighter">
                     {section.label}
@@ -70,30 +71,41 @@ export default function PoskoBanjirPage() {
                 {/* Content Logic */}
                 {section.id === 1 ? (
                   /* GRID 2 KOLOM UNTUK ID=1 */
-                  <div className="grid grid-cols-2 gap-6 mb-10">
-                    {SIDEBAR_ITEMS.filter(item => item.id !== 1).map((satker) => (
-                      <div 
-                        key={satker.id}
-                        onClick={() => scrollToSection(satker.id)}
-                        className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm hover:shadow-md hover:border-indigo-200 transition-all cursor-pointer group"
-                      >
-                        <div className="flex items-center gap-4 mb-4">
-                          <div className="p-3 bg-indigo-50 text-indigo rounded-2xl group-hover:bg-indigo group-hover:text-white transition-colors">
-                            {satker.icon}
+                  <>
+                    {/* Gambar Alur Penanganan - hanya di dashboard utama */}
+                    <div className="mb-10 flex justify-center">
+                      <img
+                        src={alurPoskoBanjir}
+                        alt="Alur Penanganan Posko Banjir"
+                        className="max-w-full max-h-[500px] w-auto rounded-2xl border border-slate-200 shadow-sm"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-6 mb-10">
+                      {SIDEBAR_ITEMS.filter(item => item.id !== 1).map((satker) => (
+                        <div 
+                          key={satker.id}
+                          onClick={() => scrollToSection(satker.id)}
+                          className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm hover:shadow-md hover:border-indigo-200 transition-all cursor-pointer group"
+                        >
+                          <div className="flex items-center gap-4 mb-4">
+                            <div className="p-3 bg-indigo-50 text-indigo rounded-2xl group-hover:bg-indigo group-hover:text-white transition-colors">
+                              {satker.icon}
+                            </div>
+                            <h4 className="font-bold text-slate-800 leading-tight group-hover:text-indigo">
+                              {satker.label}
+                            </h4>
                           </div>
-                          <h4 className="font-bold text-slate-800 leading-tight group-hover:text-indigo">
-                            {satker.label}
-                          </h4>
+                          <p className="text-xs text-slate-500 line-clamp-2 mb-4 italic">
+                            {satker.alamat || "Alamat belum tersedia."}
+                          </p>
+                          <div className="flex items-center text-[10px] font-bold text-indigo uppercase tracking-wider">
+                            Lihat Detail <ChevronRight size={12} className="ml-1" />
+                          </div>
                         </div>
-                        <p className="text-xs text-slate-500 line-clamp-2 mb-4 italic">
-                          {satker.alamat || "Alamat belum tersedia."}
-                        </p>
-                        <div className="flex items-center text-[10px] font-bold text-indigo uppercase tracking-wider">
-                          Lihat Detail <ChevronRight size={12} className="ml-1" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  </>
                 ) : (
                   /* DETAIL PAGE UNTUK ID 2-5 */
                   <div className="bg-white border border-slate-200 rounded-[2.5rem] p-12 shadow-sm flex-1 mb-10 relative overflow-hidden flex flex-col justify-center">
