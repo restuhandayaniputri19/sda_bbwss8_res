@@ -6,14 +6,6 @@ import logo from "../assets/logo.png";
 const LayoutAdmin = () => {
   const sidebar = [
     {
-      path: "/admin",
-      label: "Dashboard",
-    },
-    {
-      path: "/admin/berita",
-      label: "Berita",
-    },
-    {
       path: "/admin/majalah",
       label: "Majalah",
     },
@@ -62,10 +54,6 @@ const LayoutAdmin = () => {
       label: "Dipa",
     },
     {
-      path: "/admin/peraturan",
-      label: "Peraturan",
-    },
-    {
       path: "/admin/pengumuman",
       label: "Pengumuman",
     },
@@ -80,10 +68,6 @@ const LayoutAdmin = () => {
     {
       path: "/admin/rpsda",
       label: "RPSDA",
-    },
-    {
-      path: "/admin/prediksi-cuaca",
-      label: "Prediksi Cuaca",
     },
   ];
   return (

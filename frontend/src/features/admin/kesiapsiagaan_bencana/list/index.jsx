@@ -6,7 +6,7 @@ import CustomTable from "../../../../components/table";
 import { Hash } from "../../../../constants";
 import { Input } from "../../../../components/input";
 import KesiapsiagaanPdfViewer from "../../../kesiapsiagaan-bencana/KesiapsiagaanPdfViewer";
-import { deleteInfoGrafis } from "../../../../services/infografis";
+import { deleteKesiapsiagaanBencana } from "../../../../services/kesiapsiagaan_bencana";
 import { toast } from "sonner";
 import { useKesiapsiagaanBencanaData } from "../hooks/useKesiapsiagaanBencanaData";
 import { useNavigate } from "react-router-dom";
@@ -101,13 +101,13 @@ const ListPage = () => {
 
   const handleDelete = async (id) => {
     try {
-      await deleteInfoGrafis(id);
+      await deleteKesiapsiagaanBencana(id);
       setParams({
         ...params,
       });
-      toast.success("Infografis has been deleted");
+      toast.success("Kesiapsiagaan Bencana has been deleted");
     } catch (error) {
-      console.error("Error deleting infografis:", error);
+      console.error("Error deleting kesiapsiagaan bencana:", error);
     }
   };
 

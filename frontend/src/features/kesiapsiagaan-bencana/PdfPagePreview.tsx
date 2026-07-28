@@ -2,6 +2,7 @@ import { useState } from "react";
 
 const PdfPagePreview = ({ pdfUrl, title }) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const formattedPdfUrl = pdfUrl?.replace(/^http:\/\//i, 'https://');
 
   return (
     <div className="relative w-full h-[320px] bg-gray-100 rounded-t-lg overflow-hidden border-b">
@@ -13,7 +14,7 @@ const PdfPagePreview = ({ pdfUrl, title }) => {
       
       {/* Parameter #page=1&toolbar=0&navpanes=0 memaksa iframe menampilkan halaman 1 tanpa kontrol */}
       <iframe
-        src={`${pdfUrl}#page=1&toolbar=0&navpanes=0&scrollbar=0`}
+        src={`${formattedPdfUrl}#page=1&toolbar=0&navpanes=0&scrollbar=0`}
         title={`Preview ${title}`}
         className="w-full h-full pointer-events-none select-none"
         onLoad={() => setIsLoaded(true)}
