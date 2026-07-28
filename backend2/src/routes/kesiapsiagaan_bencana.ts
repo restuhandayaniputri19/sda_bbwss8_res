@@ -98,13 +98,12 @@ route.post('/upload', authentication, async (c) => {
   writeFileSync(filePath, Buffer.from(arrayBuffer));
 
   const urlObj = new URL(c.req.url);
-  const protocol = urlObj.protocol;
   const host = urlObj.host;
 
   const currentRoutePath = '/kesiapsiagaan-bencana/upload';
   const basePath = c.req.path.split(currentRoutePath)[0];
 
-  const generatedUrl = `${protocol}//${host}${basePath}/uploads/kesiapsiagaan-bencana/${fileName}`;
+  const generatedUrl = `https://${host}${basePath}/uploads/kesiapsiagaan-bencana/${fileName}`;
 
   const newItem = await db
     .insert(kesiapsiagaan_bencana)

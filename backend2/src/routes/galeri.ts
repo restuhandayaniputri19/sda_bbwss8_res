@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { db } from '../db'; // Asumsi instansi drizzle db Bapak
 import { galleries, Category } from '../db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, count } from 'drizzle-orm';
 import { authentication } from '../middleware/authentication';
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -34,16 +34,12 @@ galeri.get('/', async (c) => {
     // Untuk Meta, kita butuh jumlah total item
     // Catatan: Jika ingin sederhana, bisa gunakan .all().length, 
     // namun untuk efisiensi di database besar biasanya menggunakan count()
-    const allData = await db.select().from(galleries).where(whereCondition).all();
-    const count = allData.length;
-    const totalPages = Math.ceil(count / limit);
+    const [{ total }] = await db.select({ total: count() }).from(galleries).where(whereCondition);
+    const totalPages = Math.ceil(total / limit);
 
     // 3. Persiapkan Informasi Protokol (untuk URL Replace)
     const urlObj = new URL(c.req.url);
     const protocol = urlObj.protocol.replace(':', ''); // 'http' atau 'https'
-
-    console.log('--- Data Galeri yang Ditemukan ---');
-    console.log(`Menampilkan halaman ${page} dari ${totalPages}`);
 
     // 4. Return sesuai format yang diminta
     return c.json({
@@ -58,7 +54,7 @@ galeri.get('/', async (c) => {
             updatedAt: gallery.createdAt,
         })),
         meta: {
-            totalItems: count,
+            totalItems: total,
             totalPages: totalPages,
             currentPage: page,
             itemsPerPage: limit,
