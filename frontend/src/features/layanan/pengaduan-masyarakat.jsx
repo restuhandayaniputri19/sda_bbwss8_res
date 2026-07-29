@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { API2 } from "../../services";
 import VerificationForm from "../../components/VerificationForm";
-import heroImage from "../../assets/Pengaduan-masyarakat-gambar.jpeg";
+import heroImage from "../../assets/pengaduanmasyarakat.jpeg";
 
 const initialFormState = {
   nama: "",
