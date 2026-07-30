@@ -97,7 +97,7 @@ const KesiapsiagaanBencanaPage = () => {
   return (
     <div className="flex min-h-screen flex-col bg-gray-50/50">
       <img
-        className="w-full h-[50vh] md:h-[60vh] object-cover"
+        className="w-full h-auto"
         src={bendungPerjaya}
         alt="Kesiapsiagaan Bencana"
       />
