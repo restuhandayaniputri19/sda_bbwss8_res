@@ -159,10 +159,7 @@ const KesiapsiagaanBencanaPage = () => {
                   </div>
 
                   <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                    <span className="text-xs text-indigo font-medium">
-                      Klik untuk Pratinjau
-                    </span>
-                    
+                    <span></span>                    
                     <button
                       type="button"
                       onClick={(e) =>

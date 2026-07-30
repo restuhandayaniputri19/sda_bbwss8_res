@@ -93,6 +93,12 @@ const publikasiSections = [
         label: "Prakiraan Cuaca",
         desc: "BMKG Wilayah Sumatera Bagian Selatan",
       },
+            {
+        to: "/kesiapsiagaan-bencana",
+        label: "Kesiapsiagaan Bencana",
+        desc: "Siap Siaga Bencana BBWS Sumatera VIII",
+      },
+
     ],
   },
   {
