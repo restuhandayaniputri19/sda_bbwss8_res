@@ -4,24 +4,22 @@ import axios from "axios";
 export const getInfoGrafis = async (params) => {
   try {
     const response = await API2.get("/infografis", {
-      params: params,
+      params,
     });
-
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw new Error("An unexpected error occurred.");
-    }
+    console.error("Error fetching infografis:", error);
+    throw error;
   }
 };
 
 export const deleteInfoGrafis = async (id) => {
   try {
     const response = await API2.delete(`/infografis/${id}`);
-
     return response.data;
   } catch (error) {
     console.error("Error in delete infografis API call:", error);
+    throw error;
   }
 };
 
@@ -52,11 +50,9 @@ export const editInfoGrafis = async (id, formData) => {
 export const getInfoGrafisDetail = async (id) => {
   try {
     const response = await API2.get(`/infografis/${id}`);
-    console.log("Response from getInfoGrafisDetail:", response.data);
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw new Error("An unexpected error occurred.");
-    }
+    console.error("Error fetching infografis detail:", error);
+    throw error;
   }
 };
