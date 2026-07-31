@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import DropdownSelect from "../../components/select";
-import KesiapsiagaanPdfViewer from "./KesiapsiagaanPdfViewer";
+//import KesiapsiagaanPdfViewer from "./KesiapsiagaanPdfViewer";
 import PdfPagePreview from "./PdfPagePreview";
 import bendungPerjaya from "../../assets/11.png";
 import { getKesiapsiagaanBencana } from "../../services/kesiapsiagaan_bencana";
@@ -159,7 +159,7 @@ const KesiapsiagaanBencanaPage = () => {
                   </div>
 
                   <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                    <span></span>                    
+                    <span>Preview</span>                    
                     <button
                       type="button"
                       onClick={(e) =>
@@ -226,7 +226,7 @@ const KesiapsiagaanBencanaPage = () => {
 
             {/* Viewer Modal */}
             <div className="flex-1 overflow-auto p-4 bg-gray-100">
-              <KesiapsiagaanPdfViewer
+              <PdfPagePreview
                 pdfUrl={activeModalPdf.url}
                 judul={activeModalPdf.description || "Dokumen PDF"}
               />
