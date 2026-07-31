@@ -14,6 +14,19 @@ const KesiapsiagaanBencanaPage = () => {
   // State Modal Viewer
   const [activeModalPdf, setActiveModalPdf] = useState(null);
 
+  // Kunci scroll body saat modal aktif
+  useEffect(() => {
+    if (activeModalPdf) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [activeModalPdf]);
+
   // Ekstrak bulan-tahun unik dari releaseDate
   const getUniqueMonths = (items) => {
     const months = items
@@ -196,7 +209,7 @@ const KesiapsiagaanBencanaPage = () => {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header Modal */}
-            <div className="flex justify-between items-center px-6 py-4 border-b bg-gray-50">
+            <div className="flex justify-between items-center px-6 py-4 border-b bg-gray-50 flex-shrink-0">
               <h2 className="font-semibold text-gray-800 truncate pr-4">
                 {activeModalPdf.description || "Dokumen Kesiapsiagaan Bencana"}
               </h2>
@@ -224,11 +237,11 @@ const KesiapsiagaanBencanaPage = () => {
               </div>
             </div>
 
-            {/* Viewer Modal */}
-            <div className="flex-1 overflow-auto p-4 bg-gray-100">
+            {/* Viewer Modal dengan scroll mandiri */}
+            <div className="flex-1 overflow-y-auto p-4 bg-gray-100">
               <PdfPagePreview
                 pdfUrl={activeModalPdf.url}
-                judul={activeModalPdf.description || "Dokumen PDF"}
+                title={activeModalPdf.description || "Dokumen PDF"}
               />
             </div>
           </div>

@@ -62,7 +62,7 @@ const GaleriPage = () => {
 const filteredPhotos = data.filter((item) => {
   // 1. Logika Pemeriksaan Bulan
   const itemDate = new Date(item.createdAt);
-  const monthYear = itemDate.toLocaleString("default", {
+  const monthYear = itemDate.toLocaleString("id-ID", {
     month: "long",
     year: "numeric",
   });
@@ -110,7 +110,7 @@ const filteredPhotos = data.filter((item) => {
   <DropdownSelect
           className="w-[200px] p-2 border rounded-md mb-5"
           data={[
-            { value: "all", label: "All Months" },
+            { value: "all", label: "Semua Bulan" },
             ...photoMonths.map((month) => ({ value: month, label: month })),
           ]}
           defaultValue="all"
@@ -128,7 +128,8 @@ const filteredPhotos = data.filter((item) => {
                 src={item.url}
                 onImageClick={handleImageClick}
                 description={item.description}
-                date={new Date(item.createdAt).toLocaleDateString("default", {
+                category={item.category || ''}
+                date={new Date(item.createdAt).toLocaleDateString("id-ID", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
