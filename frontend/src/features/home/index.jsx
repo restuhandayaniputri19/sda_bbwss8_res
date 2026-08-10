@@ -158,10 +158,10 @@ useEffect(() => {
 
   // ── Data statis layanan terpadu (dari kode aslimu) ──
   const layananTerpaduData = [
-    { id: 1, img: "public/images/wrdc.png",           title: "WRDC",          url: "https://pdsda.sda.pu.go.id/" },
-    { id: 2, img: "public/images/visiting-point.png", title: "Visiting Point", url: "https://sda.pu.go.id/balai/bbwssumatera8/map/" },
-    { id: 3, img: "public/images/e-hidrologi.png",    title: "E-Hidrologi",   url: "https://bbwssumateraviii.co.id" },
-  ];
+  { id: 1, img: `${import.meta.env.BASE_URL}images/wrdc.png`, title: "WRDC", url: "https://pdsda.sda.pu.go.id/" },
+  { id: 2, img: `${import.meta.env.BASE_URL}images/visiting-point.png`, title: "Visiting Point", url: "https://sda.pu.go.id/balai/bbwssumatera8/map/" },
+  { id: 3, img: `${import.meta.env.BASE_URL}images/e-hidrologi.png`, title: "E-Hidrologi", url: "https://bbwssumateraviii.co.id" },
+];
 
   // ───────────────────────────────────────────────────────────────────────────
   return (
