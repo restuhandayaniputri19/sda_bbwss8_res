@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { db } from '../db'; // Asumsi instansi drizzle db Bapak
 import { galleries, Category } from '../db/schema';
-import { eq, count } from 'drizzle-orm';
+import { and, eq, count, gte, lt } from 'drizzle-orm';
 import { authentication } from '../middleware/authentication';
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -21,12 +21,21 @@ galeri.get('/', async (c) => {
     const offset = (page - 1) * limit;
 
     const categoryFilter = c.req.query('category');
+    const monthFilter = c.req.query('month');
+    const isValidMonth = monthFilter && /^\d{4}-(0[1-9]|1[0-2])$/.test(monthFilter);
+    const monthStart = isValidMonth ? new Date(`${monthFilter}-01T00:00:00.000Z`) : undefined;
+    const monthEnd = monthStart
+        ? new Date(Date.UTC(monthStart.getUTCFullYear(), monthStart.getUTCMonth() + 1, 1))
+        : undefined;
 
     // 2. Susun Kondisi Query secara fleksibel
     // Jika parameter 'category' dikirim oleh frontend, buat kondisi pencocokannya
-    const whereCondition = categoryFilter 
-        ? eq(galleries.category, categoryFilter as Category) 
-        : undefined;
+    const whereCondition = and(
+        categoryFilter ? eq(galleries.category, categoryFilter as Category) : undefined,
+        monthStart && monthEnd
+            ? and(gte(galleries.createdAt, monthStart), lt(galleries.createdAt, monthEnd))
+            : undefined
+    );
     
     // 2. Eksekusi Query (Ambil data dan Total untuk pagination)
     const galleryList = await db.select().from(galleries).where(whereCondition).limit(limit).offset(offset).all();

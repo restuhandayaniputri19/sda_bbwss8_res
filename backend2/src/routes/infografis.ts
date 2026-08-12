@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { db } from '../db';
 import { infografis, Category } from '../db/schema';
-import { eq } from 'drizzle-orm';
+import { and, eq, gte, lt } from 'drizzle-orm';
 import { authentication } from '../middleware/authentication';
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -20,10 +20,19 @@ route.get('/', async (c) => {
   const offset = (page - 1) * limit;
 
   const categoryFilter = c.req.query('category');
-
-  const whereCondition = categoryFilter
-    ? eq(infografis.category, categoryFilter as Category)
+  const monthFilter = c.req.query('month');
+  const isValidMonth = monthFilter && /^\d{4}-(0[1-9]|1[0-2])$/.test(monthFilter);
+  const monthStart = isValidMonth ? new Date(`${monthFilter}-01T00:00:00.000Z`) : undefined;
+  const monthEnd = monthStart
+    ? new Date(Date.UTC(monthStart.getUTCFullYear(), monthStart.getUTCMonth() + 1, 1))
     : undefined;
+
+  const whereCondition = and(
+    categoryFilter ? eq(infografis.category, categoryFilter as Category) : undefined,
+    monthStart && monthEnd
+      ? and(gte(infografis.createdAt, monthStart), lt(infografis.createdAt, monthEnd))
+      : undefined
+  );
 
   const list = await db
     .select()
