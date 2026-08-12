@@ -5,6 +5,7 @@ import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { bearerAuth } from 'hono/bearer-auth';
 import { serveStatic } from '@hono/node-server/serve-static'
+import cron from 'node-cron';
 
 // Import Routes
 import kesiapsiagaanBencanaRoute from './routes/kesiapsiagaan_bencana';

@@ -22,11 +22,13 @@
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.12",
     "linkedom": "^0.18.12",
+    "node-cron": "^4.6.0",
     "ulidx": "^2.4.1"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^25.5.2",
+    "@types/node-cron": "^3.0.11",
     "drizzle-kit": "^0.31.10",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",

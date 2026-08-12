@@ -1,4 +1,4 @@
-import { Hono } from 'hono';
+import { Hono, Context } from 'hono';
 import { parseHTML } from 'linkedom';
 import fs from 'fs/promises';
 
@@ -32,72 +32,93 @@ const cleanWeatherData = (rawText: string) => {
   return { kondisi: rawText, suhu: "-", kelembapan: "-" };
 };
 
+// 1. Tentukan struktur data item cuaca
+export interface CuacaItem {
+  kondisi: string;
+  ikon: string;
+}
+
+export interface PrakiraanItem {
+  lokasi: string;
+  url_detail: string;
+  hari_ini: CuacaItem;
+  besok: CuacaItem;
+}
+
+// 2. Tentukan struktur payload utama
+export interface PrakiraanPayload {
+  updated_at: string;
+  items: PrakiraanItem[];
+}
+
+// 3. Terapkan type pada fungsi
+const fetchPrakiraanBmkg = async (c: Context): Promise<PrakiraanPayload> => {
+  try {
+    const response = await fetch(BMKG_URL);
+    const html = await response.text();
+
+    const { document } = parseHTML(html);
+    const rows = document.querySelectorAll('table tr');
+
+    const items: PrakiraanItem[] = Array.from(rows).slice(1).map(row => {
+      const cols = row.querySelectorAll('td');
+      const baseUrl = 'https://www.bmkg.go.id';
+
+      const cityLink = cols[0]?.querySelector('a');
+      let relativeUrl = cityLink?.getAttribute('href') || '';
+
+      if (relativeUrl && !relativeUrl.startsWith('/')) {
+        relativeUrl = '/' + relativeUrl;
+      }
+      const fullUrl = relativeUrl
+        ? new URL(relativeUrl, baseUrl).href
+        : '-';
+
+      const getIcon = (col: Element | null): string => {
+        const svgElement = col?.querySelector('svg');
+        if (!svgElement) return '-';
+        return svgElement.toString();
+      };
+
+      return {
+        lokasi: cols[0]?.textContent?.trim() || 'Unknown',
+        url_detail: fullUrl,
+        hari_ini: {
+          kondisi: cleanWeatherData(cols[1]?.textContent || '-'),
+          ikon: getIcon(cols[1])
+        },
+        besok: {
+          kondisi: cleanWeatherData(cols[2]?.textContent || '-'),
+          ikon: getIcon(cols[2])
+        }
+      };
+    });
+
+    const payload: PrakiraanPayload = {
+      updated_at: new Date().toISOString(),
+      items
+    };
+
+    await fs.writeFile(`${DATA_FILE}.tmp`, JSON.stringify(payload, null, 2));
+    await fs.rename(`${DATA_FILE}.tmp`, DATA_FILE);
+
+    return payload; 
+  } catch (error) {
+    console.error('Scraping Error:', error);
+    throw error; // Karena throw, type return tidak perlu dicampur dengan tipe Error
+  }
+};
+
 prakiraan.get('/', async (c) => {
   const isFetch = c.req.query('fetch') === 'true';
   console.log(`Endpoint /api/prakiraan diakses. fetch=${isFetch}`);
   if (isFetch) {
-    try {
-      // 1. Ambil data dari BMKG
-      const response = await fetch(BMKG_URL);
-      const html = await response.text();
-
-      // 2. Parsing dengan Linkedom
-      const { document } = parseHTML(html);
-      const rows = document.querySelectorAll('table tr');
-
-      const items = Array.from(rows).slice(1).map(row => {
-        const cols = row.querySelectorAll('td');
-
-        const baseUrl = 'https://www.bmkg.go.id';
-
-        const cityLink = cols[0]?.querySelector('a');
-        let relativeUrl = cityLink?.getAttribute('href') || '';
-
-        if (relativeUrl && !relativeUrl.startsWith('/')) {
-          relativeUrl = '/' + relativeUrl;
-        }
-        const fullUrl = relativeUrl
-          ? new URL(relativeUrl, baseUrl).href
-          : '-';
-
-        const getIcon = (col: Element | null) => {
-          const svgElement = col?.querySelector('svg');
-          if (!svgElement) return '-';
-
-          // Mengambil string HTML dari elemen SVG tersebut
-          // .toString() atau .outerHTML di Linkedom akan mengembalikan string <svg>...</svg>
-          return svgElement.toString();
-        };
-
-        console.log('cols[2]:', cols[2]?.textContent);
-        return {
-          lokasi: cols[0]?.textContent?.trim() || 'Unknown',
-          url_detail: fullUrl,
-          hari_ini: {
-            kondisi: cleanWeatherData(cols[1]?.textContent || '-'),
-            ikon: getIcon(cols[1])
-          },
-          besok: {
-            kondisi: cleanWeatherData(cols[2]?.textContent || '-'),
-            ikon: getIcon(cols[2])
-          }
-        };
-      });
-
-      const payload = {
-        updated_at: new Date().toISOString(),
-        items
-      };
-
-      // 3. Simpan (Atomic Write untuk menghindari korupsi file)
-      // Kita tulis ke file temp dulu, baru di-rename (tipikal Unix/Ubuntu style)
-      await fs.writeFile(`${DATA_FILE}.tmp`, JSON.stringify(payload, null, 2));
-      await fs.rename(`${DATA_FILE}.tmp`, DATA_FILE);
-
-      return c.json({ success: true, message: 'Scrape Berhasil', data: payload });
-    } catch (error) {
-      console.error('Scraping Error:', error);
-      return c.json({ success: false, error: 'Gagal mengambil data terbaru' }, 500);
+try {
+      // Jalur paksa fetch baru: Jalankan scraping & kirim respons langsung dari hasil scrape
+      const payload = await fetchPrakiraanBmkg(c);
+      return c.json({ success: true, data: payload });
+    } catch (err) {
+      return c.json({ success: false, error: 'Gagal mengambil data terbaru dari BMKG' }, 500);
     }
   }
 

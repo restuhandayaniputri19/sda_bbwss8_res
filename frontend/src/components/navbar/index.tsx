@@ -350,15 +350,17 @@ const Navbar: React.FC<NavbarProps> = ({
           <span className="uppercase text-indigo">{logoText}</span>
 
           {/* Hamburger */}
-          <div className="flex items-center min-[1021px]:hidden">
-            <button
-              onClick={toggleMenu}
-              className="p-2 rounded-md text-gray-700 focus:outline-none"
-              aria-label="Toggle menu"
-            >
-              {menuOpen ? <XIcon /> : <MenuIcon />}
-            </button>
-          </div>
+          {links && (
+            <div className="flex items-center min-[1021px]:hidden">
+              <button
+                onClick={toggleMenu}
+                className="p-2 rounded-md text-gray-700 focus:outline-none"
+                aria-label="Toggle menu"
+              >
+                {menuOpen ? <XIcon /> : <MenuIcon />}
+              </button>
+            </div>
+          )}
 
           {/* Desktop Navigation */}
           {links && (
