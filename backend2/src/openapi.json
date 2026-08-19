@@ -1,0 +1,168 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "BBWSS8 API",
+    "version": "1.0.0",
+    "description": "OpenAPI specification for backend2. All paths are prefixed with /balai/bbwssumatera8/api2."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/balai/bbwssumatera8/api2",
+      "description": "Local development"
+    }
+  ],
+  "tags": [
+    { "name": "System" },
+    { "name": "Authentication" },
+    { "name": "Infografis" },
+    { "name": "Gallery" },
+    { "name": "Kesiapsiagaan Bencana" },
+    { "name": "Permintaan Data" },
+    { "name": "Pengaduan Masyarakat" },
+    { "name": "Prakiraan" },
+    { "name": "Berita" }
+  ],
+  "paths": {
+    "/": {
+      "get": { "tags": ["System"], "summary": "Health check", "responses": { "200": { "description": "API active", "content": { "text/plain": { "schema": { "type": "string", "example": "Hono Backend2 API is Active!" } } } } } }
+    },
+    "/debug-routes": {
+      "get": { "tags": ["System"], "summary": "List registered routes", "responses": { "200": { "description": "Registered routes", "content": { "application/json": { "schema": { "type": "object", "properties": { "status": { "type": "boolean" }, "total": { "type": "integer" }, "routes": { "type": "array", "items": { "type": "object", "properties": { "method": { "type": "string" }, "path": { "type": "string" } } } } } } } } } } }
+    },
+    "/send-wa": {
+      "post": { "tags": ["System"], "summary": "Send WhatsApp message", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WhatsAppMessage" } } } }, "responses": { "200": { "$ref": "#/components/responses/Success" }, "500": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/test-send-wa": {
+      "post": { "tags": ["System"], "summary": "Send test WhatsApp message", "responses": { "200": { "$ref": "#/components/responses/Success" }, "400": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/auth": {
+      "get": { "tags": ["Authentication"], "summary": "Authentication health check", "responses": { "200": { "description": "Auth active", "content": { "text/plain": { "schema": { "type": "string" } } } } } }
+    },
+    "/auth/register": {
+      "post": { "tags": ["Authentication"], "summary": "Register user", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RegisterRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/Success" }, "400": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/auth/login": {
+      "post": { "tags": ["Authentication"], "summary": "Login and obtain JWT", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LoginRequest" } } } }, "responses": { "200": { "description": "JWT token", "content": { "application/json": { "schema": { "type": "object", "required": ["token"], "properties": { "token": { "type": "string" } } } } } }, "401": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/auth/send-otp": {
+      "post": { "tags": ["Authentication"], "summary": "Send OTP to WhatsApp number", "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["phoneNumber"], "properties": { "phoneNumber": { "type": "string", "example": "628123456789" } } } } } }, "responses": { "200": { "$ref": "#/components/responses/Success" }, "500": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/auth/verify-otp": {
+      "post": { "tags": ["Authentication"], "summary": "Verify WhatsApp OTP", "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["phoneNumber", "otp"], "properties": { "phoneNumber": { "type": "string" }, "otp": { "type": "string", "example": "1234" } } } } } }, "responses": { "200": { "$ref": "#/components/responses/Success" }, "400": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/infografis": {
+      "get": { "$ref": "#/components/x-pathItems/listInfografis" }
+    },
+    "/infografis/upload": {
+      "post": { "$ref": "#/components/x-pathItems/uploadInfografis" }
+    },
+    "/infografis/{id}": {
+      "parameters": [{ "$ref": "#/components/parameters/Id" }],
+      "get": { "$ref": "#/components/x-pathItems/getInfografis" },
+      "put": { "$ref": "#/components/x-pathItems/updateInfografis" },
+      "delete": { "$ref": "#/components/x-pathItems/deleteInfografis" }
+    },
+    "/galeri": {
+      "get": { "$ref": "#/components/x-pathItems/listGallery" }
+    },
+    "/galeri/upload": {
+      "post": { "$ref": "#/components/x-pathItems/uploadGallery" }
+    },
+    "/galeri/{id}": {
+      "parameters": [{ "$ref": "#/components/parameters/Id" }],
+      "get": { "$ref": "#/components/x-pathItems/getGallery" },
+      "put": { "$ref": "#/components/x-pathItems/updateGallery" },
+      "delete": { "$ref": "#/components/x-pathItems/deleteGallery" }
+    },
+    "/kesiapsiagaan-bencana": {
+      "get": { "tags": ["Kesiapsiagaan Bencana"], "summary": "List disaster-preparedness documents", "parameters": [{ "$ref": "#/components/parameters/Page" }, { "$ref": "#/components/parameters/Limit" }, { "name": "releaseDate", "in": "query", "schema": { "type": "string", "format": "date" } }], "responses": { "200": { "$ref": "#/components/responses/PaginatedKesiapsiagaan" } } }
+    },
+    "/kesiapsiagaan-bencana/upload": {
+      "post": { "tags": ["Kesiapsiagaan Bencana"], "summary": "Upload disaster-preparedness document", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "multipart/form-data": { "schema": { "type": "object", "required": ["infografis"], "properties": { "infografis": { "type": "string", "format": "binary" }, "description": { "type": "string" }, "releaseDate": { "type": "string", "format": "date" } } } } } }, "responses": { "201": { "$ref": "#/components/responses/Kesiapsiagaan" }, "400": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/kesiapsiagaan-bencana/{id}": {
+      "parameters": [{ "$ref": "#/components/parameters/Id" }],
+      "get": { "tags": ["Kesiapsiagaan Bencana"], "summary": "Get disaster-preparedness document", "responses": { "200": { "$ref": "#/components/responses/Kesiapsiagaan" }, "404": { "$ref": "#/components/responses/Error" } } },
+      "put": { "tags": ["Kesiapsiagaan Bencana"], "summary": "Update disaster-preparedness document", "security": [{ "bearerAuth": [] }], "requestBody": { "content": { "multipart/form-data": { "schema": { "type": "object", "properties": { "url": { "type": "string", "format": "uri" }, "description": { "type": "string" }, "releaseDate": { "type": "string", "format": "date" } } } } } }, "responses": { "200": { "$ref": "#/components/responses/Kesiapsiagaan" } } },
+      "delete": { "tags": ["Kesiapsiagaan Bencana"], "summary": "Delete disaster-preparedness document", "security": [{ "bearerAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/Success" }, "404": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/pengaduan-masyarakat": {
+      "get": { "tags": ["Pengaduan Masyarakat"], "summary": "List public complaints", "parameters": [{ "$ref": "#/components/parameters/NoWa" }], "responses": { "200": { "$ref": "#/components/responses/PengaduanList" } } },
+      "post": { "tags": ["Pengaduan Masyarakat"], "summary": "Create public complaint", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PengaduanInput" } } } }, "responses": { "201": { "$ref": "#/components/responses/Pengaduan" }, "400": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/pengaduan-masyarakat/{id}": {
+      "parameters": [{ "$ref": "#/components/parameters/Id" }],
+      "get": { "tags": ["Pengaduan Masyarakat"], "summary": "Get public complaint", "responses": { "200": { "$ref": "#/components/responses/Pengaduan" }, "404": { "$ref": "#/components/responses/Error" } } },
+      "patch": { "tags": ["Pengaduan Masyarakat"], "summary": "Update complaint status", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StatusUpdate" } } } }, "responses": { "200": { "$ref": "#/components/responses/Pengaduan" }, "404": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/permintaan-data": {
+      "get": { "tags": ["Permintaan Data"], "summary": "List data requests", "parameters": [{ "$ref": "#/components/parameters/NoWa" }], "responses": { "200": { "$ref": "#/components/responses/PermintaanDataList" } } },
+      "post": { "tags": ["Permintaan Data"], "summary": "Create data request", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PermintaanDataInput" } } } }, "responses": { "201": { "$ref": "#/components/responses/PermintaanData" }, "400": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/permintaan-data/{id}": {
+      "parameters": [{ "$ref": "#/components/parameters/Id" }],
+      "get": { "tags": ["Permintaan Data"], "summary": "Get data request", "responses": { "200": { "$ref": "#/components/responses/PermintaanData" }, "404": { "$ref": "#/components/responses/Error" } } },
+      "patch": { "tags": ["Permintaan Data"], "summary": "Update data-request status", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StatusUpdate" } } } }, "responses": { "200": { "$ref": "#/components/responses/PermintaanData" }, "404": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/prakiraan": {
+      "get": { "tags": ["Prakiraan"], "summary": "Get saved or fresh BMKG weather forecast", "parameters": [{ "name": "fetch", "in": "query", "description": "Set true to scrape BMKG before responding.", "schema": { "type": "boolean", "default": false } }], "responses": { "200": { "description": "Weather forecast", "content": { "application/json": { "schema": { "type": "object", "properties": { "success": { "type": "boolean" }, "data": { "$ref": "#/components/schemas/PrakiraanPayload" } } } } } }, "404": { "$ref": "#/components/responses/Error" }, "500": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/berita": {
+      "get": { "tags": ["Berita"], "summary": "Get current news placeholder feed", "responses": { "200": { "$ref": "#/components/responses/Berita" } } }
+    }
+  },
+  "components": {
+    "securitySchemes": { "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" } },
+    "parameters": {
+      "Id": { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "minimum": 1 } },
+      "Page": { "name": "page", "in": "query", "schema": { "type": "integer", "minimum": 1, "default": 1 } },
+      "Limit": { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "default": 10 } },
+      "NoWa": { "name": "no_wa", "in": "query", "schema": { "type": "string" } }
+    },
+    "schemas": {
+      "Error": { "type": "object", "properties": { "message": { "type": "string" }, "error": { "type": "string" }, "success": { "type": "boolean", "example": false } } },
+      "Success": { "type": "object", "properties": { "success": { "type": "boolean", "example": true }, "message": { "type": "string" } } },
+      "RegisterRequest": { "type": "object", "required": ["username", "email", "password"], "properties": { "username": { "type": "string" }, "email": { "type": "string", "format": "email" }, "password": { "type": "string", "format": "password" } } },
+      "LoginRequest": { "type": "object", "required": ["username", "password"], "properties": { "username": { "type": "string" }, "password": { "type": "string", "format": "password" } } },
+      "WhatsAppMessage": { "type": "object", "required": ["to", "msg"], "properties": { "to": { "type": "string" }, "msg": { "type": "string" } } },
+      "Media": { "type": "object", "properties": { "id": { "type": "integer" }, "url": { "type": "string", "format": "uri" }, "description": { "type": "string", "nullable": true }, "category": { "type": "string", "enum": ["bendungan", "irigasi & rawa", "sungai", "danau", "embung", "air tanah & air baku"], "nullable": true }, "createdAt": { "type": "string", "format": "date-time" }, "updatedAt": { "type": "string", "format": "date-time" } } },
+      "MediaPage": { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/Media" } }, "meta": { "type": "object", "properties": { "totalItems": { "type": "integer" }, "totalPages": { "type": "integer" }, "currentPage": { "type": "integer" }, "itemsPerPage": { "type": "integer" } } } } },
+      "Kesiapsiagaan": { "type": "object", "properties": { "id": { "type": "integer" }, "url": { "type": "string", "format": "uri" }, "description": { "type": "string", "nullable": true }, "releaseDate": { "type": "string", "format": "date", "nullable": true }, "createdAt": { "type": "string", "format": "date-time" } } },
+      "StatusUpdate": { "type": "object", "properties": { "status": { "type": "string", "enum": ["pending", "diproses", "selesai", "ditolak"] }, "note": { "type": "string" } } },
+      "StatusLog": { "type": "object", "properties": { "status": { "type": "string" }, "timestamp": { "type": "string", "format": "date-time" }, "note": { "type": "string" } } },
+      "PengaduanInput": { "type": "object", "required": ["namaPelapor", "kategori", "lokasi", "deskripsi"], "properties": { "namaPelapor": { "type": "string" }, "noWa": { "type": "string" }, "telepon": { "type": "string" }, "email": { "type": "string", "format": "email" }, "kategori": { "type": "string", "enum": ["banjir", "infrastruktur", "perizinan", "lainnya"] }, "lokasi": { "type": "string" }, "deskripsi": { "type": "string" }, "fileLampiran": { "type": "string", "format": "uri", "nullable": true } } },
+      "Pengaduan": { "allOf": [{ "$ref": "#/components/schemas/PengaduanInput" }, { "type": "object", "properties": { "id": { "type": "integer" }, "status": { "type": "string" }, "statusLogs": { "type": "array", "items": { "$ref": "#/components/schemas/StatusLog" } }, "createdAt": { "type": "string", "format": "date-time" }, "updatedAt": { "type": "string", "format": "date-time" } } }] },
+      "PermintaanDataInput": { "type": "object", "required": ["namaLengkap", "jenisData", "periodeDari", "periodeSampai", "email", "tujuanPenggunaan"], "properties": { "namaLengkap": { "type": "string" }, "instansi": { "type": "string", "nullable": true }, "jenisData": { "type": "string" }, "periodeDari": { "type": "string", "format": "date" }, "periodeSampai": { "type": "string", "format": "date" }, "email": { "type": "string", "format": "email" }, "noWa": { "type": "string" }, "noTelepon": { "type": "string" }, "tujuanPenggunaan": { "type": "string" }, "fileSurat": { "type": "string", "format": "uri", "nullable": true } } },
+      "PermintaanData": { "allOf": [{ "$ref": "#/components/schemas/PermintaanDataInput" }, { "type": "object", "properties": { "id": { "type": "integer" }, "status": { "type": "string" }, "statusLogs": { "type": "array", "items": { "$ref": "#/components/schemas/StatusLog" } }, "createdAt": { "type": "string", "format": "date-time" }, "updatedAt": { "type": "string", "format": "date-time" } } }] },
+      "PrakiraanPayload": { "type": "object", "properties": { "updated_at": { "type": "string", "format": "date-time" }, "items": { "type": "array", "items": { "type": "object", "properties": { "lokasi": { "type": "string" }, "url_detail": { "type": "string", "format": "uri" }, "hari_ini": { "$ref": "#/components/schemas/Cuaca" }, "besok": { "$ref": "#/components/schemas/Cuaca" } } } } } },
+      "Cuaca": { "type": "object", "properties": { "kondisi": { "type": "object", "properties": { "kondisi": { "type": "string" }, "suhu": { "type": "string" }, "kelembapan": { "type": "string" } } }, "ikon": { "type": "string" } } }
+    },
+    "responses": {
+      "Error": { "description": "Error response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+      "Success": { "description": "Successful response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Success" } } } },
+      "Infografis": { "description": "Infografis", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Media" } } } },
+      "Gallery": { "description": "Gallery item", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Media" } } } },
+      "PaginatedInfografis": { "description": "Paginated infografis", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MediaPage" } } } },
+      "PaginatedGallery": { "description": "Paginated gallery", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MediaPage" } } } },
+      "Kesiapsiagaan": { "description": "Kesiapsiagaan bencana item", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Kesiapsiagaan" } } } },
+      "PaginatedKesiapsiagaan": { "description": "Paginated kesiapsiagaan bencana", "content": { "application/json": { "schema": { "type": "object", "properties": { "data": { "type": "array", "items": { "$ref": "#/components/schemas/Kesiapsiagaan" } }, "meta": { "type": "object" } } } } } },
+      "Pengaduan": { "description": "Public complaint", "content": { "application/json": { "schema": { "type": "object", "properties": { "success": { "type": "boolean" }, "data": { "$ref": "#/components/schemas/Pengaduan" } } } } } },
+      "PengaduanList": { "description": "Public complaint list", "content": { "application/json": { "schema": { "type": "object", "properties": { "success": { "type": "boolean" }, "data": { "type": "array", "items": { "$ref": "#/components/schemas/Pengaduan" } } } } } } },
+      "PermintaanData": { "description": "Data request", "content": { "application/json": { "schema": { "type": "object", "properties": { "success": { "type": "boolean" }, "data": { "$ref": "#/components/schemas/PermintaanData" } } } } } },
+      "PermintaanDataList": { "description": "Data request list", "content": { "application/json": { "schema": { "type": "object", "properties": { "success": { "type": "boolean" }, "data": { "type": "array", "items": { "$ref": "#/components/schemas/PermintaanData" } } } } } } },
+      "Berita": { "description": "News feed", "content": { "application/json": { "schema": { "type": "object", "properties": { "success": { "type": "boolean" }, "data": { "type": "object" } } } } } }
+    },
+    "x-pathItems": {
+      "listInfografis": { "tags": ["Infografis"], "summary": "List infografis", "parameters": [{ "$ref": "#/components/parameters/Page" }, { "$ref": "#/components/parameters/Limit" }, { "name": "category", "in": "query", "schema": { "type": "string" } }, { "name": "month", "in": "query", "description": "Creation month (YYYY-MM)", "schema": { "type": "string", "pattern": "^\\d{4}-(0[1-9]|1[0-2])$" } }], "responses": { "200": { "$ref": "#/components/responses/PaginatedInfografis" } } },
+      "uploadInfografis": { "tags": ["Infografis"], "summary": "Upload infografis image", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "multipart/form-data": { "schema": { "type": "object", "required": ["infografis"], "properties": { "infografis": { "type": "string", "format": "binary", "description": "Image is converted to WebP and resized to a 1080px maximum dimension." }, "description": { "type": "string" }, "category": { "type": "string" } } } } } }, "responses": { "201": { "$ref": "#/components/responses/Infografis" }, "400": { "$ref": "#/components/responses/Error" }, "401": { "$ref": "#/components/responses/Error" } } },
+      "getInfografis": { "tags": ["Infografis"], "summary": "Get infografis by ID", "responses": { "200": { "$ref": "#/components/responses/Infografis" }, "404": { "$ref": "#/components/responses/Error" } } },
+      "updateInfografis": { "tags": ["Infografis"], "summary": "Update infografis", "security": [{ "bearerAuth": [] }], "requestBody": { "content": { "multipart/form-data": { "schema": { "type": "object", "properties": { "infografis": { "type": "string", "format": "binary" }, "description": { "type": "string" }, "category": { "type": "string" } } } } } }, "responses": { "200": { "$ref": "#/components/responses/Infografis" }, "404": { "$ref": "#/components/responses/Error" } } },
+      "deleteInfografis": { "tags": ["Infografis"], "summary": "Delete infografis and its uploaded image", "security": [{ "bearerAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/Success" }, "404": { "$ref": "#/components/responses/Error" } } },
+      "listGallery": { "tags": ["Gallery"], "summary": "List gallery", "parameters": [{ "$ref": "#/components/parameters/Page" }, { "$ref": "#/components/parameters/Limit" }, { "name": "category", "in": "query", "schema": { "type": "string" } }, { "name": "month", "in": "query", "schema": { "type": "string", "pattern": "^\\d{4}-(0[1-9]|1[0-2])$" } }], "responses": { "200": { "$ref": "#/components/responses/PaginatedGallery" } } },
+      "uploadGallery": { "tags": ["Gallery"], "summary": "Upload gallery image", "security": [{ "bearerAuth": [] }], "requestBody": { "required": true, "content": { "multipart/form-data": { "schema": { "type": "object", "required": ["gallery"], "properties": { "gallery": { "type": "string", "format": "binary", "description": "Image is converted to WebP and resized to a 1080px maximum dimension." }, "description": { "type": "string" }, "category": { "type": "string" } } } } } }, "responses": { "201": { "$ref": "#/components/responses/Gallery" }, "400": { "$ref": "#/components/responses/Error" } } },
+      "getGallery": { "tags": ["Gallery"], "summary": "Get gallery item by ID", "responses": { "200": { "$ref": "#/components/responses/Gallery" }, "404": { "$ref": "#/components/responses/Error" } } },
+      "updateGallery": { "tags": ["Gallery"], "summary": "Update gallery item", "security": [{ "bearerAuth": [] }], "requestBody": { "content": { "multipart/form-data": { "schema": { "type": "object", "properties": { "gallery": { "type": "string", "format": "binary" }, "description": { "type": "string" }, "category": { "type": "string" } } } } } }, "responses": { "200": { "$ref": "#/components/responses/Gallery" }, "404": { "$ref": "#/components/responses/Error" } } },
+      "deleteGallery": { "tags": ["Gallery"], "summary": "Delete gallery item and its uploaded image", "security": [{ "bearerAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/Success" }, "404": { "$ref": "#/components/responses/Error" } } }
+    }
+  }
+}

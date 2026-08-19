@@ -3,13 +3,10 @@ import { db } from '../db';
 import { infografis, Category } from '../db/schema';
 import { and, eq, gte, lt } from 'drizzle-orm';
 import { authentication } from '../middleware/authentication';
-import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { deleteUploadedImage, saveOptimizedWebp } from '../lib/image';
 
 const uploadDir = join(process.cwd(), 'uploads', 'infografis');
-if (!existsSync(uploadDir)) {
-  mkdirSync(uploadDir, { recursive: true });
-}
 
 const route = new Hono();
 
@@ -94,17 +91,12 @@ route.post('/upload', authentication, async (c) => {
     return c.json({ message: 'File tidak ditemukan' }, 400);
   }
 
-  const d = new Date();
-  const tahun = d.getFullYear();
-  const bulan = String(d.getMonth() + 1).padStart(2, '0');
-  const tanggal = String(d.getDate()).padStart(2, '0');
-  const dateFormatted = `${tahun}${bulan}${tanggal}`;
-
-  const fileName = `${dateFormatted}-${file.name.replaceAll(' ', '-')}`;
-  const filePath = join(uploadDir, fileName);
-
-  const arrayBuffer = await file.arrayBuffer();
-  writeFileSync(filePath, Buffer.from(arrayBuffer));
+  let fileName: string;
+  try {
+    fileName = await saveOptimizedWebp(file, uploadDir);
+  } catch (error) {
+    return c.json({ message: error instanceof Error ? error.message : 'Gagal memproses gambar' }, 400);
+  }
 
   const urlObj = new URL(c.req.url);
   const protocol = urlObj.protocol;
@@ -133,11 +125,34 @@ route.put('/:id', authentication, async (c) => {
   if (isNaN(id)) return c.json({ message: 'ID tidak valid' }, 400);
 
   const body = await c.req.parseBody();
+  const file = body.infografis as File;
+
+  const [existingItem] = await db
+    .select()
+    .from(infografis)
+    .where(eq(infografis.id, id))
+    .all();
+
+  if (!existingItem) return c.json({ message: 'Data tidak ditemukan' }, 404);
+
+  let imageUrl = existingItem.url;
+  if (file instanceof File) {
+    let fileName: string;
+    try {
+      fileName = await saveOptimizedWebp(file, uploadDir);
+    } catch (error) {
+      return c.json({ message: error instanceof Error ? error.message : 'Gagal memproses gambar' }, 400);
+    }
+
+    const urlObj = new URL(c.req.url);
+    const basePath = c.req.path.split(`/infografis/${id}`)[0];
+    imageUrl = `${urlObj.protocol}//${urlObj.host}${basePath}/uploads/infografis/${fileName}`;
+  }
 
   const updatedItem = await db
     .update(infografis)
     .set({
-      url: body.url as string,
+      url: imageUrl,
       description: body.description as string,
       category: body.category as Category,
     })
@@ -159,6 +174,13 @@ route.delete('/:id', authentication, async (c) => {
     .returning();
 
   if (deleted.length === 0) return c.json({ message: 'Data tidak ditemukan' }, 404);
+
+  try {
+    await deleteUploadedImage(deleted[0].url, uploadDir);
+  } catch (error) {
+    console.error('Gagal menghapus file infografis:', error);
+  }
+
   return c.json({ message: 'Terhapus' });
 });
 

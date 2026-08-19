@@ -41,7 +41,6 @@ const ListPage = () => {
   const navigate = useNavigate();
   const { infografisData, setParams, params, paginationInfo } =
     useInfografisData();
-  const [keyword, setKeyword] = useState("");
   const [category, setCategory] = useState("all");
   const [month, setMonth] = useState("");
 
@@ -52,18 +51,22 @@ const ListPage = () => {
     });
   };
 
-  const handleChangeKeyword = (e) => {
-    setKeyword(e.target.value);
+  const handleCategoryChange = (value) => {
+    setCategory(value);
+    setParams((currentParams) => ({
+      ...currentParams,
+      category: value === "all" ? undefined : value,
+      page: 1,
+    }));
   };
 
-  const handleSearch = () => {
-    setParams({
-      ...params,
-      search: keyword,
-      category: category === "all" ? undefined : category,
-      month: month || undefined,
+  const handleMonthChange = (value) => {
+    setMonth(value);
+    setParams((currentParams) => ({
+      ...currentParams,
+      month: value || undefined,
       page: 1,
-    });
+    }));
   };
 
   const handleDelete = async (id) => {
@@ -86,20 +89,16 @@ const ListPage = () => {
     navigate(`?id=${id}${Hash.DETAIL}`);
   };
 
+  const selectedCategoryLabel =
+    categories.find((item) => item.value === category)?.label || category;
+
   return (
     <div className="flex flex-col">
       <h1 className="text-2xl font-bold">Data Infografis</h1>
       <br />
       <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-1 flex-wrap items-center gap-3">
-          <Input
-            variant={"default"}
-            fieldSize={"default"}
-            type={"text"}
-            placeholder={"Enter keyword"}
-            onChange={handleChangeKeyword}
-          />
-          <Select value={category} onValueChange={setCategory}>
+          <Select value={category} onValueChange={handleCategoryChange}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Semua kategori" />
             </SelectTrigger>
@@ -115,11 +114,10 @@ const ListPage = () => {
           <Input
             type="month"
             value={month}
-            onChange={(event) => setMonth(event.target.value)}
+            onChange={(event) => handleMonthChange(event.target.value)}
             className="w-44"
             aria-label="Filter bulan dibuat"
           />
-          <Button onClick={handleSearch}>Cari</Button>
         </div>
         <Button
           size="icon"
@@ -131,8 +129,13 @@ const ListPage = () => {
         </Button>
       </div>
 
-      <div className="mt-4 mb-10 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-        {infografisData.map((item) => (
+      {infografisData.length === 0 && category !== "all" ? (
+        <div className="mt-4 mb-10 rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center text-gray-600">
+          Tidak ditemukan Category: {selectedCategoryLabel}
+        </div>
+      ) : (
+        <div className="mt-4 mb-10 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {infografisData.map((item) => (
           <Card
             key={item.id}
             className="relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm"
@@ -193,8 +196,9 @@ const ListPage = () => {
               </div>
             </footer>
           </Card>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
       {paginationInfo.totalPages > 1 && (
         <CustomPagination
           currentPage={paginationInfo.currentPage}

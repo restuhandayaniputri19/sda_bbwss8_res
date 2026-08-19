@@ -17,10 +17,17 @@ import beritaRoute from './routes/berita';
 import galeriRoute from './routes/galeri';
 import auth from './routes/auth';
 
+import { swaggerUI } from '@hono/swagger-ui'
+import openApiSpec from './openapi.json' // Impor file JSON Anda
+
 const app = new Hono().basePath('/balai/bbwssumatera8/api2');
 
 // Middleware Global
 app.use('*', logger()) // 2. Pasang sebagai middleware global
+
+// Swagger UI
+app.get('/docs', swaggerUI({ url: '/balai/bbwssumatera8/api2/docs.json' }));
+app.get('/docs.json', (c) => c.json(openApiSpec));
 
 const API_TOKEN = process.env.API_TOKEN || 'slow-and-low-key';
 //app.use('/api2/*', bearerAuth({ token: API_TOKEN }));

@@ -3,13 +3,10 @@ import { db } from '../db'; // Asumsi instansi drizzle db Bapak
 import { galleries, Category } from '../db/schema';
 import { and, eq, count, gte, lt } from 'drizzle-orm';
 import { authentication } from '../middleware/authentication';
-import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { deleteUploadedImage, saveOptimizedWebp } from '../lib/image';
 
 const uploadDir = join(process.cwd(), 'uploads', 'galeri');
-if (!existsSync(uploadDir)) {
-    mkdirSync(uploadDir, { recursive: true });
-}
 
 const galeri = new Hono();
 
@@ -92,21 +89,12 @@ galeri.post('/upload', authentication, async (c) => {
         return c.json({ message: "File tidak ditemukan" }, 400);
     }
 
-    const d = new Date();
-    const tahun = d.getFullYear(); // 2026
-    const bulan = String(d.getMonth() + 1).padStart(2, '0'); // Bulan dimulai dari 0, maka ditambah 1
-    const tanggal = String(d.getDate()).padStart(2, '0');
-
-    // 2. Gabungkan menjadi format YYYYMMDD (misal: 20260613)
-    const dateFormatted = `${tahun}${bulan}${tanggal}`;
-
-    // 1. Buat Nama File Unik (Slow and Low: sederhana tapi unik)
-    const fileName = `${dateFormatted}-${file.name.replaceAll(' ', '-')}`;
-    const filePath = join(uploadDir, fileName);
-
-    // 2. Simpan File ke Disk
-    const arrayBuffer = await file.arrayBuffer();
-    writeFileSync(filePath, Buffer.from(arrayBuffer));
+    let fileName: string;
+    try {
+        fileName = await saveOptimizedWebp(file, uploadDir);
+    } catch (error) {
+        return c.json({ message: error instanceof Error ? error.message : 'Gagal memproses gambar' }, 400);
+    }
 
     // 1. Ambil informasi Host dan Protokol
     const urlObj = new URL(c.req.url);
@@ -131,11 +119,31 @@ galeri.post('/upload', authentication, async (c) => {
 // 4. Update Gallery (PUT)
 galeri.put('/:id', authentication, async (c) => {
     const id = Number(c.req.param('id'));
+    if (isNaN(id)) return c.json({ message: 'ID tidak valid' }, 400);
+
     const body = await c.req.parseBody();
+    const file = body.gallery as File;
+    const [existingItem] = await db.select().from(galleries).where(eq(galleries.id, id)).all();
+
+    if (!existingItem) return c.json({ message: 'Data tidak ditemukan' }, 404);
+
+    let imageUrl = existingItem.url;
+    if (file instanceof File) {
+        let fileName: string;
+        try {
+            fileName = await saveOptimizedWebp(file, uploadDir);
+        } catch (error) {
+            return c.json({ message: error instanceof Error ? error.message : 'Gagal memproses gambar' }, 400);
+        }
+
+        const urlObj = new URL(c.req.url);
+        const basePath = c.req.path.split(`/galeri/${id}`)[0];
+        imageUrl = `${urlObj.protocol}//${urlObj.host}${basePath}/uploads/galeri/${fileName}`;
+    }
 
     const updatedItem = await db.update(galleries)
         .set({
-            url: body.url as string,
+            url: imageUrl,
             description: body.description as string,
             category: body.category as Category,
         })
@@ -155,6 +163,13 @@ galeri.delete('/:id', authentication, async (c) => {
         .returning();
 
     if (deleted.length === 0) return c.json({ message: 'Data tidak ditemukan' }, 404);
+
+    try {
+        await deleteUploadedImage(deleted[0].url, uploadDir);
+    } catch (error) {
+        console.error('Gagal menghapus file galeri:', error);
+    }
+
     return c.json({ message: 'Terhapus' });
 });
 
