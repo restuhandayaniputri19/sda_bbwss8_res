@@ -1,5 +1,4 @@
 import { API2 } from "..";
-import axios from "axios";
 
 export const getInfoGrafis = async (params) => {
   try {

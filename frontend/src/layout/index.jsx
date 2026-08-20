@@ -29,7 +29,7 @@ const LayoutUser = () => {
 
   useEffect(() => {
   setPageLoading(true);
-  const timer = setTimeout(() => setPageLoading(false), 800);
+  const timer = setTimeout(() => setPageLoading(false), 100);
   return () => clearTimeout(timer);
 }, [pathname]);
 
@@ -129,14 +129,8 @@ if (pageLoading) return <LoadingScreen />;
             },
 
             {
-                path: "#",
+                path: "layanan-terpadu",
                 label: "Layanan Terpadu",
-                submenu: [
-                  { path: "/layanan/rekomtek", label: "Rekomtek" },
-                  { path: "/layanan/posko-banjir", label: "Posko Banjir" },
-                  { path: "/layanan/permintaan-data", label: "Permintaan Data" },
-                  { path: "/layanan/whistleblowing", label: "Whistleblowing" },
-              ],
             },
 
             {

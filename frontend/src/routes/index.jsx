@@ -63,6 +63,8 @@ import LayananTerpaduPage from "../features/layanan/layanan-terpadu";
 import WaGwAdmin from "../features/admin/whatsapp-gw";
 import InformasiSertaMertaPage from "../features/informasi-serta-merta";
 import InformasiSetiapSaatPage from "../features/informasi-tersedia";
+import AdminLogsPage from "../features/admin/AdminLogs";
+import AdminUsersPage from "../features/admin/ManageUserPage";
 
 
 export const router = createBrowserRouter([
@@ -256,6 +258,14 @@ export const router = createBrowserRouter([
           {
             index: true,
             element: <DashboardPage />,
+          },
+          {
+            path: "users",
+            element: <AdminUsersPage />,
+          },
+          {
+            path: "logs",
+            element: <AdminLogsPage />,
           },
           {
             path: "berita",

@@ -14,7 +14,6 @@ import { Link, useLocation } from "react-router-dom";
 import ProfilMenu from "./ProfilMenu";
 import PublikasiMenu from "./PublikasiMenu";
 import InformasiPublikMenu from "./InformasiPublikMenu";
-import LayananTerpaduMenu from "./LayananTerpaduMenu";
 
 interface NavbarProps {
   backgroundColor?: string;
@@ -32,7 +31,7 @@ interface NavbarProps {
   transparent?: boolean;
 }
 
-// ── Data submenu statis (diambil dari ProfilMenu, PublikasiMenu, InformasiPublikMenu) ──
+// ── Data submenu statis (Profil, Publikasi, Informasi Publik) ──
 
 const profilSections = [
   {
@@ -93,12 +92,11 @@ const publikasiSections = [
         label: "Prakiraan Cuaca",
         desc: "BMKG Wilayah Sumatera Bagian Selatan",
       },
-            {
+      {
         to: "/kesiapsiagaan-bencana",
         label: "Kesiapsiagaan Bencana",
         desc: "Siap Siaga Bencana BBWS Sumatera VIII",
       },
-
     ],
   },
   {
@@ -177,39 +175,6 @@ const informasiPublikSections = [
   },
 ];
 
-const layananTerpaduSections = [
-  {
-    title: "Layanan Publik",
-    items: [
-      {
-        to: "/layanan/rekomtek",
-        label: "Rekomtek",
-        desc: "Rekomendasi Teknis SDA",
-      },
-      {
-        to: "/layanan/posko-banjir",
-        label: "Posko Banjir",
-        desc: "Informasi & Laporan Banjir",
-      },
-      {
-        to: "/layanan/permintaan-data",
-        label: "Permintaan Data",
-        desc: "Ajukan Permintaan Data SDA",
-      },
-      {
-        to: "/layanan/pengaduan-masyarakat",
-        label: "Pengaduan Masyarakat",
-        desc: "Sampaikan Pengaduan Anda",
-      },
-      {
-        to: "/whistleblowing",
-        label: "Whistleblowing",
-        desc: "Laporkan Pelanggaran Secara Aman",
-      },
-    ],
-  },
-];
-
 // ── Komponen MobileSection: accordion per grup ──
 const MobileSection: React.FC<{
   title: string;
@@ -220,18 +185,21 @@ const MobileSection: React.FC<{
   isOpen: boolean;
   onToggle: () => void;
   onClose: () => void;
-  extraContent?: React.ReactNode;
 }> = ({ title, sections, isOpen, onToggle, onClose }) => {
   const location = useLocation();
   return (
     <div className="border-b border-gray-100">
       <button
-        className={`flex justify-between items-center w-full px-3 py-3 text-base font-bold ${isOpen ? "text-indigo" : "text-gray-700"}`}
+        className={`flex justify-between items-center w-full px-3 py-3 text-base font-bold ${
+          isOpen ? "text-indigo" : "text-gray-700"
+        }`}
         onClick={onToggle}
       >
         <span>{title}</span>
         <ChevronDown
-          className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={`w-4 h-4 transition-transform ${
+            isOpen ? "rotate-180" : ""
+          }`}
         />
       </button>
 
@@ -382,8 +350,23 @@ const Navbar: React.FC<NavbarProps> = ({
                   return <ProfilMenu key={index} label={link.label} />;
                 if (index === 2)
                   return <PublikasiMenu key={index} label={link.label} />;
+
+                // Index 3: Layanan Terpadu (Direct Link)
                 if (index === 3)
-                  return <LayananTerpaduMenu key={index} label={link.label} />;
+                  return (
+                    <Link
+                      key={index}
+                      to={link.path}
+                      className={`font-bold flex items-center self-center text-sm p-3 hover:text-indigo hover:bg-slate-50 rounded-t-lg transition-all ${
+                        location.pathname === link.path
+                          ? "text-indigo"
+                          : "text-black"
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+
                 if (index === 4)
                   return <InformasiPublikMenu key={index} label={link.label} />;
 
@@ -543,36 +526,21 @@ const Navbar: React.FC<NavbarProps> = ({
                 );
               }
 
-              // Layanan Terpadu (index 3)
+              // Layanan Terpadu (index 3 - Direct Link Mobile)
               if (index === 3) {
                 return (
                   <div key={index} className="border-b border-gray-100">
-                    <button
-                      className={`flex justify-between items-center w-full px-3 py-3 text-base font-bold ${activeSubmenu === "layanan" ? "text-indigo" : "text-gray-700"}`}
-                      onClick={() => toggleSubmenu("layanan")}
+                    <Link
+                      to={link.path}
+                      onClick={closeMenu}
+                      className={`block px-3 py-3 text-base font-bold ${
+                        location.pathname === link.path
+                          ? "text-indigo"
+                          : "text-gray-700 hover:text-indigo"
+                      }`}
                     >
-                      <span>{link.label}</span>
-                      <ChevronDown
-                        className={`w-4 h-4 transition-transform ${activeSubmenu === "layanan" ? "rotate-180" : ""}`}
-                      />
-                    </button>
-
-                    {activeSubmenu === "layanan" && (
-                      <div className="mx-3 mb-3">
-                        <Link
-                          to="/layanan-terpadu"
-                          onClick={closeMenu}
-                          className="block bg-indigo rounded-xl px-4 py-4 hover:brightness-110 transition-all"
-                        >
-                          <p className="text-white text-xs font-bold uppercase tracking-widest">
-                            Layanan Terpadu
-                          </p>
-                          <p className="text-white/70 text-[11px] mt-0.5">
-                            Pelayanan publik BBWS Sumatera VIII
-                          </p>
-                        </Link>
-                      </div>
-                    )}
+                      {link.label}
+                    </Link>
                   </div>
                 );
               }
@@ -597,12 +565,18 @@ const Navbar: React.FC<NavbarProps> = ({
                   {link.submenu ? (
                     <>
                       <button
-                        className={`flex justify-between items-center w-full px-3 py-3 text-base font-bold ${activeSubmenu === String(index) ? "text-indigo" : "text-gray-700"}`}
+                        className={`flex justify-between items-center w-full px-3 py-3 text-base font-bold ${
+                          activeSubmenu === String(index)
+                            ? "text-indigo"
+                            : "text-gray-700"
+                        }`}
                         onClick={() => toggleSubmenu(String(index))}
                       >
                         <span>{link.label}</span>
                         <ChevronDown
-                          className={`w-4 h-4 transition-transform ${activeSubmenu === String(index) ? "rotate-180" : ""}`}
+                          className={`w-4 h-4 transition-transform ${
+                            activeSubmenu === String(index) ? "rotate-180" : ""
+                          }`}
                         />
                       </button>
                       {activeSubmenu === String(index) && (
@@ -612,7 +586,11 @@ const Navbar: React.FC<NavbarProps> = ({
                               key={si}
                               to={sub.path}
                               onClick={closeMenu}
-                              className={`block px-4 py-2 text-sm font-medium hover:text-indigo ${location.pathname === sub.path ? "text-indigo font-bold" : "text-gray-600"}`}
+                              className={`block px-4 py-2 text-sm font-medium hover:text-indigo ${
+                                location.pathname === sub.path
+                                  ? "text-indigo font-bold"
+                                  : "text-gray-600"
+                              }`}
                             >
                               {sub.label}
                             </Link>
