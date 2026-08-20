@@ -41,6 +41,39 @@ export const users = sqliteTable("users", {
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 
+// Tabel untuk mencatat riwayat aktivitas Admin (Audit Log)
+export const adminLogs = sqliteTable("admin_logs", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+
+  // Siapa yang melakukan aksi (opsional jika ada aksi otomatis sistem)
+  userId: integer("user_id").references(() => users.id, { onDelete: "set null" }),
+  username: text("username"), // Disimpan redundan agar log tetap terbaca jika user dihapus
+
+  // Jenis aksi (misal: "CREATE", "UPDATE", "DELETE", "LOGIN", "APPROVE")
+  action: text("action").notNull(),
+
+  // Nama tabel/entitas yang dimodifikasi (misal: "pengaduan_masyarakat", "infografis")
+  targetEntity: text("target_entity"),
+
+  // ID dari data yang dimodifikasi (disimpan sebagai string untuk fleksibilitas)
+  targetId: text("target_id"),
+
+  // Catatan detail atau perubahan data (disimpan sebagai JSON)
+  details: text("details", { mode: "json" })
+    .$type<Record<string, any>>()
+    .default(sql`'{}'`),
+
+  // Alamat IP admin saat melakukan aksi
+  ipAddress: text("ip_address"),
+
+  // Catatan waktu eksekusi
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date()),
+});
+
+// Type definitions untuk kemudahan coding di Hono
+export type AdminLog = typeof adminLogs.$inferSelect;
+export type NewAdminLog = typeof adminLogs.$inferInsert;
 
 export const kesiapsiagaan_bencana = sqliteTable("kesiapsiagaan_bencana", {
   // Primary Key

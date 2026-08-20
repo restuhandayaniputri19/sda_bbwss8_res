@@ -5,12 +5,19 @@ import { and, eq, gte, lt } from 'drizzle-orm';
 import { authentication } from '../middleware/authentication';
 import { join } from 'node:path';
 import { deleteUploadedImage, saveOptimizedWebp } from '../lib/image';
+import { createAdminLog } from '../utils/logger';
 
 const uploadDir = join(process.cwd(), 'uploads', 'infografis');
 
 const route = new Hono();
 
-// 1. Ambil Semua Data Infografis (dengan Pagination & Filter Kategori)
+// Helper ekstrak IP Address
+const getIp = (c: any) =>
+  c.req.header('x-forwarded-for')?.split(',')[0].trim() ||
+  c.req.header('x-real-ip') ||
+  '127.0.0.1';
+
+// 1. Ambil Semua Data Infografis
 route.get('/', async (c) => {
   const page = Number(c.req.query('page')) || 1;
   const limit = Number(c.req.query('limit')) || 10;
@@ -116,6 +123,21 @@ route.post('/upload', authentication, async (c) => {
     })
     .returning();
 
+  const user = c.get('user');
+
+  await createAdminLog({
+    userId: user?.id,
+    username: user?.username,
+    action: 'CREATE_INFOGRAFIS',
+    targetEntity: 'infografis',
+    targetId: String(newItem[0].id),
+    details: {
+      category: newItem[0].category,
+      description: newItem[0].description,
+    },
+    ipAddress: getIp(c),
+  });
+
   return c.json(newItem[0], 201);
 });
 
@@ -160,6 +182,30 @@ route.put('/:id', authentication, async (c) => {
     .returning();
 
   if (updatedItem.length === 0) return c.json({ message: 'Gagal update' }, 404);
+
+  const user = c.get('user');
+
+  await createAdminLog({
+    userId: user?.id,
+    username: user?.username,
+    action: 'UPDATE_INFOGRAFIS',
+    targetEntity: 'infografis',
+    targetId: String(updatedItem[0].id),
+    details: {
+      old: {
+        description: existingItem.description,
+        category: existingItem.category,
+        url: existingItem.url,
+      },
+      new: {
+        description: updatedItem[0].description,
+        category: updatedItem[0].category,
+        url: updatedItem[0].url,
+      },
+    },
+    ipAddress: getIp(c),
+  });
+
   return c.json(updatedItem[0]);
 });
 
@@ -180,6 +226,21 @@ route.delete('/:id', authentication, async (c) => {
   } catch (error) {
     console.error('Gagal menghapus file infografis:', error);
   }
+
+  const user = c.get('user');
+
+  await createAdminLog({
+    userId: user?.id,
+    username: user?.username,
+    action: 'DELETE_INFOGRAFIS',
+    targetEntity: 'infografis',
+    targetId: String(deleted[0].id),
+    details: {
+      category: deleted[0].category,
+      description: deleted[0].description,
+    },
+    ipAddress: getIp(c),
+  });
 
   return c.json({ message: 'Terhapus' });
 });

@@ -19,6 +19,8 @@ import auth from './routes/auth';
 
 import { swaggerUI } from '@hono/swagger-ui'
 import openApiSpec from './openapi.json' // Impor file JSON Anda
+import adminLogsRoute from './routes/admin_logs';
+import manageUsers from './routes/users';
 
 const app = new Hono().basePath('/balai/bbwssumatera8/api2');
 
@@ -170,6 +172,8 @@ app.route('/berita', beritaRoute);
 app.route('/auth', auth);
 app.route('/permintaan-data', permintaanDataRoute);
 app.route('/galeri', galeriRoute);
+app.route('/admin-logs', adminLogsRoute);
+app.route('/users', manageUsers);
 
 // app.route('/banner', bannerRoute);
 // app.route('/galeri', galeriRoute);

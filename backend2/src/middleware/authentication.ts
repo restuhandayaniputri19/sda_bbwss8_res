@@ -35,7 +35,8 @@ export const authentication = async (c: Context, next: Next) => {
                         .limit(1);
 
                     if (user) {
-                        c.set('user', user);
+                        const { password, ...userWithoutPassword } = user;
+                        c.set('user', userWithoutPassword);
                         await next();
                     } else {
                         return c.json({ status: false, message: 'User not found' }, 401);

@@ -1,10 +1,11 @@
 import { Hono } from 'hono';
 import { db } from '../db';
-import { kesiapsiagaan_bencana, Category, infografis } from '../db/schema';
+import { kesiapsiagaan_bencana } from '../db/schema';
 import { eq } from 'drizzle-orm';
 import { authentication } from '../middleware/authentication';
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { createAdminLog } from '../utils/logger';
 
 const uploadDir = join(process.cwd(), 'uploads', 'kesiapsiagaan-bencana');
 if (!existsSync(uploadDir)) {
@@ -13,7 +14,13 @@ if (!existsSync(uploadDir)) {
 
 const route = new Hono();
 
-// 1. Ambil Semua Data Kesiapsiagaan Bencana (dengan Pagination & Filter Tanggal Rilis)
+// Helper untuk mengambil IP Address
+const getIp = (c: any) =>
+  c.req.header('x-forwarded-for')?.split(',')[0].trim() ||
+  c.req.header('x-real-ip') ||
+  '127.0.0.1';
+
+// 1. Ambil Semua Data Kesiapsiagaan Bencana
 route.get('/', async (c) => {
   const page = Number(c.req.query('page')) || 1;
   const limit = Number(c.req.query('limit')) || 10;
@@ -114,6 +121,21 @@ route.post('/upload', authentication, async (c) => {
     })
     .returning();
 
+  const user = c.get('user');
+
+  await createAdminLog({
+    userId: user?.id,
+    username: user?.username,
+    action: 'CREATE_KESIAPSIAGAAN_BENCANA',
+    targetEntity: 'kesiapsiagaan_bencana',
+    targetId: String(newItem[0].id),
+    details: {
+      description: newItem[0].description,
+      releaseDate: newItem[0].releaseDate,
+    },
+    ipAddress: getIp(c),
+  });
+
   return c.json(newItem[0], 201);
 });
 
@@ -122,12 +144,20 @@ route.put('/:id', authentication, async (c) => {
   const id = Number(c.req.param('id'));
   if (isNaN(id)) return c.json({ message: 'ID tidak valid' }, 400);
 
+  const [existingItem] = await db
+    .select()
+    .from(kesiapsiagaan_bencana)
+    .where(eq(kesiapsiagaan_bencana.id, id))
+    .all();
+
+  if (!existingItem) return c.json({ message: 'Data tidak ditemukan' }, 404);
+
   const body = await c.req.parseBody();
 
   const updatedItem = await db
     .update(kesiapsiagaan_bencana)
     .set({
-      url: body.url as string,
+      url: (body.url as string) || existingItem.url,
       description: body.description as string,
       releaseDate: body.releaseDate as string,
     })
@@ -135,6 +165,30 @@ route.put('/:id', authentication, async (c) => {
     .returning();
 
   if (updatedItem.length === 0) return c.json({ message: 'Gagal update' }, 404);
+
+  const user = c.get('user');
+
+  await createAdminLog({
+    userId: user?.id,
+    username: user?.username,
+    action: 'UPDATE_KESIAPSIAGAAN_BENCANA',
+    targetEntity: 'kesiapsiagaan_bencana',
+    targetId: String(updatedItem[0].id),
+    details: {
+      old: {
+        description: existingItem.description,
+        releaseDate: existingItem.releaseDate,
+        url: existingItem.url,
+      },
+      new: {
+        description: updatedItem[0].description,
+        releaseDate: updatedItem[0].releaseDate,
+        url: updatedItem[0].url,
+      },
+    },
+    ipAddress: getIp(c),
+  });
+
   return c.json(updatedItem[0]);
 });
 
@@ -149,6 +203,22 @@ route.delete('/:id', authentication, async (c) => {
     .returning();
 
   if (deleted.length === 0) return c.json({ message: 'Data tidak ditemukan' }, 404);
+
+  const user = c.get('user');
+
+  await createAdminLog({
+    userId: user?.id,
+    username: user?.username,
+    action: 'DELETE_KESIAPSIAGAAN_BENCANA',
+    targetEntity: 'kesiapsiagaan_bencana',
+    targetId: String(deleted[0].id),
+    details: {
+      description: deleted[0].description,
+      releaseDate: deleted[0].releaseDate,
+    },
+    ipAddress: getIp(c),
+  });
+
   return c.json({ message: 'Terhapus' });
 });
 

@@ -1,18 +1,24 @@
 import { Hono } from 'hono';
-import { db } from '../db'; // Asumsi instansi drizzle db Bapak
+import { db } from '../db';
 import { galleries, Category } from '../db/schema';
 import { and, eq, count, gte, lt } from 'drizzle-orm';
 import { authentication } from '../middleware/authentication';
 import { join } from 'node:path';
 import { deleteUploadedImage, saveOptimizedWebp } from '../lib/image';
+import { createAdminLog } from '../utils/logger';
 
 const uploadDir = join(process.cwd(), 'uploads', 'galeri');
 
 const galeri = new Hono();
 
+// Helper untuk mengambil IP Address
+const getIp = (c: any) =>
+    c.req.header('x-forwarded-for')?.split(',')[0].trim() ||
+    c.req.header('x-real-ip') ||
+    '127.0.0.1';
+
 // 1. Ambil Semua Data Galeri
 galeri.get('/', async (c) => {
-    // 1. Ambil Parameter (untuk Meta)
     const page = Number(c.req.query('page')) || 1;
     const limit = Number(c.req.query('limit')) || 10;
     const offset = (page - 1) * limit;
@@ -25,38 +31,27 @@ galeri.get('/', async (c) => {
         ? new Date(Date.UTC(monthStart.getUTCFullYear(), monthStart.getUTCMonth() + 1, 1))
         : undefined;
 
-    // 2. Susun Kondisi Query secara fleksibel
-    // Jika parameter 'category' dikirim oleh frontend, buat kondisi pencocokannya
     const whereCondition = and(
         categoryFilter ? eq(galleries.category, categoryFilter as Category) : undefined,
         monthStart && monthEnd
             ? and(gte(galleries.createdAt, monthStart), lt(galleries.createdAt, monthEnd))
             : undefined
     );
-    
-    // 2. Eksekusi Query (Ambil data dan Total untuk pagination)
-    const galleryList = await db.select().from(galleries).where(whereCondition).limit(limit).offset(offset).all();
 
-    // Untuk Meta, kita butuh jumlah total item
-    // Catatan: Jika ingin sederhana, bisa gunakan .all().length, 
-    // namun untuk efisiensi di database besar biasanya menggunakan count()
+    const galleryList = await db.select().from(galleries).where(whereCondition).limit(limit).offset(offset).all();
     const [{ total }] = await db.select({ total: count() }).from(galleries).where(whereCondition);
     const totalPages = Math.ceil(total / limit);
 
-    // 3. Persiapkan Informasi Protokol (untuk URL Replace)
     const urlObj = new URL(c.req.url);
-    const protocol = urlObj.protocol.replace(':', ''); // 'http' atau 'https'
+    const protocol = urlObj.protocol.replace(':', '');
 
-    // 4. Return sesuai format yang diminta
     return c.json({
         data: galleryList.map((gallery) => ({
             id: gallery.id,
-            // Mengganti protokol secara dinamis
             url: gallery.url.replace(/^https?:\/\//, `${protocol}://`),
             description: gallery.description,
             category: gallery.category,
             createdAt: gallery.createdAt,
-            // Jika di schema tidak ada updatedAt, baris ini bisa dihapus atau disesuaikan
             updatedAt: gallery.createdAt,
         })),
         meta: {
@@ -79,10 +74,7 @@ galeri.get('/:id', async (c) => {
 
 // 3. Create Gallery (POST)
 galeri.post('/upload', authentication, async (c) => {
-    // Catatan: uploadMiddleware logika fisik file bisa ditaruh di sini 
-    // atau menggunakan c.req.parseBody() untuk multipart
     const body = await c.req.parseBody();
-
     const file = body.gallery as File;
 
     if (!file || !(file instanceof File)) {
@@ -96,22 +88,34 @@ galeri.post('/upload', authentication, async (c) => {
         return c.json({ message: error instanceof Error ? error.message : 'Gagal memproses gambar' }, 400);
     }
 
-    // 1. Ambil informasi Host dan Protokol
     const urlObj = new URL(c.req.url);
-    const protocol = urlObj.protocol; // http: atau https:
-    const host = urlObj.host;         // localhost:3000 atau domain.com
+    const protocol = urlObj.protocol;
+    const host = urlObj.host;
 
     const currentRoutePath = '/galeri/upload';
-    const basePath = c.req.path.split(currentRoutePath)[0]; // Hasil: '/balai/bbwssumatera8/api2'
+    const basePath = c.req.path.split(currentRoutePath)[0];
 
-    // Susun URL penuh dengan menyisipkan basePath sebelum '/uploads'
     const generatedUrl = `${protocol}//${host}${basePath}/uploads/galeri/${fileName}`;
 
     const newItem = await db.insert(galleries).values({
         url: generatedUrl,
         description: body.description as string,
-        category: body.category as Category, // Menggunakan kategori yang kita buat tadi
+        category: body.category as Category,
     }).returning();
+
+    // Ambil user dari konteks autentikasi
+    const user = c.get('user');
+
+    // Catat Admin Log
+    await createAdminLog({
+        userId: user?.id,
+        username: user?.username,
+        action: 'CREATE_GALLERY',
+        targetEntity: 'galleries',
+        targetId: String(newItem[0].id),
+        details: { category: newItem[0].category, description: newItem[0].description },
+        ipAddress: getIp(c)
+    });
 
     return c.json(newItem[0], 201);
 });
@@ -151,6 +155,24 @@ galeri.put('/:id', authentication, async (c) => {
         .returning();
 
     if (updatedItem.length === 0) return c.json({ message: 'Gagal update' }, 404);
+
+    // Ambil user dari konteks autentikasi
+    const user = c.get('user');
+
+    // Catat Admin Log
+    await createAdminLog({
+        userId: user?.id,
+        username: user?.username,
+        action: 'UPDATE_GALLERY',
+        targetEntity: 'galleries',
+        targetId: String(updatedItem[0].id),
+        details: {
+            old: { description: existingItem.description, category: existingItem.category },
+            new: { description: updatedItem[0].description, category: updatedItem[0].category }
+        },
+        ipAddress: getIp(c)
+    });
+
     return c.json(updatedItem[0]);
 });
 
@@ -169,6 +191,20 @@ galeri.delete('/:id', authentication, async (c) => {
     } catch (error) {
         console.error('Gagal menghapus file galeri:', error);
     }
+
+    // Ambil user dari konteks autentikasi
+    const user = c.get('user');
+
+    // Catat Admin Log
+    await createAdminLog({
+        userId: user?.id,
+        username: user?.username,
+        action: 'DELETE_GALLERY',
+        targetEntity: 'galleries',
+        targetId: String(deleted[0].id),
+        details: { category: deleted[0].category, description: deleted[0].description },
+        ipAddress: getIp(c)
+    });
 
     return c.json({ message: 'Terhapus' });
 });
