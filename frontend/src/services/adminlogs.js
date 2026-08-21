@@ -1,4 +1,4 @@
-import { API2 } from "./";
+import { API2 } from ".";
 
 export const getAdminLogs = async (page = 1, limit = 10, userId = "") => {
   const response = await API2.get(
