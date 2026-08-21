@@ -6,18 +6,6 @@ import logo from "../assets/logo.png";
 const LayoutAdmin = () => {
   const sidebar = [
     {
-      path: "/admin/majalah",
-      label: "Majalah",
-    },
-    {
-      path: "/admin/youtube",
-      label: "Youtube",
-    },
-    {
-      path: "/admin/banner",
-      label: "Banner",
-    },
-    {
       path: "/admin/infografis",
       label: "Infografis",
     },
@@ -38,16 +26,8 @@ const LayoutAdmin = () => {
       label: "Layanan Terpadu",
     },
     {
-      path: "/admin/struktur-organisasi",
-      label: "Struktur Organisasi",
-    },
-    {
       path: "/admin/pola-rencana",
       label: "Pola dan Rencana",
-    },
-    {
-      path: "/admin/tugas-fungsi",
-      label: "Tugas dan Fungsi",
     },
     {
       path: "/admin/dipa",
@@ -56,6 +36,14 @@ const LayoutAdmin = () => {
     {
       path: "/admin/pengumuman",
       label: "Pengumuman",
+    },
+    {
+      path: "/admin/youtube",
+      label: "Youtube",
+    },
+    {
+      path: "/admin/banner",
+      label: "Banner",
     },
     {
       path: "/admin/informasi",
@@ -68,6 +56,10 @@ const LayoutAdmin = () => {
     {
       path: "/admin/rpsda",
       label: "RPSDA",
+    },
+    {
+      path: "/admin/majalah",
+      label: "Majalah",
     },
   ];
   return (

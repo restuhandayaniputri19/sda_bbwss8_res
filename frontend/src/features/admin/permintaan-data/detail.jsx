@@ -59,7 +59,7 @@ const AdminDetailPermintaanData = () => {
   if (!permohonan) return <div className="p-8 text-center">Data tidak ditemukan</div>;
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">
           Detail Permintaan <span className="text-blue-600">#{id}</span>{permohonan.jenisData && ` - ${permohonan.jenisData}`}

@@ -41,8 +41,8 @@ const AdminPermintaan = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold">Panel Admin Permintaan Data</h1>
 
         {/* Filter Tabs */}

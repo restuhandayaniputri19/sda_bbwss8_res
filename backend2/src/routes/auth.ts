@@ -4,6 +4,7 @@ import { PubAuth, users } from "../db/schema";
 import { eq, and, gt, or } from "drizzle-orm";
 import { sign } from 'hono/jwt';
 import { hash, compare } from "bcrypt-ts";
+import { authentication } from "../middleware/authentication";
 
 const auth = new Hono();
 
@@ -85,6 +86,22 @@ auth.post('/login', async (c) => {
   } catch (error: any) {
     return c.json({ error: error.message }, 500);
   }
+});
+
+// Endpoint untuk mengambil profil user dari JWT token
+auth.get("/me", authentication, (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return c.json({ status: false, message: "User tidak ditemukan" }, 404);
+  }
+  return c.json({
+    status: true,
+    user: {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    },
+  });
 });
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
