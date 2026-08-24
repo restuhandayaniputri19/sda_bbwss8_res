@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { usePetaGeospasialData } from "../hooks/usePetaGeospasialData";
 import { useState } from "react";
 import SpatialMap from "../../../components/spatial-map";
+import bannerGeoportal from "../../../assets/5.png";
 
 const PetaGeospasial = () => {
   const navigate = useNavigate();
@@ -51,10 +52,8 @@ const PetaGeospasial = () => {
     <div className="flex min-h-screen flex-col">
       <img
         className="w-full h-[400px] object-cover"
-        src={
-          "https://mediabbwssviii.sgp1.cdn.digitaloceanspaces.com/image/bendung%20perjaya.jpg"
-        }
-        alt="bendungan perjaya"
+        src={bannerGeoportal}
+        alt="embung konservasi kayu agung geoportal"
       />
 
       <section className="p-10">

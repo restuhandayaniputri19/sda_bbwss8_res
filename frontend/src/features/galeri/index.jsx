@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import DropdownSelect from "../../components/select"; // Reusing the DropdownSelect component
 import PhotoCard from "../../components/photo-card";
 import { getGallery } from "../../services/gallery/api";
+import bannerGaleri from "../../assets/6.png";
 
 const GaleriPage = () => {
   const [data, setData] = useState([]);
@@ -86,6 +87,12 @@ const filteredPhotos = data.filter((item) => {
 
   return (
     <div className="flex min-h-screen flex-col">
+      {/* Hero Banner */}
+      <img
+        className="w-full h-[400px] object-cover"
+        src={bannerGaleri}
+        alt="Galeri"
+      />
       <section className="p-10">
   <h1 className="text-2xl font-bold text-indigo mb-6">Galeri</h1>
 

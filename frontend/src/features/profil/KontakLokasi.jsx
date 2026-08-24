@@ -7,6 +7,7 @@ import "leaflet/dist/leaflet.css";
 import MapComponent from "../../components/locationMap";
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaInstagram, FaYoutube, FaWhatsapp, FaFacebook } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import bannerKontak from "../../assets/7.png";
 
 const infoKontak = [
   {
@@ -14,7 +15,7 @@ const infoKontak = [
     icon: <FaPhone className="text-2xl text-indigo" />,
     label: "TELEPON",
     title: "Hubungi Kami",
-    lines: ["(0711) 123-456", "Senin – Jumat, 08.00 – 16.00 WIB"],
+    lines: ["0811 - 7887 - 443", "Senin – Jumat, 08.00 – 16.00 WIB"],
   },
   {
     id: "email",
@@ -90,10 +91,10 @@ const KontakLokasi = () => {
     <div className="flex min-h-screen flex-col">
       {/* Hero Banner */}
       <img
-        className="w-full h-[400px] object-cover"
-        src="https://mediabbwssviii.sgp1.cdn.digitaloceanspaces.com/image/WhatsApp%20Image%202024-10-25%20at%2015.07.39.jpeg"
-        alt="Kontak & Lokasi"
-      />
+  className="w-full h-[400px] object-cover bg-gray-100"
+  src={bannerKontak}
+  alt="Kontak & Lokasi"
+/>
 
       <section className="flex flex-col lg:flex-row p-5 lg:p-10">
         {/* Konten Utama */}

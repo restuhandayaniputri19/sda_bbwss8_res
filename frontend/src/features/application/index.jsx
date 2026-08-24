@@ -1,5 +1,6 @@
 import { Button } from "../../components/button";
 import Card from "../../components/card";
+import bannerAplikasi from "../../assets/4.png";
 
 const aplikasiTerkait = [
   {
@@ -41,8 +42,8 @@ const Application = () => {
     <div className="flex min-h-screen flex-col">
       <img
         className="w-full h-[50vh] md:h-[60vh] object-cover"
-        src="https://mediabbwssviii.sgp1.cdn.digitaloceanspaces.com/image/WhatsApp%20Image%202024-10-25%20at%2015.11.43.jpeg"
-        alt="Call center picture"
+        src={bannerAplikasi}
+        alt="Aplikasi Terkait"
       />
 
       <section className="p-10">

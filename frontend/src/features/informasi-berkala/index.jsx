@@ -36,28 +36,28 @@ const InformasiBerkalaPage = () => {
                     <td className="border border-gray-300 px-4 py-4 text-left">-</td>
                     <td className="border border-gray-300 px-4 py-4 text-left">Alamat Lengkap</td>
                     <td className="border border-gray-300 px-4 py-4 text-center">
-                        <Link to="/lokasi-kantor">Link</Link>
+                        <Link to="/lokasi-kantor" className="text-blue-600 hover:underline">Link</Link>
                     </td>
                 </tr>
                 <tr>
                     <td className="border border-gray-300 px-4 py-4 text-left">-</td>
                     <td className="border border-gray-300 px-4 py-4 text-left">Struktur Organisasi</td>
                     <td className="border border-gray-300 px-4 py-4 text-center">
-                        <Link to="/struktur-organisasi">Link</Link>
+                        <Link to="/struktur-organisasi" className="text-blue-600 hover:underline">Link</Link>
                     </td>
                 </tr>
                 <tr>
                     <td className="border border-gray-300 px-4 py-4 text-left">-</td>
                     <td className="border border-gray-300 px-4 py-4 text-left">Tugas dan Fungsi</td>
                     <td className="border border-gray-300 px-4 py-4 text-center">
-                        <Link to="/tugas-fungsi">Link</Link>
+                        <Link to="/tugas-fungsi" className="text-blue-600 hover:underline">Link</Link>
                     </td>
                 </tr>
                 <tr>
                     <td className="border border-gray-300 px-4 py-4 text-left">-</td>
                     <td className="border border-gray-300 px-4 py-4 text-left">Informasi Balai</td>
                     <td className="border border-gray-300 px-4 py-4 text-center">
-                        <Link to="/informasi-balai">Link</Link>
+                        <Link to="/informasi-balai" className="text-blue-600 hover:underline">Link</Link>
                     </td>
                 </tr>
                 <tr>
