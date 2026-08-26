@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Card from "../../components/card";
 import { Hash } from "../../constants";
 import { truncateText } from "../../utils/truncate-text";
-import bendungPerjaya from "../../assets/11.png";
+import bendungPerjaya from "../../assets/11_5_11zon.webp";
 import wilayahKerja from "../../assets/1.jpeg";
 
 const TentangKami = () => {

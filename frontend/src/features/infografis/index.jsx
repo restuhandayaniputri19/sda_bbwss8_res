@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import DropdownSelect from "../../components/select";
 import PhotoCard from "../../components/photo-card";
 import { getInfoGrafis } from "../../services/infografis/api";
-import bendungPerjaya from "../../assets/11.png";
+import bendungPerjaya from "../../assets/11_5_11zon.webp";
 
 const InfografisPage = () => {
   const [data, setData] = useState([]);

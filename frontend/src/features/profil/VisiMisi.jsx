@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Card from "../../components/card";
 import { Hash } from "../../constants";
 import { truncateText } from "../../utils/truncate-text";
-import visiMisiImg from "../../assets/3.png";
+import visiMisiImg from "../../assets/3_11zon.webp";
 
 const misiData = [
   { periode: "01", deskripsi: "Konservasi sumber daya air secara konsisten dan berkelanjutan." },

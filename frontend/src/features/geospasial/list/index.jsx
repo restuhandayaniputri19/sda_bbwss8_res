@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { usePetaGeospasialData } from "../hooks/usePetaGeospasialData";
 import { useState } from "react";
 import SpatialMap from "../../../components/spatial-map";
-import bannerGeoportal from "../../../assets/5.png";
+import bannerGeoportal from "../../../assets/5_6_11zon.webp";
 
 const PetaGeospasial = () => {
   const navigate = useNavigate();

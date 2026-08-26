@@ -1,6 +1,6 @@
 import { Button } from "../../components/button";
 import Card from "../../components/card";
-import bannerAplikasi from "../../assets/4.png";
+import bannerAplikasi from "../../assets/4_11zon.webp";
 
 const aplikasiTerkait = [
   {

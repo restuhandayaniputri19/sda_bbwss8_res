@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import DropdownSelect from "../../components/select"; // Reusing the DropdownSelect component
 import PhotoCard from "../../components/photo-card";
 import { getGallery } from "../../services/gallery/api";
-import bannerGaleri from "../../assets/6.png";
+import bannerGaleri from "../../assets/6_4_11zon.webp";
 
 const GaleriPage = () => {
   const [data, setData] = useState([]);

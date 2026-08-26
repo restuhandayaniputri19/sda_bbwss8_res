@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import DropdownSelect from "../../components/select";
 //import KesiapsiagaanPdfViewer from "./KesiapsiagaanPdfViewer";
 import PdfPagePreview from "./PdfPagePreview";
-import bendungPerjaya from "../../assets/11.png";
+import bendungPerjaya from "../../assets/11_5_11zon.webp";
 import { getKesiapsiagaanBencana } from "../../services/kesiapsiagaan_bencana";
 
 const KesiapsiagaanBencanaPage = () => {

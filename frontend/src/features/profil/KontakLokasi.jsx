@@ -7,7 +7,7 @@ import "leaflet/dist/leaflet.css";
 import MapComponent from "../../components/locationMap";
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaInstagram, FaYoutube, FaWhatsapp, FaFacebook } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
-import bannerKontak from "../../assets/7.png";
+import bannerKontak from "../../assets/7_3_11zon.webp";
 
 const infoKontak = [
   {
