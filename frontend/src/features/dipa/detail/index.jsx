@@ -5,6 +5,7 @@ import { useBeritaData } from "../../home/hooks/useBeritaData";
 import { useDipaDetail } from "../hooks/useDipaDetail";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "../../../hooks/useQuery";
+import FlipbookViewer from "../../../components/flipbookviewer/FlipbookViewer";
 
 const DetailDipa = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const DetailDipa = () => {
   const id = query.get("id");
   const { beritaData } = useBeritaData();
   const dipaDetail = useDipaDetail(id);
+  console.log("DEBUG dipaDetail:", dipaDetail);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -29,14 +31,7 @@ const DetailDipa = () => {
             <h1 className="text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
               {dipaDetail.title}
             </h1>
-            <iframe
-              src={dipaDetail.url}
-              title="PDF Viewer"
-              width="100%"
-              height="100%"
-              className="h-screen"
-              style={{ border: "none" }}
-            />
+            <FlipbookViewer pdfUrl={dipaDetail.url} />
           </div>
         ) : (
           <p>Loading dipa data...</p>

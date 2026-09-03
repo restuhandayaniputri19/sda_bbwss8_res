@@ -54,12 +54,12 @@ const InformasiBerkalaPage = () => {
                     </td>
                 </tr>
                 <tr>
-                    <td className="border border-gray-300 px-4 py-4 text-left">-</td>
-                    <td className="border border-gray-300 px-4 py-4 text-left">Informasi Balai</td>
-                    <td className="border border-gray-300 px-4 py-4 text-center">
-                        <Link to="/informasi-balai" className="text-blue-600 hover:underline">Link</Link>
-                    </td>
-                </tr>
+    <td className="border border-gray-300 px-4 py-4 text-left">-</td>
+    <td className="border border-gray-300 px-4 py-4 text-left">Tentang Kami</td>
+    <td className="border border-gray-300 px-4 py-4 text-center">
+        <Link to="/tentang-kami" className="text-blue-600 hover:underline">Link</Link>
+    </td>
+</tr>
                 <tr>
                     <td className="border border-gray-300 px-4 py-4 text-left font-bold" colSpan="3"></td>
                 </tr>

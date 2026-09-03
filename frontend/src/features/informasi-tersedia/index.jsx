@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import callCenter from "../../assets/CallCenter.png";
 
 const data = [
-  { judul: "Aset Sumber Daya Air", link: "/geoportal" },
+  { judul: "Aset Sumber Daya Air", link: "https://pdsda.sda.pu.go.id/", external: true },
   { judul: "Informasi Anggaran Direktorat Jenderal Sumber Daya Air", link: "/dipa" },
   { judul: "Profil Pimpinan Direktorat Jenderal Sumber Daya Air", link: "/profil-pejabat" },
   { judul: "Rencana Strategis Direktorat Jenderal Sumber Daya Air", link: "/publikasi" },
@@ -40,9 +40,15 @@ const InformasiSetiapSaatPage = () => {
                 <td className="border border-gray-300 px-4 py-4 text-left">-</td>
                 <td className="border border-gray-300 px-4 py-4 text-left">{item.judul}</td>
                 <td className="border border-gray-300 px-4 py-4 text-center">
-                  <Link to={item.link} className="text-blue-600 hover:underline">
-                    Link
-                  </Link>
+                  {item.external ? (
+                    <a href={item.link} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
+                      Link
+                    </a>
+                  ) : (
+                    <Link to={item.link} className="text-blue-600 hover:underline">
+                      Link
+                    </Link>
+                  )}
                 </td>
               </tr>
             ))}

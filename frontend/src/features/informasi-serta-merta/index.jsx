@@ -8,7 +8,7 @@ const data = [
   },
   {
     judul: "Sistem Tanggap Bencana Kementerian PU",
-    link: "https://bnpb.go.id",
+    link: "https://sitaba.pu.go.id/bencana-terkini?type=statistik",
     external: true,
   },
   {

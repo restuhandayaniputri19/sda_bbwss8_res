@@ -5,6 +5,7 @@ import { useBeritaData } from "../home/hooks/useBeritaData";
 import { useNavigate } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import MapComponent from "../../components/locationMap";
+import bannerKontak from "../../assets/7_3_11zon.webp";
 
 const LokasiKantor = () => {
   const navigate = useNavigate();
@@ -14,9 +15,7 @@ const LokasiKantor = () => {
     <div className="flex min-h-screen flex-col">
       <img
         className="w-full h-[400px] object-cover"
-        src={
-          "https://mediabbwssviii.sgp1.cdn.digitaloceanspaces.com/image/WhatsApp%20Image%202024-10-25%20at%2015.07.39.jpeg"
-        }
+        src={bannerKontak}
         alt="Call center picture"
       />
 
