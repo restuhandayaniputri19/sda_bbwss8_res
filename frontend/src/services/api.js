@@ -1,19 +1,38 @@
 import axios from "axios";
 
-let bearerToken = "";
-const baseSubPath = "/balai/bbwssumatera8/api";
-
-const axiosWithConfig = axios.create();
+const axiosWithConfig = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || "/balai/bbwssumatera8/api",
+});
 
 export const setAxiosConfig = (token) => {
-  bearerToken = token;
+  if (token) {
+    localStorage.setItem("token", token);
+  } else {
+    localStorage.removeItem("token");
+    localStorage.removeItem("auth_source");
+  }
 };
 
 axiosWithConfig.interceptors.request.use((axiosConfig) => {
-  axiosConfig.baseURL = import.meta.env.VITE_BASE_URL || baseSubPath;
-  axiosConfig.headers.Authorization = `Bearer ${bearerToken}`;
-
+  const token = localStorage.getItem("token");
+  if (token) {
+    axiosConfig.headers.Authorization = `Bearer ${token}`;
+  } else {
+    delete axiosConfig.headers.Authorization;
+  }
   return axiosConfig;
 });
+
+axiosWithConfig.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("auth_source");
+      window.location.href = "/balai/bbwssumatera8/login";
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default axiosWithConfig;

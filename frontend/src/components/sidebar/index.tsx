@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useToken } from "../../hooks/useToken";
 import { Menu, X, ChevronDown, User } from "lucide-react";
-import { API2 } from "../../services";
+import { API } from "../../services";
 
 interface SidebarProps {
   header?: ReactNode;
@@ -65,26 +65,50 @@ const Sidebar: React.FC<SidebarProps> = ({
   const location = useLocation();
   const { changeToken } = useToken();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [username, setUsername] = useState<string>("Memuat...");
 
-  // Fetch data user dari Hono backend
+  // 1. Inisialisasi username sebagai React State
+  const [username, setUsername] = useState<string>(
+    () => localStorage.getItem("username") || "Memuat..."
+  );
+
+  // 2. Ambil sumber autentikasi (Provider A / B)
+  const authSource = (localStorage.getItem("auth_source") || "B").toUpperCase();
+
+  // Fetch data user dari backend
 useEffect(() => {
   let isMounted = true;
 
-  // Pemanggilan API2 menggunakan helper proyek
-  API2
-    .get("/auth/me")
-    .then((data: any) => {
-      // Jika interceptor api2 Anda langsung mengembalikan res.data:
-      const user = data?.user || data?.data?.user;
-      
-      if (isMounted && user?.username) {
-        setUsername(user.username);
+  const authSource = (localStorage.getItem("auth_source") || "B").toUpperCase();
+  const savedUsername = localStorage.getItem("username");
+
+  // Jika Provider A (Legacy), tidak perlu panggil /api/auth/me
+  if (authSource === "A") {
+    if (savedUsername) {
+      setUsername(savedUsername);
+    } else {
+      setUsername("User Legacy");
+    }
+    return;
+  }
+
+  // Jika Provider B (Hono/SQLite), panggil /api/auth/me lokal
+  API.get("/api/auth/me")
+    .then((res: any) => {
+      const fetchedUsername =
+        res?.user?.username ||
+        res?.data?.user?.username ||
+        res?.username;
+
+      if (isMounted && fetchedUsername) {
+        setUsername(fetchedUsername);
+        localStorage.setItem("username", fetchedUsername);
       }
     })
     .catch((err: any) => {
-      console.error("[Sidebar Profil Error]:", err?.response?.data || err?.message || err);
-      if (isMounted) setUsername("Admin");
+      console.error("[Sidebar Profil Error]:", err);
+      if (isMounted) {
+        setUsername(savedUsername || "Admin");
+      }
     });
 
   return () => {
@@ -98,6 +122,7 @@ useEffect(() => {
 
   const handleLogout = () => {
     setIsMobileMenuOpen(false);
+    localStorage.removeItem("username");
     changeToken();
     toast.success("Logout successfully");
     navigate("/login");
@@ -178,12 +203,17 @@ useEffect(() => {
       {/* Info Username & Logout */}
       <div className="mt-auto border-t border-gray-100 pt-4 flex flex-col gap-3">
         <div className="flex items-center gap-2.5 px-2 py-1.5 rounded-md bg-gray-50 border border-gray-100">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-200 text-gray-600">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-200 text-gray-600 shrink-0">
             <User className="h-4 w-4" />
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-[10px] text-gray-400 font-medium leading-none">Logged in as</span>
-            <span className="text-sm font-semibold text-gray-800 truncate leading-tight mt-0.5">
+            <div className="flex items-center gap-1.5 leading-none">
+              <span className="text-[10px] text-gray-400 font-medium">Logged in as</span>
+              <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-gray-200 text-gray-600">
+                {authSource === "A" ? "Warisan (A)" : "Baru (B)"}
+              </span>
+            </div>
+            <span className="text-sm font-semibold text-gray-800 truncate leading-tight mt-1">
               {username}
             </span>
           </div>

@@ -1,20 +1,11 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useToken } from "../hooks/useToken";
+import { Navigate, Outlet } from "react-router-dom";
 
 const ProtectedRoutes = () => {
-  const { pathname } = useLocation();
-  const { token } = useToken();
+  // Ambil token langsung untuk memastikan keabsahannya
+  const token = localStorage.getItem("token");
 
-  const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/register");
-  const isAdminRoute = pathname.startsWith("/admin");
-
-  // Jika sudah login tapi mencoba akses /login atau /register
-  if (isAuthRoute && token) {
-    return <Navigate to="/admin" replace />;
-  }
-
-  // Jika belum login tapi mencoba akses /admin atau sub-halamannya (/admin/...)
-  if (isAdminRoute && !token) {
+  // Jika tidak ada token di storage, langsung arahkan ke login
+  if (!token) {
     return <Navigate to="/login" replace />;
   }
 

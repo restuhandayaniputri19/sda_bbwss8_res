@@ -1,9 +1,8 @@
+import { useEffect } from "react"; // 1. Tambahkan import useEffect
 import { CustomFormField, Form } from "../../components/form";
-
 import { Button } from "../../components/button";
 import { Input } from "../../components/input";
 import { loginSchema } from "../../services/auth/form";
-import logo from "../../assets/logo.png";
 import { postLogin } from "../../services/auth/api";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -14,29 +13,59 @@ import { zodResolver } from "@hookform/resolvers/zod";
 const LoginPage = () => {
   const navigate = useNavigate();
   const { changeToken } = useToken();
+
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       username: "",
       password: "",
+      provider: "b", // Default pilihan ke 'b' (SQLite Hono) atau 'a' (Express)
     },
     mode: "onChange",
   });
 
-  const onSubmit = async (data) => {
-    try {
-      const result = await postLogin(data);
+  // Bersihkan token sisa saat pengguna masuk ke halaman login
+  useEffect(() => {
+  }, []);
 
-      changeToken(result.token);
-      navigate("/admin");
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An unexpected error occurred.");
-      }
+const onSubmit = async (data) => {
+  try {
+    const result = await postLogin(data);
+    
+    // CETAK ISI HASIL RESPONS DI CONSOLE
+    console.log("[DEBUG RESPONS LOGIN]:", result);
+
+    // Ambil token dengan memeriksa semua kemungkinan tempat
+    const token = 
+      result?.token || 
+      result?.data?.token || 
+      result?.data?.data?.token;
+
+    console.log("[DEBUG TOKEN]:", token);
+
+    if (!token) {
+      toast.error("Token tidak ditemukan pada respons server.");
+      return;
     }
-  };
+
+    // Simpan ke localStorage
+    const selectedProvider = (data.provider || "b").toUpperCase();
+    localStorage.setItem("token", token);
+    localStorage.setItem("auth_source", selectedProvider);
+    localStorage.setItem("username", data.username);
+
+    if (changeToken) {
+      changeToken(token);
+    }
+
+    toast.success("Login berhasil!");
+    navigate("/admin", { replace: true });
+
+  } catch (error) {
+    console.error("[LOGIN ERROR]:", error);
+    toast.error("Gagal melakukan login.");
+  }
+};
 
   const {
     handleSubmit,
@@ -47,16 +76,48 @@ const LoginPage = () => {
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
         <div className="flex justify-center mb-6">
-          <img src={logo} alt="Logo" className="h-36" />
+          Manage Content Website SDA
         </div>
-        {/* <h2 className="text-2xl text-indigo font-bold mb-6 text-center">
-          Login
-        </h2> */}
+
         <Form {...form}>
           <form
             className="flex flex-col gap-5"
             onSubmit={handleSubmit(onSubmit)}
           >
+            {/* Pilihan Layanan / Provider */}
+<CustomFormField
+  control={form.control}
+  name="provider"
+  label="Pilih Layanan / Database"
+>
+  {(field) => (
+    <div className="flex flex-col gap-2 mt-1">
+      <label className="flex items-center gap-2 cursor-pointer">
+        <input
+          type="radio"
+          name="provider"
+          value="b"
+          checked={field.value === "b" || !field.value} // Default b
+          onChange={() => field.onChange("b")}
+        />
+        <span>Baru (sda.bbwssumatera8.id)</span>
+      </label>
+
+      <label className="flex items-center gap-2 cursor-pointer">
+        <input
+          type="radio"
+          name="provider"
+          value="a"
+          checked={field.value === "a"}
+          onChange={() => field.onChange("a")}
+        />
+        <span>Warisan (sda.pu.go.id)</span>
+      </label>
+    </div>
+  )}
+</CustomFormField>
+
+            {/* Input Username */}
             <CustomFormField
               control={form.control}
               name="username"
@@ -72,6 +133,8 @@ const LoginPage = () => {
                 />
               )}
             </CustomFormField>
+
+            {/* Input Password */}
             <CustomFormField
               control={form.control}
               name="password"
@@ -92,9 +155,9 @@ const LoginPage = () => {
               type="submit"
               disabled={isSubmitting}
               aria-disabled={isSubmitting}
-              className="bg-indigo hover:bg-indigo"
+              className="bg-indigo hover:bg-indigo mt-2"
             >
-              {isSubmitting ? "Login..." : "Login"}
+              {isSubmitting ? "Memproses..." : "Login"}
             </Button>
           </form>
         </Form>

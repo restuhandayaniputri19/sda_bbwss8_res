@@ -66,301 +66,302 @@ import InformasiSetiapSaatPage from "../features/informasi-tersedia";
 import AdminLogsPage from "../features/admin/AdminLogs";
 import AdminUsersPage from "../features/admin/ManageUserPage";
 
-
-export const router = createBrowserRouter([
+export const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <Layout />,
+      children: [
+        {
+          index: true,
+          element: <HomePage />,
+        },
+        {
+          path: "/login",
+          element: <LoginPage />,
+        },
+        {
+          path: "/layanan",
+          children: [
+            {
+              path: "permintaan-data",
+              element: <PermintaanDataPage />,
+            },
+            {
+              path: "posko-banjir",
+              element: <PoskoBanjirPage />,
+            },
+            {
+              path: "rekomtek",
+              element: <RekomtekPage />,
+            },
+            {
+              path: "pengaduan-masyarakat",
+              element: <PengaduanMasyarakatPage />,
+            },
+            {
+              path: "adm-permintaan-data",
+              children: [
+                {
+                  index: true, // Ini untuk /layanan/adm-permintaan-data (list)
+                  element: <AdminPermintaan />,
+                },
+                {
+                  path: ":id", // Ini untuk /layanan/adm-permintaan-data/<id>
+                  element: <AdminDetailPermintaanData />,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          path: "/satker",
+          element: <SatkerPage />,
+        },
+        {
+          path: "/aplikasi",
+          element: <Application />,
+        },
+        {
+          path: "/kontak-kami",
+          element: <Contact />,
+        },
+        {
+          path: "/publikasi",
+          element: <Publication />,
+        },
+        {
+          path: "/tkpsda",
+          element: <Tkpsda />,
+        },
+        {
+          path: "/profil",
+          element: <Profil />,
+        },
+        {
+          path: "/produk",
+          element: <Product />,
+        },
+        {
+          path: "/galeri",
+          element: <GaleriPage />,
+        },
+        {
+          path: "/infografis",
+          element: <InfografisPage />,
+        },
+        {
+          path: "/berita",
+          element: <BeritaTerkini />,
+        },
+        {
+          path: "/tugas-fungsi",
+          element: <TugasFungsi />,
+        },
+        {
+          path: "/struktur-organisasi",
+          element: <StrukturOrganisasi />,
+        },
+        {
+          path: "/tentang-kami",
+          element: <TentangKami />,
+        },
+        {
+          path: "/visi-misi",
+          element: <VisiMisi />,
+        },
+        {
+          path: "/sejarah",
+          element: <Sejarah />,
+        },
+        {
+          path: "/whistleblowing",
+          element: <WhistleblowingPage />,
+        },
+        {
+          path: "/profil-pejabat",
+          element: <ProfilePejabat />,
+        },
+        {
+          path: "/lokasi-kantor",
+          element: <LokasiKantor />,
+        },
+        {
+          path: "/kontak-lokasi",
+          element: <KontakLokasi />,
+        },
+        {
+          path: "/satker",
+          element: <SatuanKerja />,
+        },
+        {
+          path: "/pola-rencana",
+          element: <PolaRencana />,
+        },
+        {
+          path: "/pola-rpsda",
+          element: <PolaRpsda />,
+        },
+        {
+          path: "/kesiapsiagaan-bencana",
+          element: <KesiapsiagaanBencana />,
+        },
+        {
+          path: "/dipa",
+          element: <DipaPage />,
+        },
+        {
+          path: "/peraturan",
+          element: <PeraturanPage />,
+        },
+        {
+          path: "/informasi",
+          element: <InformasiPage />,
+        },
+        {
+          path: "/geoportal",
+          element: <GeospasialPage />,
+        },
+        {
+          path: "/rpsda",
+          element: <RpsdaPage />,
+        },
+        {
+          path: "/prakiraan-cuaca",
+          element: <PrakiraanCuacaPage />,
+        },
+        {
+          path: "/informasi-berkala",
+          element: <InformasiBerkalaPage />,
+        },
+        {
+          path: "/informasi-serta-merta",
+          element: <InformasiSertaMertaPage />,
+        },
+        {
+          path: "/informasi-tersedia",
+          element: <InformasiSetiapSaatPage />,
+        },
+        {
+          path: "/majalah",
+          element: <MajalahUser />,
+        },
+        {
+          path: "/layanan-terpadu",
+          element: <LayananTerpaduPage />,
+        },
+      ],
+    },
+    {
+      element: <ProtectedRoutes />,
+      children: [
+        {
+          path: "/admin",
+          element: <LayoutAdmin />,
+          children: [
+            {
+              index: true,
+              element: <DashboardPage />,
+            },
+            {
+              path: "users",
+              element: <AdminUsersPage />,
+            },
+            {
+              path: "logs",
+              element: <AdminLogsPage />,
+            },
+            {
+              path: "berita",
+              element: <BeritaAdmin />,
+            },
+            {
+              path: "majalah",
+              element: <MajalahAdmin />,
+            },
+            {
+              path: "youtube",
+              element: <YoutubeAdmin />,
+            },
+            {
+              path: "banner",
+              element: <BannerAdmin />,
+            },
+            {
+              path: "infografis",
+              element: <InfografisAdmin />,
+            },
+            {
+              path: "gallery",
+              element: <GalleryAdmin />,
+            },
+            {
+              path: "kesiapsiagaan-bencana",
+              element: <KesiapsiagaanBencanaAdmin />,
+            },
+            {
+              path: "layanan-terpadu",
+              element: <LayananTerpaduAdmin />,
+            },
+            {
+              path: "struktur-organisasi",
+              element: <StrukturOrganisasiAdmin />,
+            },
+            {
+              path: "pola-rencana",
+              element: <PolaRencanaAdmin />,
+            },
+            {
+              path: "tugas-fungsi",
+              element: <TugasFungsiAdmin />,
+            },
+            {
+              path: "dipa",
+              element: <DipaAdmin />,
+            },
+            {
+              path: "peraturan",
+              element: <PeraturanAdmin />,
+            },
+            {
+              path: "pengumuman",
+              element: <PengumumanAdmin />,
+            },
+            {
+              path: "informasi",
+              element: <InformasiAdmin />,
+            },
+            {
+              path: "geoportal",
+              element: <PetaGeospasialAdmin />,
+            },
+            {
+              path: "rpsda",
+              element: <RpsdaAdmin />,
+            },
+            {
+              path: "permintaan-data",
+              children: [
+                {
+                  index: true, // Ini untuk /layanan/adm-permintaan-data (list)
+                  element: <AdminPermintaan />,
+                },
+                {
+                  path: ":id", // Ini untuk /layanan/adm-permintaan-data/<id>
+                  element: <AdminDetailPermintaanData />,
+                },
+              ],
+            },
+            {
+              path: "wa-gw",
+              element: <WaGwAdmin />,
+            },
+          ],
+        },
+      ],
+    },
+  ],
   {
-    path: "/",
-    element: <Layout />,
-    children: [
-      {
-        index: true,
-        element: <HomePage />,
-      },
-      {
-        path: "/layanan",
-        children: [
-          {
-            path: "permintaan-data",
-            element: <PermintaanDataPage />,
-          },
-          {
-            path: "posko-banjir",
-            element: <PoskoBanjirPage />,
-          },
-          {
-            path: "rekomtek",
-            element: <RekomtekPage />,
-          },
-          {
-            path: "pengaduan-masyarakat",
-            element: <PengaduanMasyarakatPage />,
-          },
-          {
-            path: "adm-permintaan-data",
-            children: [
-              {
-                index: true, // Ini untuk /layanan/adm-permintaan-data (list)
-                element: <AdminPermintaan />,
-              },
-              {
-                path: ":id", // Ini untuk /layanan/adm-permintaan-data/<id>
-                element: <AdminDetailPermintaanData />, 
-              }
-            ]
-          }
-        ]
-      },
-      {
-        path: "/satker",
-        element: <SatkerPage />,
-      },
-      {
-        path: "/aplikasi",
-        element: <Application />,
-      },
-      {
-        path: "/kontak-kami",
-        element: <Contact />,
-      },
-      {
-        path: "/publikasi",
-        element: <Publication />,
-      },
-      {
-        path: "/tkpsda",
-        element: <Tkpsda />,
-      },
-      {
-        path: "/profil",
-        element: <Profil />,
-      },
-      {
-        path: "/produk",
-        element: <Product />,
-      },
-      {
-        path: "/galeri",
-        element: <GaleriPage />,
-      },
-      {
-        path: "/infografis",
-        element: <InfografisPage />,
-      },
-      {
-        path: "/berita",
-        element: <BeritaTerkini />,
-      },
-      {
-        path: "/tugas-fungsi",
-        element: <TugasFungsi />,
-      },
-      {
-        path: "/struktur-organisasi",
-        element: <StrukturOrganisasi />,
-      },
-      {
-  path: "/tentang-kami",
-  element: <TentangKami />,
-},
-{
-  path: "/visi-misi",
-  element: <VisiMisi />,
-},
-      {
-        path: "/sejarah",
-        element: <Sejarah />
-      },
-      {
-        path: "/whistleblowing",
-        element: <WhistleblowingPage />,
-      },
-      {
-        path: "/profil-pejabat",
-        element: <ProfilePejabat />,
-      },
-      {
-        path: "/lokasi-kantor",
-        element: <LokasiKantor />,
-      },
-      {
-        path: "/kontak-lokasi",
-        element: <KontakLokasi />,
-      },
-      {
-        path: "/satker",
-        element: <SatuanKerja />,
-      },
-      {
-        path: "/pola-rencana",
-        element: <PolaRencana />,
-      },
-      {
-  path: "/pola-rpsda",
-  element: <PolaRpsda />,
-},
-{
-  path: "/kesiapsiagaan-bencana",
-  element: <KesiapsiagaanBencana />,
-},
-      {
-        path: "/dipa",
-        element: <DipaPage />,
-      },
-      {
-        path: "/peraturan",
-        element: <PeraturanPage />,
-      },
-      {
-        path: "/informasi",
-        element: <InformasiPage />,
-      },
-      {
-        path: "/geoportal",
-        element: <GeospasialPage />,
-      },
-      {
-        path: "/rpsda",
-        element: <RpsdaPage />,
-      },
-      {
-        path: "/prakiraan-cuaca",
-        element: <PrakiraanCuacaPage />,
-      },
-      {
-        path: "/informasi-berkala",
-        element: <InformasiBerkalaPage />,
-      },
-      {
-  path: "/informasi-serta-merta",
-  element: <InformasiSertaMertaPage />,
-},
-      {
-  path: "/informasi-tersedia",
-  element: <InformasiSetiapSaatPage />,
-},
-      {
-        path: "/majalah",
-        element: <MajalahUser />,
-      },
-      {
-  path: "/layanan-terpadu",
-  element: <LayananTerpaduPage />,
-},
-    ],
+    basename: "/balai/bbwssumatera8",
   },
-  {
-    element: <ProtectedRoutes />,
-    children: [
-      {
-        path: "/admin",
-        element: <LayoutAdmin />,
-        children: [
-          {
-            index: true,
-            element: <DashboardPage />,
-          },
-          {
-            path: "users",
-            element: <AdminUsersPage />,
-          },
-          {
-            path: "logs",
-            element: <AdminLogsPage />,
-          },
-          {
-            path: "berita",
-            element: <BeritaAdmin />,
-          },
-          {
-            path: "majalah",
-            element: <MajalahAdmin />,
-          },
-          {
-            path: "youtube",
-            element: <YoutubeAdmin />,
-          },
-          {
-            path: "banner",
-            element: <BannerAdmin />,
-          },
-          {
-            path: "infografis",
-            element: <InfografisAdmin />,
-          },
-          {
-            path: "gallery",
-            element: <GalleryAdmin />,
-          },
-          {
-            path: "kesiapsiagaan-bencana",
-            element: <KesiapsiagaanBencanaAdmin />,
-          },
-          {
-            path: "layanan-terpadu",
-            element: <LayananTerpaduAdmin />,
-          },
-          {
-            path: "struktur-organisasi",
-            element: <StrukturOrganisasiAdmin />,
-          },
-          {
-            path: "pola-rencana",
-            element: <PolaRencanaAdmin />,
-          },
-          {
-            path: "tugas-fungsi",
-            element: <TugasFungsiAdmin />,
-          },
-          {
-            path: "dipa",
-            element: <DipaAdmin />,
-          },
-          {
-            path: "peraturan",
-            element: <PeraturanAdmin />,
-          },
-          {
-            path: "pengumuman",
-            element: <PengumumanAdmin />,
-          },
-          {
-            path: "informasi",
-            element: <InformasiAdmin />,
-          },
-          {
-            path: "geoportal",
-            element: <PetaGeospasialAdmin />,
-          },
-          {
-            path: "rpsda",
-            element: <RpsdaAdmin />,
-          },
-          {
-            path: "permintaan-data",
-            children: [
-              {
-                index: true, // Ini untuk /layanan/adm-permintaan-data (list)
-                element: <AdminPermintaan />,
-              },
-              {
-                path: ":id", // Ini untuk /layanan/adm-permintaan-data/<id>
-                element: <AdminDetailPermintaanData />, 
-              }
-            ]
-          },
-          {
-            path: "wa-gw",
-            element: <WaGwAdmin />,
-          }
-        ],
-      },
-      {
-        path: "/login",
-        element: <LoginPage />,
-      },
-    ],
-  },
-],
-{
-  basename: "/balai/bbwssumatera8",
-});
+);

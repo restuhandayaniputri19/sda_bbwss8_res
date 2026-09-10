@@ -1,16 +1,11 @@
-import { API2 } from "..";
-import axios from "axios";
+import api from "../api"; // Instance Axios tunggal yang mengarah ke Hono
 
-export const postLogin = async (payload) => {
-  try {
-    const response = await API2.post(`/auth/login`, payload);
+export const postLogin = async (credentials) => {
+  const { username, password, provider } = credentials;
+  
+  // Tentukan endpoint berdasarkan pilihan dropdown ('a' atau 'b')
+  const endpoint = provider === "a" ? "/api/auth/login/a" : "/api/auth/login/b";
 
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.message || "Login failed");
-    } else {
-      throw new Error("An unexpected error occurred.");
-    }
-  }
+  const response = await api.post(endpoint, { username, password });
+  return response.data; // Mengembalikan { token }
 };

@@ -5,4 +5,5 @@ export const loginSchema = z.object({
   password: z
     .string()
     .min(4, { message: "Password must be at least 6 characters" }),
+  provider: z.enum(["a", "b"]).default("b")
 });

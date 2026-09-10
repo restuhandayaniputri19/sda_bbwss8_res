@@ -1,9 +1,27 @@
 import Navbar from "../components/navbar";
-import { Outlet } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, Outlet } from "react-router-dom";
 import Sidebar from "../components/sidebar";
 import logo from "../assets/logo.png";
+import api from "../services/api";
 
 const LayoutAdmin = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+// Setiap kali area admin dibuka, tes token ke backend Hono
+    api.get("/api/auth/me")
+      .then((res) => {
+        // Token valid & masuk ke backend Hono
+      })
+      .catch((err) => {
+        // Jika Hono merespons 401 / error, tendang ke login
+        localStorage.removeItem("token");
+        localStorage.removeItem("auth_source");
+        navigate("/login", { replace: true });
+      });
+  }, [navigate]);
+
   const sidebar = [
     {
       path: "/admin/infografis",

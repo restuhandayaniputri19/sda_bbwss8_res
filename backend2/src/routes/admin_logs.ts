@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { eq, desc, count, and } from 'drizzle-orm';
 import { db } from '../db'; // Sesuaikan lokasi instance Drizzle DB Anda
 import { adminLogs, NewAdminLog } from '../db/schema';
+import { authentication } from '../middleware/authentication'; // Pastikan path ini benar
 
 const adminLogsRoute = new Hono();
 
@@ -10,7 +11,7 @@ const adminLogsRoute = new Hono();
 // GET /balai/bbwssumatera8/api2/admin-logs
 // Query Params: ?page=1&limit=20&action=CREATE&target_entity=berita
 // ==========================================
-adminLogsRoute.get('/', async (c) => {
+adminLogsRoute.get('/', authentication, async (c) => {
   try {
     const page = Number(c.req.query('page') || '1');
     const limit = Number(c.req.query('limit') || '20');
@@ -60,7 +61,7 @@ adminLogsRoute.get('/', async (c) => {
 // 2. SELECT: Ambil Detail Single Log by ID
 // GET /balai/bbwssumatera8/api2/admin-logs/:id
 // ==========================================
-adminLogsRoute.get('/:id', async (c) => {
+adminLogsRoute.get('/:id', authentication, async (c) => {
   try {
     const id = Number(c.req.param('id'));
     if (isNaN(id)) {
@@ -87,7 +88,7 @@ adminLogsRoute.get('/:id', async (c) => {
 // 3. INSERT: Manual Insert via API Endpoint
 // POST /balai/bbwssumatera8/api2/admin-logs
 // ==========================================
-adminLogsRoute.post('/', async (c) => {
+adminLogsRoute.post('/', authentication, async (c) => {
   try {
     const body = await c.req.json();
     const { userId, username, action, targetEntity, targetId, details } = body;

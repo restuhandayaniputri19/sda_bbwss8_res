@@ -1,244 +1,152 @@
-import { Hono } from "hono";
-import { db } from "../db";
-import { PubAuth, users } from "../db/schema";
-import { eq, and, gt, or } from "drizzle-orm";
+import { Hono } from 'hono';
 import { sign } from 'hono/jwt';
-import { hash, compare } from "bcrypt-ts";
-import { authentication } from "../middleware/authentication";
+import { compare } from 'bcrypt-ts';
+import { db } from '../db'; // Instance Drizzle ORM kamu
+import { users } from '../db/schema'; // Table schema user SQLite
+import { eq } from 'drizzle-orm';
 
 const auth = new Hono();
+const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-production';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
-
-auth.get("/", (c) => c.text("Auth Endpoint is Active!"));
-
-const opsiWaktu: Intl.DateTimeFormatOptions = {
-  timeZone: 'Asia/Jakarta',
-  dateStyle: 'medium', // Menghasilkan: 20 Juni 2026
-  timeStyle: 'short'   // Menghasilkan: 08.34
-};
-
-// --- 1. REGISTER ---
-auth.post('/register', async (c) => {
-  try {
-    const { username, email, password } = await c.req.json();
-
-    // Cek apakah user/email sudah ada
-    const existingUser = await db
-      .select()
-      .from(users)
-      .where(or(eq(users.username, username), eq(users.email, email)))
-      .limit(1);
-
-    if (existingUser.length > 0) {
-      return c.json({ message: "Username atau email sudah terdaftar" }, 400);
-    }
-
-    // Hash password
-    const hashedPassword = await hash(password, 10);
-
-    // Simpan ke PostgreSQL
-    const [newUser] = await db.insert(users).values({
-      username,
-      email,
-      password: hashedPassword,
-    }).returning();
-
-    return c.json({ message: "User berhasil dibuat", user: { id: newUser.id, username: newUser.username } }, 201);
-  } catch (error: any) {
-    return c.json({ error: error.message }, 500);
-  }
-});
-
-// --- 2. LOGIN ---
-auth.post('/login', async (c) => {
+// =================================================================
+// 1. LOGIN PROVIDER B (Internal Hono / SQLite)
+// =================================================================
+auth.post('/login/b', async (c) => {
   try {
     const { username, password } = await c.req.json();
 
-    // Cari user
+    if (!username || !password) {
+      return c.json({ status: false, message: "Username dan password wajib diisi" }, 400);
+    }
+
+    // Cari user di SQLite
     const [user] = await db
       .select()
       .from(users)
       .where(eq(users.username, username))
       .limit(1);
 
-    // Validasi user & password
-    if (!user || !(await compare(password, user.password))) {
-      return c.json({ message: "Kredensial tidak valid" }, 401);
+    if (!user) {
+      console.log(`[AUTH-B] User ${username} tidak ditemukan.`);
+      return c.json({ status: false, message: "Username atau password salah" }, 401);
     }
 
-    // Update lastLogin
-    await db.update(users)
-      .set({ lastLogin: new Date() })
-      .where(eq(users.id, user.id));
+    // Pastikan user.password ada sebelum dikomparasi
+    if (!user.password || !(await compare(password, user.password))) {
+      console.log(`[AUTH-B] Password salah untuk user: ${username}`);
+      return c.json({ status: false, message: "Username atau password salah" }, 401);
+    }
 
-    // Buat JWT Token (Expire 12 jam sesuai request Bapak)
+    // Payload JWT
     const payload = {
       id: user.id,
       username: user.username,
       email: user.email,
-      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 12, // 12 jam
+      source: 'B',
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 12,
     };
 
     const token = await sign(payload, JWT_SECRET, 'HS256');
 
-    return c.json({ token });
+    return c.json({
+      status: true,
+      message: "Login berhasil",
+      token,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+      }
+    });
   } catch (error: any) {
-    return c.json({ error: error.message }, 500);
+    // CETAK ERROR ASLI DI TERMINAL HONO
+    console.error('[AUTH-B CRASH]:', error);
+    return c.json({ status: false, message: error.message || "Terjadi kesalahan server" }, 500);
   }
 });
 
-// Endpoint untuk mengambil profil user dari JWT token
-auth.get("/me", authentication, (c) => {
-  const user = c.get("user");
-  if (!user) {
-    return c.json({ status: false, message: "User tidak ditemukan" }, 404);
-  }
-  return c.json({
-    status: true,
-    user: {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-    },
-  });
-});
-
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-auth.post("/send-otp", async (c) => {
-  console.log("Endpoint /auth/send-otp diakses");
-  const { phoneNumber } = await c.req.json();
-
-  const now = new Date();
-  const expiresAt = new Date(now.getTime() + 3 * 60000); // +3 Menit (3 * 60 detik * 1000ms)
-  const lastRequest = now; // Waktu sekarang untuk rate limit
-
-  // 1. Generate 4 digit OTP sederhana
-  const otpCode = Math.floor(1000 + Math.random() * 9000).toString().slice(0, 4);
-
+// =================================================================
+// LOGIN PROVIDER A (External Express / MySQL sda.pu.go.id)
+// =================================================================
+auth.post('/login/a', async (c) => {
   try {
-    // 2. Simpan ke SQLite
-    await db.insert(PubAuth).values({
-      identifier: phoneNumber,
-      type: 'whatsapp',
-      otp_code: otpCode,
-      expires_at: expiresAt,
-      last_request: lastRequest,
-    })
-      .onConflictDoUpdate({
-        // Jika terjadi tabrakan pada index unik (identifier + type)
-        target: [PubAuth.identifier, PubAuth.type],
-        set: {
-          // Update dengan data OTP yang baru
-          otp_code: otpCode,
-          expires_at: expiresAt,
-          last_request: now,
-          // Kita biarkan ul_id tetap yang lama (opsional) 
-          // atau update jika ingin ganti karakter "sulit" nya
-        },
-      })
-      .returning({ id_pamer: PubAuth.ul_id }); // Mengembalikan ULID untuk referensi eksternal (opsional)
+    const { username, password } = await c.req.json();
 
-    const urlObj = new URL(c.req.url);
-    const host = urlObj.hostname; // localhost:3000 atau domain.com
-
-    const isDev = process.env.NODE_ENV !== "production";
-    if (isDev) {
-      console.log(`[DEV MODE] OTP untuk ${phoneNumber}: ${otpCode} (kadaluwarsa pada ${expiresAt.toLocaleString('id-ID', opsiWaktu)}) WIB`);
-      return c.json({ success: true, message: "OTP terkirim (DEV MODE)", otp: otpCode }); // Kirim OTP di response untuk dev
-    } else {
-      console.log(`OTP untuk ${phoneNumber} disimpan di database. Mengirim pesan via WA...`);
-      // 3. Panggil container wa-webjs (Internal network)
-      console.log(`Mengirim pesan via WA melalui ${process.env.WA_GATEWAY_URL}/send dengan OTP: ${otpCode}`);
-      const waResponse = await fetch(`${process.env.WA_GATEWAY_URL}/send`, { // Sesuaikan port/host container
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.WA_TOKEN}`
-        },
-        body: JSON.stringify({
-          to: phoneNumber.startsWith('+') ? phoneNumber.slice(1) : phoneNumber,
-          msg: `[BBWS Sumatera VIII] OTP: *${otpCode}*, akan kadaluwarsa pada ${expiresAt.toLocaleString('id-ID', opsiWaktu)} WIB.`
-        }),
-      });
-      // Kirim ke group WA khusus admin untuk monitoring (opsional)
-      const responseText = await waResponse.text();
-      console.log('Respon Server WA:', responseText);
-
-      if (!waResponse.ok) {
-        // Ambil detail pesan eror dari response gateway jika ada
-        const errorText = await waResponse.text();
-
-        // 1. Cetak ke console.error agar masuk ke `docker logs`
-        console.error(`[WA_ERROR] Gagal mengirim pesan via WA. Status: ${waResponse.status}, Detail: ${errorText}`);
-
-        // 2. Lempar eror untuk ditangkap oleh blok catch utama
-        throw new Error(`Gagal mengirim pesan via WA: ${errorText}`);
-      }
-
-      await delay(3000);
-
-      const waResponse2 = await fetch(`${process.env.WA_GATEWAY_URL}/send`, { // Sesuaikan port/host container
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${process.env.WA_TOKEN}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          to: "120363427359958027@g.us",
-          msg: `[BBWS Sumatera VIII] Permintaan OTP dari ${phoneNumber}, akan kadaluwarsa pada ${expiresAt.toLocaleString('id-ID', opsiWaktu)} WIB.`
-        }),
-      });
-
-      const responseText2 = await waResponse2.text();
-      console.log('Respon Server WA:', responseText2);
-
-      if (!waResponse2.ok) {
-        // Ambil detail pesan eror dari response gateway jika ada
-        const errorText = await waResponse2.text();
-
-        // 1. Cetak ke console.error agar masuk ke `docker logs`
-        console.error(`[WA_ERROR] Gagal mengirim pesan via WA. Status: ${waResponse2.status}, Detail: ${errorText}`);
-
-        // 2. Lempar eror untuk ditangkap oleh blok catch utama
-        throw new Error(`Gagal mengirim pesan via WA: ${errorText}`);
-      }
-
+    if (!username || !password) {
+      return c.json({ status: false, message: 'Username dan password wajib diisi' }, 400);
     }
 
-    return c.json({ success: true, message: "OTP terkirim" });
+    // Target URL API Express Legacy
+    const targetUrl = 'https://sda.pu.go.id/balai/bbwssumatera8/api/auth/login';
+
+    console.log(`[AUTH-A PROXY] Meneruskan login untuk user: ${username} -> ${targetUrl}`);
+
+    // Forward Kredensial ke Express
+    const response = await fetch(targetUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const responseText = await response.text();
+    console.log(`[AUTH-A RESPONSE STATUS]: ${response.status}`);
+    console.log(`[AUTH-A RESPONSE BODY]:`, responseText);
+
+    let data: any = {};
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      return c.json({ status: false, message: 'Server legacy mengembalikan respons non-JSON' }, 502);
+    }
+
+    // Jika Express merespons 401 (Invalid credentials)
+    if (!response.ok) {
+      return c.json(
+        {
+          status: false,
+          message: data.message || 'Username atau password di server warisan salah',
+        },
+        response.status as any
+      );
+    }
+
+    // Express mengirimkan respons berupa { token: "..." }
+    const token = data.token;
+
+    if (!token) {
+      return c.json({ status: false, message: 'Token tidak ditemukan pada respons Express' }, 502);
+    }
+
+    // Berhasil login
+    return c.json({
+      status: true,
+      message: 'Login berhasil (Sistem Warisan)',
+      token: token,
+      user: {
+        username: username,
+      },
+    });
+
   } catch (error: any) {
-    return c.json({ success: false, error: error.message }, 500);
+    console.error('[AUTH-A ERROR]:', error.message);
+    return c.json({ status: false, message: `Gagal terhubung ke Express: ${error.message}` }, 502);
   }
 });
 
-auth.post("/verify-otp", async (c) => {
-  const { phoneNumber, otp } = await c.req.json();
-  console.log("Endpoint /auth/verify-otp diakses");
-
-  try {
-    // Cari OTP yang valid untuk nomor tersebut
-    const record = await db.select().from(PubAuth)
-      .where(
-        and(
-          eq(PubAuth.identifier, phoneNumber),
-          eq(PubAuth.type, 'whatsapp'),
-          eq(PubAuth.otp_code, otp),
-          gt(PubAuth.expires_at, new Date()) // Pastikan OTP belum expired
-        )
-      )
-      .get();
-
-    if (record) {
-      // OTP valid, bisa lanjutkan dengan logika autentikasi atau pembuatan session
-      return c.json({ success: true, message: "OTP valid" });
-    } else {
-      return c.json({ success: false, message: "OTP tidak valid atau sudah kadaluwarsa" }, 400);
-    }
-  } catch (error: any) {
-    return c.json({ success: false, error: error.message }, 500);
+// =================================================================
+// 3. ENDPOINT CEK PROFILE USER LOKAL (/auth/me)
+// =================================================================
+auth.get('/me', async (c) => {
+  const authHeader = c.req.header('Authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return c.json({ status: false, message: 'Unauthorized' }, 401);
   }
+
+  // Token valid
+  return c.json({ status: true, message: 'Token aktif' });
 });
 
 export default auth;

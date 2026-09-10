@@ -7,7 +7,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import axiosWithConfig, { setAxiosConfig } from "../services/api";
+import axiosWithConfig from "../services/api";
 
 interface Context {
   token: string;
@@ -26,28 +26,12 @@ const contextValue = {
 const TokenContext = createContext<Context>(contextValue);
 
 export function TokenProvider({ children }: Readonly<Props>) {
-  const [token, setToken] = useState(localStorage.getItem("token") ?? "");
-
-  // Daftarkan interceptor hanya SATU KALI saat aplikasi pertama kali jalan
-  useEffect(() => {
-    const interceptor = axiosWithConfig.interceptors.response.use(
-      (response) => response,
-      (error) => {
-        if (error.response?.status === 401) {
-          // Jika 401, bersihkan token agar kembali ke login
-          handleLogout();
-        }
-        return Promise.reject(error);
-      }
-    );
-
-    // Cleanup function untuk menghapus interceptor jika component unmount
-    return () => axiosWithConfig.interceptors.response.eject(interceptor);
-  }, []);
+  const [token, setToken] = useState(() => localStorage.getItem("token") ?? "");
 
   const handleLogout = useCallback(() => {
     setToken("");
     localStorage.removeItem("token");
+    localStorage.removeItem("auth_source");
   }, []);
 
   const changeToken = useCallback((newToken?: string) => {
@@ -57,13 +41,51 @@ export function TokenProvider({ children }: Readonly<Props>) {
       localStorage.setItem("token", val);
     } else {
       localStorage.removeItem("token");
+      localStorage.removeItem("auth_source");
     }
   }, []);
 
-  const tokenContextValue = useMemo(() => ({
-    token,
-    changeToken,
-  }), [token, changeToken]);
+  // 1. Request Interceptor: SELALU SISIPKAN TOKEN DARI LOCALSTORAGE
+  useEffect(() => {
+    const reqInterceptor = axiosWithConfig.interceptors.request.use(
+      (config) => {
+        const activeToken = localStorage.getItem("token");
+        if (activeToken) {
+          config.headers.Authorization = `Bearer ${activeToken}`;
+        }
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
+
+    // 2. Response Interceptor: TANGSUD 401 HANYA JIKA BUKAN DARI PROSES LOGIN
+    const resInterceptor = axiosWithConfig.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        const isAuthEndpoint = error.config?.url?.includes("/api/auth/login");
+        
+        // Jangan jalankan handleLogout jika yang 401 adalah request login itu sendiri
+        if (error.response?.status === 401 && !isAuthEndpoint) {
+          console.warn("[AUTH] Token tidak valid / 401 received. Clearing session...");
+          handleLogout();
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axiosWithConfig.interceptors.request.eject(reqInterceptor);
+      axiosWithConfig.interceptors.response.eject(resInterceptor);
+    };
+  }, [handleLogout]);
+
+  const tokenContextValue = useMemo(
+    () => ({
+      token,
+      changeToken,
+    }),
+    [token, changeToken]
+  );
 
   return (
     <TokenContext.Provider value={tokenContextValue}>
