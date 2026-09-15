@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { API2 } from "../services";
+import { API } from "../services";
 import * as Dialog from "@radix-ui/react-dialog";
 
 declare global {
   interface ImportMetaEnv {
-    readonly VITE_API2_BASE_URL: string;
+    readonly VITE_API_BASE_URL: string;
   }
 
   interface ImportMeta {
@@ -52,9 +52,9 @@ const handleSendOtp = async (e: React.FormEvent) => {
     try {
       console.log("Mengirim OTP ke:", formattedPhone);
 
-      // Gunakan instance axios (API2) secara langsung
+      // Gunakan instance axios (API) secara langsung
       // Tidak perlu menuliskan full URL karena sudah ada di axiosConfig
-      const response = await API2.post("/auth/send-otp", { 
+      const response = await API.post("/api/auth/send-otp", { 
         phoneNumber: formattedPhone 
       });
 
@@ -68,7 +68,7 @@ const handleSendOtp = async (e: React.FormEvent) => {
       }
     } catch (err) {
       console.error("Error saat mengirim OTP:", err);
-      alert("Terjadi kesalahan koneksi. Pastikan server API2 aktif.");
+      alert("Terjadi kesalahan koneksi. Pastikan server API aktif.");
     }
   };
   
@@ -78,9 +78,9 @@ const handleVerifyOtp = async (e: React.FormEvent) => {
     console.log("Memverifikasi OTP:", otp);
 
     try {
-      // 1. Gunakan API2.post (Instance Axios)
-      // Tidak perlu `${API2}`, cukup sub-path-nya saja.
-      const response = await API2.post("/auth/verify-otp", {
+      // 1. Gunakan API.post (Instance Axios)
+      // Tidak perlu `${API}`, cukup sub-path-nya saja.
+      const response = await API.post("/api/auth/verify-otp", {
         phoneNumber: "+62" + phoneNumber,
         otp: otp
       });

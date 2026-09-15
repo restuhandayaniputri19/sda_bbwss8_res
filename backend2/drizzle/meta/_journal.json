@@ -8,6 +8,20 @@
       "when": 1787147721326,
       "tag": "0000_shiny_captain_america",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1789454514568,
+      "tag": "0001_fuzzy_inhumans",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1789458886052,
+      "tag": "0002_youthful_lily_hollister",
+      "breakpoints": true
     }
   ]
 }

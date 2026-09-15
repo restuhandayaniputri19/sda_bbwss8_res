@@ -244,9 +244,59 @@ export const pengaduanMasyarakat = sqliteTable('pengaduan_masyarakat', {
     .default(sql`(strftime('%s', 'now'))`),
 });
 
+export const berita = sqliteTable('berita', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  location: text('location'),
+  img: text('img'),
+  highlighted: integer('highlighted', { mode: 'boolean' })
+    .notNull()
+    .default(false),
+  createdAt: text('created_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+  updatedAt: text('updated_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+});
+
+export const geolocation = sqliteTable('geolocation', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  title: text('title').notNull(),
+  url: text('url').notNull(),
+  location: text('location').notNull(),
+  createdAt: text('created_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+  updatedAt: text('updated_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+});
+
+export type Geolocation = typeof geolocation.$inferSelect;
+export type NewGeolocation = typeof geolocation.$inferInsert;
+
+export const banners = sqliteTable('banners', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  url: text('url').notNull(),
+  filename: text('filename').notNull(),
+  createdAt: text('created_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+  updatedAt: text('updated_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+});
+
+export type Banner = typeof banners.$inferSelect;
+export type NewBanner = typeof banners.$inferInsert;
+
 // Inferensi tipe untuk digunakan di frontend/backend
 export type PermintaanData = typeof permintaanData.$inferSelect;
 export type InsertPermintaanData = typeof permintaanData.$inferInsert;
 export type PengaduanMasyarakat = typeof pengaduanMasyarakat.$inferSelect;
 export type InsertPengaduanMasyarakat = typeof pengaduanMasyarakat.$inferInsert;
+export type Berita = typeof berita.$inferSelect;
+export type NewBerita = typeof berita.$inferInsert;
 

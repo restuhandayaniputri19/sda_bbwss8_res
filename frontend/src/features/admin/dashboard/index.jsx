@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Card from "../../../components/card";
-import api2 from "../../../services/api2";
+import api from "../../../services/api";
 import { 
   Newspaper, 
   FileSpreadsheet, 
@@ -31,8 +31,8 @@ useEffect(() => {
   let isMounted = true;
   setLoading(true);
 
-  api2
-    .get("/admin-logs?page=1&limit=5")
+  api
+    .get("/api/admin-logs?page=1&limit=5")
     .then((response) => {
       // Ambil array data dari response axios (response.data.data)
       const logsArray = response.data?.data || response.data || [];

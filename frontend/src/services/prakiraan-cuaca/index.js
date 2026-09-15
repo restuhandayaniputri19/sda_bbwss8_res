@@ -1,7 +1,7 @@
 export const getPrakiraanCuaca = async () => {
-  const API2_BASE_URL = import.meta.env.VITE_API2_BASE_URL || '/balai/bbwssumatera8/api2';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/balai/bbwssumatera8/api';
   
-  const response = await fetch(`${API2_BASE_URL}/prakiraan`);
+  const response = await fetch(`${API_BASE_URL}/api/prakiraan`);
   
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);

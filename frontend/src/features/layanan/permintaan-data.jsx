@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { API2 } from "../../services";
+import { API } from "../../services";
 import VerificationForm from "../../components/VerificationForm";
 import heroImage from "../../assets/Permintaan-data-gambar.jpeg";
 
@@ -51,7 +51,7 @@ const PermintaanDataPage = () => {
     setLoadingHistory(true);
     try {
       console.log("Mengambil riwayat untuk nomor:", noWa); // Debug log untuk memastikan nomor yang digunakan
-      const response = await API2.get(`/permintaan-data`, {
+      const response = await API.get(`/permintaan-data`, {
         params: { no_wa: noWa },
       });
       if (response.data.success) {
@@ -89,7 +89,7 @@ const PermintaanDataPage = () => {
 
     try {
       // Langsung kirim dataToSend tanpa header multipart
-      const response = await API2.post("/permintaan-data", dataForBackend);
+      const response = await API.post("/permintaan-data", dataForBackend);
 
       if (response.status === 201 || response.data.success) {
         alert("Permintaan berhasil dikirim!");

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { API2 } from "../services";
+import { API } from "../services";
 
 interface VerificationFormProps {
   onSuccess?: (phoneNumber: string) => void;
@@ -34,7 +34,7 @@ const VerificationForm = ({ onSuccess, onCancel }: VerificationFormProps) => {
 
     try {
       console.log("Mengirim OTP ke:", formattedPhone);
-      const response = await API2.post("/auth/send-otp", { 
+      const response = await API.post("/api/auth/send-otp", { 
         phoneNumber: formattedPhone 
       });
 
@@ -55,7 +55,7 @@ const VerificationForm = ({ onSuccess, onCancel }: VerificationFormProps) => {
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await API2.post("/auth/verify-otp", {
+      const response = await API.post("/api/auth/verify-otp", {
         phoneNumber: "+62" + phoneNumber,
         otp: otp
       });

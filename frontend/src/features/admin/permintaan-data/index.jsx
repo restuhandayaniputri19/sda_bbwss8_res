@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { API2 as API } from '../../../services';
+import { API } from '../../../services';
 import { Link } from "react-router-dom";
 
 const getWaktuTunggu = (createdAt) => {
@@ -21,7 +21,7 @@ const AdminPermintaan = () => {
 
   const fetchData = async (status) => {
     try {
-      const response = await API.get(`/permintaan-data?status=${status}`);
+      const response = await API.get(`/api/permintaan-data?status=${status}`);
       setPermintaan(response.data.data || []); // Pastikan data ada sebelum setState
     } catch (err) {
       console.error("Gagal mengambil data", err);

@@ -1,4 +1,4 @@
-import { useEffect } from "react"; // 1. Tambahkan import useEffect
+import { useEffect } from "react";
 import { CustomFormField, Form } from "../../components/form";
 import { Button } from "../../components/button";
 import { Input } from "../../components/input";
@@ -19,53 +19,60 @@ const LoginPage = () => {
     defaultValues: {
       username: "",
       password: "",
-      provider: "b", // Default pilihan ke 'b' (SQLite Hono) atau 'a' (Express)
+      provider: "b", // Default dikunci ke 'b' (SQLite Hono)
     },
     mode: "onChange",
   });
 
   // Bersihkan token sisa saat pengguna masuk ke halaman login
   useEffect(() => {
+    // Logika pembersihan token jika diperlukan
   }, []);
 
-const onSubmit = async (data) => {
-  try {
-    const result = await postLogin(data);
-    
-    // CETAK ISI HASIL RESPONS DI CONSOLE
-    console.log("[DEBUG RESPONS LOGIN]:", result);
+  const onSubmit = async (data) => {
+    try {
+      // Pastikan provider selalu bernilai 'b'
+      const payload = {
+        ...data,
+        provider: "b",
+      };
 
-    // Ambil token dengan memeriksa semua kemungkinan tempat
-    const token = 
-      result?.token || 
-      result?.data?.token || 
-      result?.data?.data?.token;
+      const result = await postLogin(payload);
+      
+      // CETAK ISI HASIL RESPONS DI CONSOLE
+      console.log("[DEBUG RESPONS LOGIN]:", result);
 
-    console.log("[DEBUG TOKEN]:", token);
+      // Ambil token dengan memeriksa semua kemungkinan tempat
+      const token = 
+        result?.token || 
+        result?.data?.token || 
+        result?.data?.data?.token;
 
-    if (!token) {
-      toast.error("Token tidak ditemukan pada respons server.");
-      return;
+      console.log("[DEBUG TOKEN]:", token);
+
+      if (!token) {
+        toast.error("Token tidak ditemukan pada respons server.");
+        return;
+      }
+
+      // Simpan ke localStorage
+      const selectedProvider = "B";
+      localStorage.setItem("token", token);
+      localStorage.setItem("auth_source", selectedProvider);
+      localStorage.setItem("username", payload.username);
+
+      if (changeToken) {
+        changeToken(token);
+      }
+
+      toast.success("Login berhasil!");
+      navigate("/admin", { replace: true });
+
+    } catch (error) {
+      console.error("[LOGIN ERROR]:", error);
+      toast.error("Gagal melakukan login.");
     }
-
-    // Simpan ke localStorage
-    const selectedProvider = (data.provider || "b").toUpperCase();
-    localStorage.setItem("token", token);
-    localStorage.setItem("auth_source", selectedProvider);
-    localStorage.setItem("username", data.username);
-
-    if (changeToken) {
-      changeToken(token);
-    }
-
-    toast.success("Login berhasil!");
-    navigate("/admin", { replace: true });
-
-  } catch (error) {
-    console.error("[LOGIN ERROR]:", error);
-    toast.error("Gagal melakukan login.");
-  }
-};
+  };
 
   const {
     handleSubmit,
@@ -75,7 +82,7 @@ const onSubmit = async (data) => {
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-6 font-semibold text-gray-700">
           Manage Content Website SDA
         </div>
 
@@ -84,38 +91,22 @@ const onSubmit = async (data) => {
             className="flex flex-col gap-5"
             onSubmit={handleSubmit(onSubmit)}
           >
-            {/* Pilihan Layanan / Provider */}
-<CustomFormField
-  control={form.control}
-  name="provider"
-  label="Pilih Layanan / Database"
->
-  {(field) => (
-    <div className="flex flex-col gap-2 mt-1">
-      <label className="flex items-center gap-2 cursor-pointer">
-        <input
-          type="radio"
-          name="provider"
-          value="b"
-          checked={field.value === "b" || !field.value} // Default b
-          onChange={() => field.onChange("b")}
-        />
-        <span>Baru (sda.bbwssumatera8.id)</span>
-      </label>
-
-      <label className="flex items-center gap-2 cursor-pointer">
-        <input
-          type="radio"
-          name="provider"
-          value="a"
-          checked={field.value === "a"}
-          onChange={() => field.onChange("a")}
-        />
-        <span>Warisan (sda.pu.go.id)</span>
-      </label>
-    </div>
-  )}
-</CustomFormField>
+            {/* Field Hidden Provider (Default 'b') */}
+            <div className="hidden">
+              <CustomFormField
+                control={form.control}
+                name="provider"
+                label="Provider"
+              >
+                {(field) => (
+                  <input
+                    type="hidden"
+                    {...field}
+                    value="b"
+                  />
+                )}
+              </CustomFormField>
+            </div>
 
             {/* Input Username */}
             <CustomFormField

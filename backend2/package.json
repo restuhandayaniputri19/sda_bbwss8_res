@@ -8,7 +8,8 @@
     "build": "tsup src/index.ts --format esm --clean --minify --external drizzle-orm --external better-sqlite3 --entry.index=src/index.ts",
     "start": "node dist/index.mjs",
     "test": "vitest",
-    "db:push": "drizzle-kit push --preview"
+    "db:push": "drizzle-kit push --preview",
+    "generate:doc": "tsx scripts/generate-openapi.ts"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +18,7 @@
   "dependencies": {
     "@hono/node-server": "^1.19.14",
     "@hono/swagger-ui": "^0.6.1",
+    "@hono/zod-openapi": "^1.6.3",
     "bcrypt-ts": "^8.0.1",
     "better-sqlite3": "^12.9.0",
     "dotenv": "^17.4.1",
@@ -25,7 +27,8 @@
     "linkedom": "^0.18.12",
     "node-cron": "^4.6.0",
     "sharp": "^0.35.3",
-    "ulidx": "^2.4.1"
+    "ulidx": "^2.4.1",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",

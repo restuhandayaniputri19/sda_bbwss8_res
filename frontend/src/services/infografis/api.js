@@ -1,8 +1,8 @@
-import { API2 } from "..";
+import { API } from "..";
 
 export const getInfoGrafis = async (params) => {
   try {
-    const response = await API2.get("/infografis", {
+    const response = await API.get("/api/infografis", {
       params,
     });
     return response.data;
@@ -14,7 +14,7 @@ export const getInfoGrafis = async (params) => {
 
 export const deleteInfoGrafis = async (id) => {
   try {
-    const response = await API2.delete(`/infografis/${id}`);
+    const response = await API.delete(`/api/infografis/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error in delete infografis API call:", error);
@@ -24,7 +24,7 @@ export const deleteInfoGrafis = async (id) => {
 
 export const postInfoGrafis = async (formData) => {
   try {
-    const response = await API2.post(`/infografis/upload`, formData, {
+    const response = await API.post(`/api/infografis/upload`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
@@ -36,7 +36,7 @@ export const postInfoGrafis = async (formData) => {
 
 export const editInfoGrafis = async (id, formData) => {
   try {
-    const response = await API2.put(`/infografis/${id}`, formData, {
+    const response = await API.put(`/api/infografis/${id}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
@@ -48,7 +48,7 @@ export const editInfoGrafis = async (id, formData) => {
 
 export const getInfoGrafisDetail = async (id) => {
   try {
-    const response = await API2.get(`/infografis/${id}`);
+    const response = await API.get(`/api/infografis/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching infografis detail:", error);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { API2 } from "../../services";
+import { API } from "../../services";
 import VerificationForm from "../../components/VerificationForm";
 import heroImage from "../../assets/pengaduanmasyarakat.jpeg";
 
@@ -46,7 +46,7 @@ const PengaduanMasyarakat = () => {
   const fetchHistory = async (noWa) => {
     setLoadingHistory(true);
     try {
-      const response = await API2.get(`/pengaduan-masyarakat`, {
+      const response = await API.get(`/api/pengaduan-masyarakat`, {
         params: { no_wa: noWa },
       });
       if (response.data?.success) {
@@ -92,7 +92,7 @@ const PengaduanMasyarakat = () => {
     };
 
     try {
-      const response = await API2.post("/pengaduan-masyarakat", dataForBackend);
+      const response = await API.post("/api/pengaduan-masyarakat", dataForBackend);
 
       if (response.status === 201 || response.data?.success) {
         alert("Pengaduan berhasil dikirim! Kami akan menindaklanjuti dalam 5 hari kerja.");

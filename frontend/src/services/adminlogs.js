@@ -1,8 +1,8 @@
-import { API2 } from ".";
+import { API } from ".";
 
 export const getAdminLogs = async (page = 1, limit = 10, userId = "") => {
-  const response = await API2.get(
-    `/admin-logs?page=${page}&limit=${limit}`
+  const response = await API.get(
+    `/api/admin-logs?page=${page}&limit=${limit}`
   );
   if (userId) {
     response.data.data = response.data.data.filter(
@@ -13,6 +13,6 @@ export const getAdminLogs = async (page = 1, limit = 10, userId = "") => {
 };
 
 export const getUsersOption = async () => {
-  const response = await API2.get(`/users?limit=100`);
+  const response = await API.get(`/api/users?limit=100`);
   return response.data;
 };
