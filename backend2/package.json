@@ -9,6 +9,7 @@
     "start": "node dist/index.mjs",
     "test": "vitest",
     "db:push": "drizzle-kit push --preview",
+    "db:studio": "drizzle-kit studio --port 4983 --host 0.0.0.0",
     "generate:doc": "tsx scripts/generate-openapi.ts"
   },
   "keywords": [],
