@@ -1,5 +1,5 @@
 # Tahap 1: Build
-FROM node:20-slim AS builder
+FROM node:22-slim AS builder
 WORKDIR /app
 
 # Copy file package untuk install dependencies
@@ -13,7 +13,7 @@ RUN npm run build
 RUN npm prune --production
 
 # Tahap 2: Produksi
-FROM node:20-slim
+FROM node:22-slim
 WORKDIR /app
 
 # Salin hanya hasil build dan dependencies produksi

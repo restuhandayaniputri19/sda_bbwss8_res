@@ -34,19 +34,6 @@ const api = new Hono().basePath(API_BASE_PATH);
 // Middleware Global
 app.use('*', logger());
 
-// ==========================================
-// DRIZZLE STUDIO REDIRECT (/dbshell)
-// Dipasang di 'app' root agar URL-nya murni /dbshell
-// ==========================================
-api.get('/dbshell', (c) => {
-  const host = c.req.header('host')?.split(':')[0] || 'localhost';
-  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-  
-  // Mengarahkan langsung ke Drizzle Studio (Port 4983)
-  const studioUrl = `${protocol}://${host}:4983`;
-  return c.redirect(studioUrl);
-});
-
 // 1. CORS
 const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173')
   .split(',')
