@@ -6,6 +6,7 @@ import path from 'path';
 import fs from 'fs/promises';
 import { existsSync } from 'fs';
 import { authentication } from '../middleware/authentication';
+import { getPublicUploadUrl } from '../lib/public-url';
 
 const app = new Hono();
 
@@ -130,7 +131,7 @@ app.post('/upload', authentication, async (c) => {
     const savedFiles = await Promise.all(
       files.map(async (file) => {
         const filename = await saveUploadedFile(file, 'banners');
-        const fileUrl = `${protocol}://${host}/uploads/banners/${filename}`;
+        const fileUrl = getPublicUploadUrl(c.req.url, 'banners', filename);
 
         const [inserted] = await db
           .insert(banners)

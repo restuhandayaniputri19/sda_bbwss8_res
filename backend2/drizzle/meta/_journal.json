@@ -22,6 +22,41 @@
       "when": 1789458886052,
       "tag": "0002_youthful_lily_hollister",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1791466296784,
+      "tag": "0003_amusing_may_parker",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1791467100627,
+      "tag": "0004_unique_whirlwind",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1791467387970,
+      "tag": "0005_wet_psylocke",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1791467773706,
+      "tag": "0006_secret_deathbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1791497429204,
+      "tag": "0007_lumpy_calypso",
+      "breakpoints": true
     }
   ]
 }

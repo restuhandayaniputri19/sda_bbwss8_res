@@ -6,10 +6,11 @@ import path from 'path';
 import fs from 'fs/promises';
 import { existsSync } from 'fs';
 import { authentication } from '../middleware/authentication';
+import { getPublicUploadUrl } from '../lib/public-url';
 
 const app = new Hono();
 
-// Helper untuk penentuan protokol (HTTPS / HTTP)
+// Helper untuk penentuan protokol
 const getProtocol = (c: any) =>
   process.env.NODE_ENV === 'production' ? 'https' : 'http';
 
@@ -49,8 +50,13 @@ const deleteFile = async (folderName: string, fileName: string) => {
 // 1. Read All Berita (Pagination, Filter, Search)
 app.get('/', async (c) => {
   try {
-    const page = parseInt(c.req.query('page') || '1');
-    const limit = parseInt(c.req.query('limit') || '10');
+    // Sanitasi nilai page agar tidak pernah kurang dari 1
+    const rawPage = parseInt(c.req.query('page') || '1', 10);
+    const page = Number.isNaN(rawPage) || rawPage < 1 ? 1 : rawPage;
+
+    const rawLimit = parseInt(c.req.query('limit') || '10', 10);
+    const limit = Number.isNaN(rawLimit) || rawLimit < 1 ? 10 : rawLimit;
+
     const offset = (page - 1) * limit;
 
     const sortParam = c.req.query('sort') === 'oldest' ? asc(berita.createdAt) : desc(berita.createdAt);
@@ -110,6 +116,7 @@ app.get('/', async (c) => {
       },
     });
   } catch (error: any) {
+    console.error('Error GET /berita:', error);
     return c.json({ error: error.message }, 500);
   }
 });
@@ -135,6 +142,7 @@ app.get('/highlighted', async (c) => {
 
     return c.json({ data: formattedData });
   } catch (error: any) {
+    console.error('Error GET /berita/highlighted:', error);
     return c.json({ error: error.message }, 500);
   }
 });
@@ -142,7 +150,11 @@ app.get('/highlighted', async (c) => {
 // 3. Read Berita By ID
 app.get('/:id', async (c) => {
   try {
-    const id = parseInt(c.req.param('id'));
+    const id = parseInt(c.req.param('id'), 10);
+    if (Number.isNaN(id)) {
+      return c.json({ message: 'Invalid ID format' }, 400);
+    }
+
     const [item] = await db.select().from(berita).where(eq(berita.id, id));
 
     if (!item) {
@@ -154,6 +166,7 @@ app.get('/:id', async (c) => {
 
     return c.json({ data: item });
   } catch (error: any) {
+    console.error(`Error GET /berita/${c.req.param('id')}:`, error);
     return c.json({ error: error.message }, 500);
   }
 });
@@ -166,20 +179,21 @@ app.get('/:id', async (c) => {
 app.post('/', authentication, async (c) => {
   try {
     const formData = await c.req.parseBody();
-    const title = formData['title'] as string;
-    const description = formData['description'] as string;
-    const location = formData['location'] as string;
-    const highlighted = formData['highlighted'] === 'true' || formData['highlighted'] === '1';
-    const file = formData['img'] as File;
 
-    if (!file || typeof file === 'string') {
-      return c.json({ message: 'Image file is required' }, 400);
+    const title = (formData['title'] as string) || '';
+    const description = (formData['description'] as string) || '';
+    const location = (formData['location'] as string) || '';
+    const highlighted = formData['highlighted'] === 'true' || formData['highlighted'] === '1';
+
+    // Mendukung key 'img', 'file', atau 'image' dari FormData frontend
+    const file = (formData['img'] || formData['file'] || formData['image']) as File;
+
+    if (!file || typeof file === 'string' || typeof file.arrayBuffer !== 'function') {
+      return c.json({ message: 'Image file is required and must be a valid file' }, 400);
     }
 
     const filename = await saveUploadedFile(file, 'berita');
-    const host = c.req.header('host') || 'localhost:3000';
-    const protocol = getProtocol(c);
-    const imgUrl = `${protocol}://${host}/uploads/berita/${filename}`;
+    const imgUrl = getPublicUploadUrl(c.req.url, 'berita', filename);
 
     const [inserted] = await db
       .insert(berita)
@@ -194,6 +208,7 @@ app.post('/', authentication, async (c) => {
 
     return c.json({ data: inserted }, 201);
   } catch (error: any) {
+    console.error('Error POST /berita:', error);
     return c.json({ error: error.message }, 500);
   }
 });
@@ -201,7 +216,11 @@ app.post('/', authentication, async (c) => {
 // 5. Update Berita
 app.put('/:id', authentication, async (c) => {
   try {
-    const id = parseInt(c.req.param('id'));
+    const id = parseInt(c.req.param('id'), 10);
+    if (Number.isNaN(id)) {
+      return c.json({ message: 'Invalid ID format' }, 400);
+    }
+
     const [existing] = await db.select().from(berita).where(eq(berita.id, id));
 
     if (!existing) {
@@ -216,19 +235,18 @@ app.put('/:id', authentication, async (c) => {
       formData['highlighted'] !== undefined
         ? formData['highlighted'] === 'true' || formData['highlighted'] === '1'
         : existing.highlighted;
-    const file = formData['img'] as File;
+
+    const file = (formData['img'] || formData['file'] || formData['image']) as File;
 
     let imgUrl = existing.img;
 
-    if (file && typeof file !== 'string') {
+    if (file && typeof file !== 'string' && typeof file.arrayBuffer === 'function') {
       if (existing.img) {
         const oldFileName = path.basename(existing.img);
         await deleteFile('berita', oldFileName);
       }
       const filename = await saveUploadedFile(file, 'berita');
-      const host = c.req.header('host') || 'localhost:3000';
-      const protocol = getProtocol(c);
-      imgUrl = `${protocol}://${host}/uploads/berita/${filename}`;
+      imgUrl = getPublicUploadUrl(c.req.url, 'berita', filename);
     }
 
     const [updated] = await db
@@ -246,6 +264,7 @@ app.put('/:id', authentication, async (c) => {
 
     return c.json({ data: updated });
   } catch (error: any) {
+    console.error(`Error PUT /berita/${c.req.param('id')}:`, error);
     return c.json({ error: error.message }, 500);
   }
 });
@@ -253,7 +272,11 @@ app.put('/:id', authentication, async (c) => {
 // 6. Delete Berita
 app.delete('/:id', authentication, async (c) => {
   try {
-    const id = parseInt(c.req.param('id'));
+    const id = parseInt(c.req.param('id'), 10);
+    if (Number.isNaN(id)) {
+      return c.json({ message: 'Invalid ID format' }, 400);
+    }
+
     const [existing] = await db.select().from(berita).where(eq(berita.id, id));
 
     if (!existing) {
@@ -269,6 +292,7 @@ app.delete('/:id', authentication, async (c) => {
 
     return c.json({ message: 'Berita deleted successfully' });
   } catch (error: any) {
+    console.error(`Error DELETE /berita/${c.req.param('id')}:`, error);
     return c.json({ error: error.message }, 500);
   }
 });

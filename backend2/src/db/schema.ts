@@ -75,6 +75,97 @@ export const adminLogs = sqliteTable("admin_logs", {
 export type AdminLog = typeof adminLogs.$inferSelect;
 export type NewAdminLog = typeof adminLogs.$inferInsert;
 
+export const rpsda = sqliteTable('rpsda', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  title: text('title').notNull(),
+  url: text('url').notNull(),
+  createdAt: text('created_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+  updatedAt: text('updated_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+});
+
+export type Rpsda = typeof rpsda.$inferSelect;
+export type NewRpsda = typeof rpsda.$inferInsert;
+
+export const polaRencana = sqliteTable('pola_rencana', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  pdf: text('pdf').notNull(),
+  createdAt: text('created_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+  updatedAt: text('updated_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+});
+
+export type PolaRencana = typeof polaRencana.$inferSelect;
+export type NewPolaRencana = typeof polaRencana.$inferInsert;
+
+export const majalah = sqliteTable('majalah', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  thumbnail: text('thumbnail').notNull(),
+  title: text('title').notNull(),
+  url: text('url').notNull(),
+  createdAt: text('created_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+  updatedAt: text('updated_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+});
+
+export type Majalah = typeof majalah.$inferSelect;
+export type NewMajalah = typeof majalah.$inferInsert;
+
+export const youtube = sqliteTable('youtube', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  url: text('url').notNull(),
+  createdAt: text('created_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+  updatedAt: text('updated_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+});
+
+export type Youtube = typeof youtube.$inferSelect;
+export type NewYoutube = typeof youtube.$inferInsert;
+
+export const pengumuman = sqliteTable('pengumuman', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  title: text('title').notNull(),
+  url: text('url'),
+  createdAt: text('created_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+  updatedAt: text('updated_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+});
+
+export type Pengumuman = typeof pengumuman.$inferSelect;
+export type NewPengumuman = typeof pengumuman.$inferInsert;
+
+export const informasi = sqliteTable('informasi', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  location: text('location'),
+  url: text('url'),
+  createdAt: text('created_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+  updatedAt: text('updated_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+});
+
+export type Informasi = typeof informasi.$inferSelect;
+export type NewInformasi = typeof informasi.$inferInsert;
+
 export const kesiapsiagaan_bencana = sqliteTable("kesiapsiagaan_bencana", {
   // Primary Key
   id: integer("id").primaryKey({ autoIncrement: true }),

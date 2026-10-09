@@ -1,27 +1,27 @@
 import { Hono } from 'hono';
 import { db } from '../db';
-import { geolocation } from '../db/schema';
+import { informasi } from '../db/schema';
 import { eq, like, desc, asc, count } from 'drizzle-orm';
 import path from 'path';
 import fs from 'fs/promises';
 import { existsSync } from 'fs';
 import { authentication } from '../middleware/authentication';
-import { getPublicUploadUrl } from '../lib/public-url';
 
 const app = new Hono();
 
-// Helper Protocol (HTTP / HTTPS)
+// Helper untuk penentuan protokol (HTTPS / HTTP)
 const getProtocol = (c: any) =>
   process.env.NODE_ENV === 'production' ? 'https' : 'http';
 
-// Helper Upload File
+// Helper Penyimpanan File Upload
 const saveUploadedFile = async (file: File, folderName: string): Promise<string> => {
   const uploadDir = path.join(process.cwd(), 'uploads', folderName);
   if (!existsSync(uploadDir)) {
     await fs.mkdir(uploadDir, { recursive: true });
   }
 
-  const fileExt = path.extname(file.name) || '.png';
+  const originalName = file.name || 'informasi_file.pdf';
+  const fileExt = path.extname(originalName) || '.pdf';
   const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${fileExt}`;
   const filePath = path.join(uploadDir, fileName);
 
@@ -31,7 +31,7 @@ const saveUploadedFile = async (file: File, folderName: string): Promise<string>
   return fileName;
 };
 
-// Helper Delete File
+// Helper Penghapusan File
 const deleteFile = async (folderName: string, fileName: string) => {
   try {
     const filePath = path.join(process.cwd(), 'uploads', folderName, fileName);
@@ -47,9 +47,8 @@ const deleteFile = async (folderName: string, fileName: string) => {
 // RUTE PUBLIK (GET)
 // ==========================================
 
-// 1. Read All Geolocations (Pagination, Search, & Sorting)
+// 1. Read All Informasi (Pagination, Search, & Sorting)
 app.get('/', async (c) => {
-    console.log('--- GET /geolocation ---');
   try {
     const page = parseInt(c.req.query('page') || '1');
     const limit = parseInt(c.req.query('limit') || '10');
@@ -57,20 +56,20 @@ app.get('/', async (c) => {
 
     const searchQuery = (c.req.query('search') || '').toLowerCase();
     const sortParam = c.req.query('sort') || 'newest';
-    const orderBy = sortParam === 'oldest' ? asc(geolocation.createdAt) : desc(geolocation.createdAt);
+    const orderBy = sortParam === 'oldest' ? asc(informasi.createdAt) : desc(informasi.createdAt);
 
-    const whereClause = searchQuery ? like(geolocation.title, `%${searchQuery}%`) : undefined;
+    const whereClause = searchQuery ? like(informasi.title, `%${searchQuery}%`) : undefined;
 
-    // Total Count
+    // Hitung Total Data
     const [{ totalItems }] = await db
       .select({ totalItems: count() })
-      .from(geolocation)
+      .from(informasi)
       .where(whereClause);
 
-    // Fetch Rows
-    const geolocationList = await db
+    // Ambil Data
+    const informasiList = await db
       .select()
-      .from(geolocation)
+      .from(informasi)
       .where(whereClause)
       .orderBy(orderBy)
       .limit(limit)
@@ -79,13 +78,14 @@ app.get('/', async (c) => {
     const protocol = getProtocol(c);
     const totalPages = Math.ceil(totalItems / limit);
 
-    const formattedData = geolocationList.map((geo) => ({
-      id: geo.id,
-      title: geo.title,
-      location: geo.location,
-      url: geo.url.replace(/^https?:\/\//, `${protocol}://`),
-      createdAt: geo.createdAt,
-      updatedAt: geo.updatedAt,
+    const formattedData = informasiList.map((info) => ({
+      id: info.id,
+      title: info.title,
+      description: info.description,
+      location: info.location,
+      url: info.url ? info.url.replace(/^https?:\/\//i, `${protocol}://`) : null,
+      createdAt: info.createdAt,
+      updatedAt: info.updatedAt,
     }));
 
     return c.json({
@@ -98,32 +98,35 @@ app.get('/', async (c) => {
       },
     });
   } catch (error: any) {
+    console.error('Error GET /informasi:', error);
     return c.json({ error: error.message }, 500);
   }
 });
 
-// 2. Read Geolocation By ID
+// 2. Read Informasi By ID
 app.get('/:id', async (c) => {
   try {
     const id = parseInt(c.req.param('id'));
-    const [geo] = await db.select().from(geolocation).where(eq(geolocation.id, id));
+    const [info] = await db.select().from(informasi).where(eq(informasi.id, id));
 
-    if (!geo) {
-      return c.json({ message: 'Geolocation not found' }, 404);
+    if (!info) {
+      return c.json({ message: 'Informasi not found' }, 404);
     }
 
     const protocol = getProtocol(c);
     const formattedData = {
-      id: geo.id,
-      title: geo.title,
-      location: geo.location,
-      url: geo.url.replace(/^https?:\/\//, `${protocol}://`),
-      createdAt: geo.createdAt,
-      updatedAt: geo.updatedAt,
+      id: info.id,
+      title: info.title,
+      description: info.description,
+      location: info.location,
+      url: info.url ? info.url.replace(/^https?:\/\//i, `${protocol}://`) : null,
+      createdAt: info.createdAt,
+      updatedAt: info.updatedAt,
     };
 
     return c.json({ data: formattedData });
   } catch (error: any) {
+    console.error('Error GET /informasi/:id:', error);
     return c.json({ error: error.message }, 500);
   }
 });
@@ -132,113 +135,117 @@ app.get('/:id', async (c) => {
 // RUTE PROTEKSI AUTHENTICATION (POST, PUT, DELETE)
 // ==========================================
 
-// 3. Create Geolocation
+// 3. Create Informasi
 app.post('/', authentication, async (c) => {
   try {
     const formData = await c.req.parseBody();
     const title = formData['title'] as string;
+    const description = formData['description'] as string;
     const location = formData['location'] as string;
-    const file = formData['file'] as File;
+    const file = formData['file'];
 
-    if (!file || typeof file === 'string') {
-      return c.json({ message: 'File is required' }, 400);
+    if (!title || !description) {
+      return c.json({ message: 'Title and description are required' }, 400);
     }
 
-    const filename = await saveUploadedFile(file, 'geolocation');
-    const fileUrl = getPublicUploadUrl(c.req.url, 'geolocation', filename);
+    let fileUrl: string | null = null;
+
+    if (file && typeof file !== 'string' && file instanceof File) {
+      const filename = await saveUploadedFile(file, 'informasi');
+      const host = c.req.header('host') || 'localhost:3000';
+      const protocol = getProtocol(c);
+      
+      // Menggunakan path lengkap termasuk basePath agar file static menyatu
+      fileUrl = `${protocol}://${host}/balai/bbwssumatera8/api/uploads/informasi/${filename}`;
+    }
 
     const [inserted] = await db
-      .insert(geolocation)
+      .insert(informasi)
       .values({
         title,
+        description,
         location,
         url: fileUrl,
       })
       .returning();
 
-    return c.json({
-      data: {
-        id: inserted.id,
-        title: inserted.title,
-        location: inserted.location,
-        url: inserted.url,
-        createdAt: inserted.createdAt,
-        updatedAt: inserted.updatedAt,
-      },
-    }, 201);
+    return c.json({ data: inserted }, 201);
   } catch (error: any) {
+    console.error('Error POST /informasi:', error);
     return c.json({ error: error.message }, 500);
   }
 });
 
-// 4. Update Geolocation
+// 4. Update Informasi
 app.put('/:id', authentication, async (c) => {
   try {
     const id = parseInt(c.req.param('id'));
-    const [existing] = await db.select().from(geolocation).where(eq(geolocation.id, id));
+    const [existing] = await db.select().from(informasi).where(eq(informasi.id, id));
 
     if (!existing) {
-      return c.json({ message: 'Geolocation not found' }, 404);
+      return c.json({ message: 'Informasi not found' }, 404);
     }
 
     const formData = await c.req.parseBody();
     const title = (formData['title'] as string) || existing.title;
+    const description = (formData['description'] as string) || existing.description;
     const location = (formData['location'] as string) || existing.location;
-    const file = formData['file'] as File;
+    const file = formData['file'];
 
     let newUrl = existing.url;
 
-    if (file && typeof file !== 'string') {
-      const oldFileName = path.basename(existing.url);
-      await deleteFile('geolocation', oldFileName);
+    if (file && typeof file !== 'string' && file instanceof File) {
+      if (existing.url) {
+        const oldFileName = path.basename(existing.url);
+        await deleteFile('informasi', oldFileName);
+      }
 
-      const filename = await saveUploadedFile(file, 'geolocation');
-      newUrl = getPublicUploadUrl(c.req.url, 'geolocation', filename);
+      const filename = await saveUploadedFile(file, 'informasi');
+      const host = c.req.header('host') || 'localhost:3000';
+      const protocol = getProtocol(c);
+      
+      newUrl = `${protocol}://${host}/balai/bbwssumatera8/api/uploads/informasi/${filename}`;
     }
 
     const [updated] = await db
-      .update(geolocation)
+      .update(informasi)
       .set({
         title,
+        description,
         location,
         url: newUrl,
         updatedAt: new Date().toISOString(),
       })
-      .where(eq(geolocation.id, id))
+      .where(eq(informasi.id, id))
       .returning();
 
-    return c.json({
-      data: {
-        id: updated.id,
-        title: updated.title,
-        location: updated.location,
-        url: updated.url,
-        createdAt: updated.createdAt,
-        updatedAt: updated.updatedAt,
-      },
-    });
+    return c.json({ data: updated });
   } catch (error: any) {
+    console.error('Error PUT /informasi/:id:', error);
     return c.json({ error: error.message }, 500);
   }
 });
 
-// 5. Delete Geolocation
+// 5. Delete Informasi
 app.delete('/:id', authentication, async (c) => {
   try {
     const id = parseInt(c.req.param('id'));
-    const [existing] = await db.select().from(geolocation).where(eq(geolocation.id, id));
+    const [existing] = await db.select().from(informasi).where(eq(informasi.id, id));
 
     if (!existing) {
-      return c.json({ message: 'Geolocation not found' }, 404);
+      return c.json({ message: 'Informasi not found' }, 404);
     }
 
-    const fileName = path.basename(existing.url);
-    await deleteFile('geolocation', fileName);
+    if (existing.url) {
+      const fileName = path.basename(existing.url);
+      await deleteFile('informasi', fileName);
+    }
 
-    await db.delete(geolocation).where(eq(geolocation.id, id));
+    await db.delete(informasi).where(eq(informasi.id, id));
 
-    return c.json({ message: 'Geolocation deleted successfully' });
+    return c.json({ message: 'Informasi deleted successfully' });
   } catch (error: any) {
+    console.error('Error DELETE /informasi/:id:', error);
     return c.json({ error: error.message }, 500);
   }
 });

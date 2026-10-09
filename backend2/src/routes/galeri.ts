@@ -6,6 +6,7 @@ import { authentication } from '../middleware/authentication';
 import { join } from 'node:path';
 import { deleteUploadedImage, saveOptimizedWebp } from '../lib/image';
 import { createAdminLog } from '../utils/logger';
+import { getPublicUploadUrl } from '../lib/public-url';
 
 const uploadDir = join(process.cwd(), 'uploads', 'galeri');
 
@@ -88,14 +89,7 @@ galeri.post('/upload', authentication, async (c) => {
         return c.json({ message: error instanceof Error ? error.message : 'Gagal memproses gambar' }, 400);
     }
 
-    const urlObj = new URL(c.req.url);
-    const protocol = urlObj.protocol;
-    const host = urlObj.host;
-
-    const currentRoutePath = '/galeri/upload';
-    const basePath = c.req.path.split(currentRoutePath)[0];
-
-    const generatedUrl = `${protocol}//${host}${basePath}/uploads/galeri/${fileName}`;
+    const generatedUrl = getPublicUploadUrl(c.req.url, 'galeri', fileName);
 
     const newItem = await db.insert(galleries).values({
         url: generatedUrl,
@@ -140,9 +134,7 @@ galeri.put('/:id', authentication, async (c) => {
             return c.json({ message: error instanceof Error ? error.message : 'Gagal memproses gambar' }, 400);
         }
 
-        const urlObj = new URL(c.req.url);
-        const basePath = c.req.path.split(`/galeri/${id}`)[0];
-        imageUrl = `${urlObj.protocol}//${urlObj.host}${basePath}/uploads/galeri/${fileName}`;
+        imageUrl = getPublicUploadUrl(c.req.url, 'galeri', fileName);
     }
 
     const updatedItem = await db.update(galleries)

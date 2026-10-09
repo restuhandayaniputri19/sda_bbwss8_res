@@ -1,27 +1,27 @@
 import { Hono } from 'hono';
 import { db } from '../db';
-import { geolocation } from '../db/schema';
+import { rpsda } from '../db/schema';
 import { eq, like, desc, asc, count } from 'drizzle-orm';
 import path from 'path';
 import fs from 'fs/promises';
 import { existsSync } from 'fs';
 import { authentication } from '../middleware/authentication';
-import { getPublicUploadUrl } from '../lib/public-url';
 
 const app = new Hono();
 
-// Helper Protocol (HTTP / HTTPS)
+// Helper untuk menentukan protokol (HTTPS / HTTP)
 const getProtocol = (c: any) =>
   process.env.NODE_ENV === 'production' ? 'https' : 'http';
 
-// Helper Upload File
+// Helper Penyimpanan File Upload
 const saveUploadedFile = async (file: File, folderName: string): Promise<string> => {
   const uploadDir = path.join(process.cwd(), 'uploads', folderName);
   if (!existsSync(uploadDir)) {
     await fs.mkdir(uploadDir, { recursive: true });
   }
 
-  const fileExt = path.extname(file.name) || '.png';
+  const originalName = file.name || 'rpsda_file.pdf';
+  const fileExt = path.extname(originalName) || '.pdf';
   const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${fileExt}`;
   const filePath = path.join(uploadDir, fileName);
 
@@ -31,7 +31,7 @@ const saveUploadedFile = async (file: File, folderName: string): Promise<string>
   return fileName;
 };
 
-// Helper Delete File
+// Helper Penghapusan File
 const deleteFile = async (folderName: string, fileName: string) => {
   try {
     const filePath = path.join(process.cwd(), 'uploads', folderName, fileName);
@@ -47,9 +47,8 @@ const deleteFile = async (folderName: string, fileName: string) => {
 // RUTE PUBLIK (GET)
 // ==========================================
 
-// 1. Read All Geolocations (Pagination, Search, & Sorting)
+// 1. Read All RPSDA (Pagination, Search, & Sorting)
 app.get('/', async (c) => {
-    console.log('--- GET /geolocation ---');
   try {
     const page = parseInt(c.req.query('page') || '1');
     const limit = parseInt(c.req.query('limit') || '10');
@@ -57,20 +56,20 @@ app.get('/', async (c) => {
 
     const searchQuery = (c.req.query('search') || '').toLowerCase();
     const sortParam = c.req.query('sort') || 'newest';
-    const orderBy = sortParam === 'oldest' ? asc(geolocation.createdAt) : desc(geolocation.createdAt);
+    const orderBy = sortParam === 'oldest' ? asc(rpsda.createdAt) : desc(rpsda.createdAt);
 
-    const whereClause = searchQuery ? like(geolocation.title, `%${searchQuery}%`) : undefined;
+    const whereClause = searchQuery ? like(rpsda.title, `%${searchQuery}%`) : undefined;
 
-    // Total Count
+    // Hitung Total Data
     const [{ totalItems }] = await db
       .select({ totalItems: count() })
-      .from(geolocation)
+      .from(rpsda)
       .where(whereClause);
 
-    // Fetch Rows
-    const geolocationList = await db
+    // Ambil Data
+    const rpsdaList = await db
       .select()
-      .from(geolocation)
+      .from(rpsda)
       .where(whereClause)
       .orderBy(orderBy)
       .limit(limit)
@@ -79,13 +78,12 @@ app.get('/', async (c) => {
     const protocol = getProtocol(c);
     const totalPages = Math.ceil(totalItems / limit);
 
-    const formattedData = geolocationList.map((geo) => ({
-      id: geo.id,
-      title: geo.title,
-      location: geo.location,
-      url: geo.url.replace(/^https?:\/\//, `${protocol}://`),
-      createdAt: geo.createdAt,
-      updatedAt: geo.updatedAt,
+    const formattedData = rpsdaList.map((item) => ({
+      id: item.id,
+      title: item.title,
+      url: item.url ? item.url.replace(/^https?:\/\//i, `${protocol}://`) : null,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
     }));
 
     return c.json({
@@ -98,32 +96,33 @@ app.get('/', async (c) => {
       },
     });
   } catch (error: any) {
+    console.error('Error GET /rpsda:', error);
     return c.json({ error: error.message }, 500);
   }
 });
 
-// 2. Read Geolocation By ID
+// 2. Read RPSDA By ID
 app.get('/:id', async (c) => {
   try {
     const id = parseInt(c.req.param('id'));
-    const [geo] = await db.select().from(geolocation).where(eq(geolocation.id, id));
+    const [item] = await db.select().from(rpsda).where(eq(rpsda.id, id));
 
-    if (!geo) {
-      return c.json({ message: 'Geolocation not found' }, 404);
+    if (!item) {
+      return c.json({ message: 'RPSDA not found' }, 404);
     }
 
     const protocol = getProtocol(c);
     const formattedData = {
-      id: geo.id,
-      title: geo.title,
-      location: geo.location,
-      url: geo.url.replace(/^https?:\/\//, `${protocol}://`),
-      createdAt: geo.createdAt,
-      updatedAt: geo.updatedAt,
+      id: item.id,
+      title: item.title,
+      url: item.url ? item.url.replace(/^https?:\/\//i, `${protocol}://`) : null,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
     };
 
     return c.json({ data: formattedData });
   } catch (error: any) {
+    console.error('Error GET /rpsda/:id:', error);
     return c.json({ error: error.message }, 500);
   }
 });
@@ -132,113 +131,105 @@ app.get('/:id', async (c) => {
 // RUTE PROTEKSI AUTHENTICATION (POST, PUT, DELETE)
 // ==========================================
 
-// 3. Create Geolocation
+// 3. Create RPSDA
 app.post('/', authentication, async (c) => {
   try {
     const formData = await c.req.parseBody();
     const title = formData['title'] as string;
-    const location = formData['location'] as string;
-    const file = formData['file'] as File;
+    const file = formData['rpsda']; // membaca field 'rpsda'
 
-    if (!file || typeof file === 'string') {
-      return c.json({ message: 'File is required' }, 400);
+    if (!file || typeof file === 'string' || !(file instanceof File)) {
+      return c.json({ message: 'RPSDA file is required' }, 400);
     }
 
-    const filename = await saveUploadedFile(file, 'geolocation');
-    const fileUrl = getPublicUploadUrl(c.req.url, 'geolocation', filename);
+    const filename = await saveUploadedFile(file, 'rpsda');
+    const host = c.req.header('host') || 'localhost:3000';
+    const protocol = getProtocol(c);
+
+    // Membentuk URL publik lengkap menyertakan basePath
+    const fileUrl = `${protocol}://${host}/balai/bbwssumatera8/api/uploads/rpsda/${filename}`;
 
     const [inserted] = await db
-      .insert(geolocation)
+      .insert(rpsda)
       .values({
         title,
-        location,
         url: fileUrl,
       })
       .returning();
 
-    return c.json({
-      data: {
-        id: inserted.id,
-        title: inserted.title,
-        location: inserted.location,
-        url: inserted.url,
-        createdAt: inserted.createdAt,
-        updatedAt: inserted.updatedAt,
-      },
-    }, 201);
+    return c.json({ data: inserted }, 201);
   } catch (error: any) {
+    console.error('Error POST /rpsda:', error);
     return c.json({ error: error.message }, 500);
   }
 });
 
-// 4. Update Geolocation
+// 4. Update RPSDA
 app.put('/:id', authentication, async (c) => {
   try {
     const id = parseInt(c.req.param('id'));
-    const [existing] = await db.select().from(geolocation).where(eq(geolocation.id, id));
+    const [existing] = await db.select().from(rpsda).where(eq(rpsda.id, id));
 
     if (!existing) {
-      return c.json({ message: 'Geolocation not found' }, 404);
+      return c.json({ message: 'RPSDA not found' }, 404);
     }
 
     const formData = await c.req.parseBody();
     const title = (formData['title'] as string) || existing.title;
-    const location = (formData['location'] as string) || existing.location;
-    const file = formData['file'] as File;
+    const file = formData['rpsda'];
 
     let newUrl = existing.url;
 
-    if (file && typeof file !== 'string') {
-      const oldFileName = path.basename(existing.url);
-      await deleteFile('geolocation', oldFileName);
+    if (file && typeof file !== 'string' && file instanceof File) {
+      if (existing.url) {
+        const oldFileName = path.basename(existing.url);
+        await deleteFile('rpsda', oldFileName);
+      }
 
-      const filename = await saveUploadedFile(file, 'geolocation');
-      newUrl = getPublicUploadUrl(c.req.url, 'geolocation', filename);
+      const filename = await saveUploadedFile(file, 'rpsda');
+      const host = c.req.header('host') || 'localhost:3000';
+      const protocol = getProtocol(c);
+
+      newUrl = `${protocol}://${host}/balai/bbwssumatera8/api/uploads/rpsda/${filename}`;
     }
 
     const [updated] = await db
-      .update(geolocation)
+      .update(rpsda)
       .set({
         title,
-        location,
         url: newUrl,
         updatedAt: new Date().toISOString(),
       })
-      .where(eq(geolocation.id, id))
+      .where(eq(rpsda.id, id))
       .returning();
 
-    return c.json({
-      data: {
-        id: updated.id,
-        title: updated.title,
-        location: updated.location,
-        url: updated.url,
-        createdAt: updated.createdAt,
-        updatedAt: updated.updatedAt,
-      },
-    });
+    return c.json({ data: updated });
   } catch (error: any) {
+    console.error('Error PUT /rpsda/:id:', error);
     return c.json({ error: error.message }, 500);
   }
 });
 
-// 5. Delete Geolocation
+// 5. Delete RPSDA
 app.delete('/:id', authentication, async (c) => {
   try {
     const id = parseInt(c.req.param('id'));
-    const [existing] = await db.select().from(geolocation).where(eq(geolocation.id, id));
+    const [existing] = await db.select().from(rpsda).where(eq(rpsda.id, id));
 
     if (!existing) {
-      return c.json({ message: 'Geolocation not found' }, 404);
+      return c.json({ message: 'RPSDA not found' }, 404);
     }
 
-    const fileName = path.basename(existing.url);
-    await deleteFile('geolocation', fileName);
+    if (existing.url) {
+      const fileName = path.basename(existing.url);
+      await deleteFile('rpsda', fileName);
+    }
 
-    await db.delete(geolocation).where(eq(geolocation.id, id));
+    await db.delete(rpsda).where(eq(rpsda.id, id));
 
-    return c.json({ message: 'Geolocation deleted successfully' });
+    return c.json({ message: 'RPSDA deleted successfully' });
   } catch (error: any) {
+    console.error('Error DELETE /rpsda/:id:', error);
     return c.json({ error: error.message }, 500);
   }
 });

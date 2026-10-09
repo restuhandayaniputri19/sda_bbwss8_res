@@ -6,6 +6,7 @@ import { authentication } from '../middleware/authentication';
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { createAdminLog } from '../utils/logger';
+import { getPublicUploadUrl } from '../lib/public-url';
 
 const uploadDir = join(process.cwd(), 'uploads', 'kesiapsiagaan-bencana');
 if (!existsSync(uploadDir)) {
@@ -104,13 +105,7 @@ route.post('/upload', authentication, async (c) => {
   const arrayBuffer = await file.arrayBuffer();
   writeFileSync(filePath, Buffer.from(arrayBuffer));
 
-  const urlObj = new URL(c.req.url);
-  const host = urlObj.host;
-
-  const currentRoutePath = '/kesiapsiagaan-bencana/upload';
-  const basePath = c.req.path.split(currentRoutePath)[0];
-
-  const generatedUrl = `https://${host}${basePath}/uploads/kesiapsiagaan-bencana/${fileName}`;
+  const generatedUrl = getPublicUploadUrl(c.req.url, 'kesiapsiagaan-bencana', fileName);
 
   const newItem = await db
     .insert(kesiapsiagaan_bencana)

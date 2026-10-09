@@ -164,12 +164,12 @@
         }
       }
     },
-    "/balai/bbwssumatera8/api/uploads/*": {
+    "/balai/bbwssumatera8/uploads/*": {
       "all": {
         "tags": [
           "Uploads"
         ],
-        "summary": "ALL /balai/bbwssumatera8/api/uploads/*",
+        "summary": "ALL /balai/bbwssumatera8/uploads/*",
         "responses": {
           "200": {
             "description": "Respons Berhasil",
@@ -906,6 +906,113 @@
           "Berita"
         ],
         "summary": "DELETE /balai/bbwssumatera8/api/berita/{id}",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respons Berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi (Unauthorized)"
+          },
+          "404": {
+            "description": "Resource Tidak Ditemukan"
+          },
+          "500": {
+            "description": "Kesalahan Server Internal"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/balai/bbwssumatera8/api/banner": {
+      "get": {
+        "tags": [
+          "Banner"
+        ],
+        "summary": "GET /balai/bbwssumatera8/api/banner",
+        "responses": {
+          "200": {
+            "description": "Respons Berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi (Unauthorized)"
+          },
+          "404": {
+            "description": "Resource Tidak Ditemukan"
+          },
+          "500": {
+            "description": "Kesalahan Server Internal"
+          }
+        }
+      }
+    },
+    "/balai/bbwssumatera8/api/banner/upload": {
+      "post": {
+        "tags": [
+          "Banner"
+        ],
+        "summary": "POST /balai/bbwssumatera8/api/banner/upload",
+        "responses": {
+          "200": {
+            "description": "Respons Berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak terautentikasi (Unauthorized)"
+          },
+          "404": {
+            "description": "Resource Tidak Ditemukan"
+          },
+          "500": {
+            "description": "Kesalahan Server Internal"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/balai/bbwssumatera8/api/banner/{id}": {
+      "delete": {
+        "tags": [
+          "Banner"
+        ],
+        "summary": "DELETE /balai/bbwssumatera8/api/banner/{id}",
         "parameters": [
           {
             "name": "id",

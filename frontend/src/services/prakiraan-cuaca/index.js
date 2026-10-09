@@ -1,6 +1,6 @@
+import { API_BASE_URL } from "../apiBaseUrl";
+
 export const getPrakiraanCuaca = async () => {
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/balai/bbwssumatera8/api';
-  
   const response = await fetch(`${API_BASE_URL}/api/prakiraan`);
   
   if (!response.ok) {
