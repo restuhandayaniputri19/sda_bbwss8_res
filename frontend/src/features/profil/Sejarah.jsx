@@ -1,4 +1,5 @@
 import Card from "../../components/card";
+import kantor2 from "../../assets/kantor2.png";
 import { Hash } from "../../constants";
 import { truncateText } from "../../utils/truncate-text";
 import { useBeritaData } from "../home/hooks/useBeritaData";
@@ -166,8 +167,8 @@ const Sejarah = () => {
   </div>
       <img
         className="w-full h-[400px] object-cover"
-        src="https://mediabbwssviii.sgp1.cdn.digitaloceanspaces.com/image/WhatsApp%20Image%202024-10-25%20at%2015.09.11.jpeg"
-        alt="Call center picture"
+        src={kantor2}
+        alt="Kantor BBWS Sumatera VIII"
       />
 
       <section className="flex flex-col lg:flex-row p-10">

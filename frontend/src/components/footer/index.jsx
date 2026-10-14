@@ -1,5 +1,5 @@
 
-import logo from "../../assets/logo.png";
+import logo from "../../assets/logobbwss8.png";
 import FlagCounter from "../FlagCounter";
 
 const Footer = () => {
@@ -268,7 +268,7 @@ const Footer = () => {
       <div className="flex flex-col md:flex-row justify-around items-center md:items-start py-5 border-b-[1px]">
         <img
           src={logo}
-          className="shadow-2xl w-24 h-24 md:w-36 md:h-36 mb-4 md:mb-0"
+          className="shadow-2xl w-36 md:w-36 mb-4 md:mb-0"
         />
         <div className="flex flex-col md:flex-row justify-start items-center md:items-start gap-5 mb-4 md:mb-0">
           {leftColumns.map((leftColumn, columnIndex) => (
