@@ -1,5 +1,5 @@
 import Card from "../../components/card";
-import kantor2 from "../../assets/kantor2.png";
+import kantor2 from "../../assets/gedungbbwss8.jpg";
 import { Hash } from "../../constants";
 import { truncateText } from "../../utils/truncate-text";
 import { useBeritaData } from "../home/hooks/useBeritaData";
@@ -177,6 +177,8 @@ const Sejarah = () => {
           <div className="border-t w-20 border-indigo" />
 
           <p className="text-base">
+  Balai Besar Wilayah Sungai Sumatera VIII Palembang Merupakan Unit Pelaksana Teknis Ditjen Sumber Daya Air - Kementerian Pekerjaan Umum.</p>
+     <p className="text-base">
   Balai Besar Wilayah Sungai Sumatera VIII (BBWS Sumatera VIII) berdiri
   sejak tahun 1976 dan telah mengalami beberapa kali perubahan nama seiring
   perkembangan organisasi. Bermula dari proyek pengairan dan irigasi di
