@@ -57,6 +57,13 @@
       "when": 1791497429204,
       "tag": "0007_lumpy_calypso",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1791947440718,
+      "tag": "0008_even_carlie_cooper",
+      "breakpoints": true
     }
   ]
 }

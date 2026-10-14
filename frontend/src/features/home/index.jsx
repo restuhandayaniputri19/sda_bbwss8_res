@@ -324,16 +324,15 @@ useEffect(() => {
               </Carousel>
             ) : null}
             <div className="flex justify-center">
-              <a
-                href="/berita"
+              <Link
+                to="/berita"
                 className="px-4 py-2 bg-indigo text-white rounded-md hover:bg-indigo-dark transition duration-300"
               >
                 Lihat Semua Berita
-              </a>
+              </Link>
             </div>
           </div>
         </section>
-
         {/* ── SNAP 3/6 · GEOPORTAL ── */}
         <section
           id="geoportal"
