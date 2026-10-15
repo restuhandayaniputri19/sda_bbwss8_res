@@ -53,8 +53,7 @@ app.get('/', async (c) => {
     const [item] = await db
       .select()
       .from(polaRencana)
-      .where(eq(polaRencana.id, 1));
-
+      .limit(1);
     if (!item) {
       return c.json({ message: 'No Pola Rencana found' }, 404);
     }

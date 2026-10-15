@@ -6,6 +6,7 @@ import { useDipaDetail } from "../hooks/useDipaDetail";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "../../../hooks/useQuery";
 import FlipbookViewer from "../../../components/flipbookviewer/FlipbookViewer";
+import gedungBbwss8 from "../../../assets/Gedungbws.jpeg";
 
 const DetailDipa = () => {
   const navigate = useNavigate();
@@ -13,16 +14,15 @@ const DetailDipa = () => {
   const id = query.get("id");
   const { beritaData } = useBeritaData();
   const dipaDetail = useDipaDetail(id);
-  console.log("DEBUG dipaDetail:", dipaDetail);
 
   return (
     <div className="flex min-h-screen flex-col">
       <img
         className="w-full h-[400px] object-cover"
         src={
-          "https://mediabbwssviii.sgp1.cdn.digitaloceanspaces.com/image/bendung%20perjaya.jpg"
+          gedungBbwss8
         }
-        alt="Bendungan"
+        alt="Gedung BBWS Sumatera 8"
       />
 
       <section className="flex flex-col lg:flex-row p-10">

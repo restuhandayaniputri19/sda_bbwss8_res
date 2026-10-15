@@ -6,6 +6,7 @@ import { truncateText } from "../../../utils/truncate-text";
 import { useBeritaData } from "../../home/hooks/useBeritaData";
 import { useDipaData } from "../hooks/useDipaData";
 import { useNavigate } from "react-router-dom";
+import kantor2 from "../../../assets/Gedungbws.jpeg";
 
 const Dipa = () => {
   const navigate = useNavigate();
@@ -23,10 +24,8 @@ const Dipa = () => {
     <div className="flex min-h-screen flex-col">
       <img
         className="w-full h-[400px] object-cover"
-        src={
-          "https://mediabbwssviii.sgp1.cdn.digitaloceanspaces.com/image/bendung%20perjaya.jpg"
-        }
-        alt="Call center picture"
+        src={kantor2}
+        alt=""
       />
 
       <section className="p-10">

@@ -9,7 +9,7 @@ import { useBeritaData } from "../../home/hooks/useBeritaData";
 import { useInformasiData } from "../hooks/useInformasiData";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import callCenter from "../../../assets/CallCenter.png";
+import gedungBbws from "../../../assets/GedungBws.jpeg";
 
 const BeritaTerkini = () => {
   const navigate = useNavigate();
@@ -40,8 +40,8 @@ const BeritaTerkini = () => {
     <div className="flex min-h-screen flex-col">
       <img
         className="w-full h-[400px] object-cover"
-        src={callCenter}
-        alt="call center informasi"
+        src={gedungBbws}
+        alt="Gedung BBWSS8"
       />
 
       <section className="p-10">

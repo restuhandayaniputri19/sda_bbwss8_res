@@ -1,6 +1,5 @@
 
 import logo from "../../assets/logobbwss8.png";
-import FlagCounter from "../FlagCounter";
 
 const Footer = () => {
   const styleFooter = "bg-indigo text-white p-4";
@@ -282,7 +281,6 @@ const Footer = () => {
                   {item.content}
                 </div>
               ))}
-              <FlagCounter />
             </div>
           ))}
         </div>
