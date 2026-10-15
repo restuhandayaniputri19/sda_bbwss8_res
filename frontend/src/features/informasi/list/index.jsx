@@ -9,7 +9,7 @@ import { useBeritaData } from "../../home/hooks/useBeritaData";
 import { useInformasiData } from "../hooks/useInformasiData";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import gedungBbws from "../../../assets/GedungBws.jpeg";
+import gedungBbws from "../../../assets/Gedungbws.jpeg";
 
 const BeritaTerkini = () => {
   const navigate = useNavigate();
