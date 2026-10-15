@@ -9,5 +9,5 @@ export const getPublicUploadUrl = (
   const request = new URL(requestUrl);
   const protocol = process.env.NODE_ENV === 'production' ? 'https:' : request.protocol;
 
-  return `${protocol}//${request.host}${PUBLIC_BASE_PATH}/uploads/${folderName}/${encodeURIComponent(fileName)}`;
+  return `${protocol}//${request.host}${API_BASE_PATH}/uploads/${folderName}/${encodeURIComponent(fileName)}`;
 };

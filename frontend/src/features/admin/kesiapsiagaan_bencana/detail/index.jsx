@@ -7,7 +7,7 @@ import {
 
 import { Button } from "../../../../components/button";
 import { Input } from "../../../../components/input";
-import { kesiapsiagaanBencanaSchema } from "../../../../services/kesiapsiagaan_bencana/form"; // Sesuaikan jika ada schema khusus
+import { kesiapsiagaanBencanaSchema } from "../../../../services/kesiapsiagaan_bencana/form";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { useKesiapsiagaanBencanaDetail } from "../hooks/useKesiapsiagaanBencanaDetail";
@@ -21,11 +21,11 @@ const DetailPage = () => {
   const navigate = useNavigate();
 
   const kesiapsiagaanBencanaDetail = useKesiapsiagaanBencanaDetail(id);
-  const [imgUrl, setImgUrl] = useState("");
+  // Ubah nama state agar mencerminkan dokumen PDF
+  const [pdfUrl, setPdfUrl] = useState("");
   const isEdit = !!id;
 
   const form = useForm({
-    // Jika masih memakai infografisSchema, pastikan schemanya disesuaikan/dikendurkan
     resolver: zodResolver(kesiapsiagaanBencanaSchema ? kesiapsiagaanBencanaSchema(isEdit) : undefined),
     defaultValues: {
       description: "",
@@ -41,12 +41,10 @@ const DetailPage = () => {
     const formData = new FormData();
     formData.append("description", data.description || "");
     
-    // 1. Ganti category dengan releaseDate
     if (data.releaseDate) {
       formData.append("releaseDate", data.releaseDate);
     }
 
-    // 2. Ambil file dari field infografis
     if (data.infografis && data.infografis.length > 0) {
       formData.append("infografis", data.infografis[0]);
     }
@@ -69,16 +67,15 @@ const DetailPage = () => {
   const {
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
   } = form;
 
-  // Log error validasi jika submit gagal karena Zod
   const onError = (formErrors) => {
     console.error("Validation Errors:", formErrors);
     toast.error("Mohon lengkapi semua field yang wajib diisi");
   };
 
-  // 1. Effect Reset Data saat Edit
+  // 1. Reset Data saat Edit
   useEffect(() => {
     if (kesiapsiagaanBencanaDetail) {
       const data = kesiapsiagaanBencanaDetail.data || kesiapsiagaanBencanaDetail;
@@ -91,23 +88,23 @@ const DetailPage = () => {
         });
 
         if (data.url) {
-          setImgUrl(data.url);
+          setPdfUrl(data.url);
         }
       }
     }
   }, [kesiapsiagaanBencanaDetail, reset]);
 
-  // 2. Effect Preview jika ada file baru yang di-upload
+  // 2. Preview jika ada file PDF baru yang di-upload
   useEffect(() => {
     if (
       fileWatcher &&
       fileWatcher.length > 0 &&
       fileWatcher[0] instanceof File
     ) {
-      const newImgUrl = URL.createObjectURL(fileWatcher[0]);
-      setImgUrl(newImgUrl);
+      const newPdfUrl = URL.createObjectURL(fileWatcher[0]);
+      setPdfUrl(newPdfUrl);
 
-      return () => URL.revokeObjectURL(newImgUrl);
+      return () => URL.revokeObjectURL(newPdfUrl);
     }
   }, [fileWatcher]);
 
@@ -118,7 +115,6 @@ const DetailPage = () => {
       </h1>
 
       <Form {...form}>
-        {/* Tambahkan onError pada handleSubmit untuk menangkap error validasi */}
         <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit, onError)}>
           
           {/* Field Description */}
@@ -137,7 +133,7 @@ const DetailPage = () => {
             )}
           </CustomFormField>
 
-          {/* Field Release Date (Pengganti Category) */}
+          {/* Field Release Date */}
           <CustomFormField
             control={form.control}
             name="releaseDate"
@@ -152,7 +148,7 @@ const DetailPage = () => {
             )}
           </CustomFormField>
 
-          {/* Field File Upload (Nama disamakan: infografis) */}
+          {/* Field File Upload (PDF) */}
           <CustomFormField
             control={form.control}
             name="infografis"
@@ -160,12 +156,15 @@ const DetailPage = () => {
           >
             {() => (
               <>
-                {imgUrl && (
+                {/* DITUKAR KE IFRAME SUPAYA DAPAT MEMERIKSA PREVIEW FILE PDF */}
+                {pdfUrl && (
                   <div className="flex w-full justify-center mb-3">
-                    <img
-                      src={imgUrl}
-                      className="max-h-72 rounded border object-contain"
-                      alt="Preview"
+                    <iframe
+                      src={pdfUrl}
+                      width="100%"
+                      height="400"
+                      style={{ border: "none" }}
+                      title="PDF Viewer"
                     />
                   </div>
                 )}
