@@ -22,6 +22,7 @@ import youtubeRoute from './routes/youtube';
 import majalahRoute from './routes/majalah';
 import polarencanaRoute from './routes/polarencana';
 import rpsdaRoute from './routes/rpsda';
+import dipaRoute from './routes/dipa';
 
 import { swaggerUI } from '@hono/swagger-ui';
 import openApiSpec from './openapi.json';
@@ -40,27 +41,23 @@ const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173')
   .split(',')
   .map((o) => o.trim());
 
-api.use(
-  '*',
-  cors({
-    origin: (incomingOrigin) => {
-      if (incomingOrigin) {
-        return incomingOrigin;
-      }
-      return allowedOrigins[0];
-    },
-    credentials: true,
-    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    exposeHeaders: ['Content-Length', 'Authorization'],
-    maxAge: 600,
-  })
-);
-
-// 2. Preflight Options
-api.options('*', (c) => {
-  return new Response(null, { status: 204 });
+const corsMiddleware = cors({
+  origin: (incomingOrigin) => {
+    if (incomingOrigin) {
+      return incomingOrigin;
+    }
+    return allowedOrigins[0];
+  },
+  credentials: true,
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposeHeaders: ['Content-Length', 'Authorization'],
+  maxAge: 600,
 });
+
+// Terapkan CORS ke seluruh rute (Root & API)
+app.use('*', corsMiddleware);
+api.use('*', corsMiddleware);
 
 // Swagger UI & OpenApi JSON
 api.get('/docs', swaggerUI({ url: `${API_BASE_PATH}/docs.json` }));
@@ -110,6 +107,7 @@ api.route('/youtube', youtubeRoute);
 api.route('/majalah', majalahRoute);
 api.route('/pola-rencana', polarencanaRoute);
 api.route('/rpsda', rpsdaRoute);
+api.route('/dipa', dipaRoute);
 api.get('/', (c) => c.text('Hono Backend API is Active!'));
 
 // Custom 404 Handler (Menangani endpoint yang tidak terdaftar)

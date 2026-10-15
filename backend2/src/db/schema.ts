@@ -75,6 +75,21 @@ export const adminLogs = sqliteTable("admin_logs", {
 export type AdminLog = typeof adminLogs.$inferSelect;
 export type NewAdminLog = typeof adminLogs.$inferInsert;
 
+export const dipa = sqliteTable('dipa', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  title: text('title').notNull(),
+  url: text('url').notNull(),
+  createdAt: text('created_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+  updatedAt: text('updated_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+});
+
+export type Dipa = typeof dipa.$inferSelect;
+export type NewDipa = typeof dipa.$inferInsert;
+
 export const rpsda = sqliteTable('rpsda', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   title: text('title').notNull(),
