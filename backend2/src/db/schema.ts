@@ -2,8 +2,8 @@
 // Tabel untuk verifikasi OTP dan proteksi Rate Limit
 
 
-import { sqliteTable, text, integer, uniqueIndex } from 'drizzle-orm/sqlite-core';
-import { sql } from 'drizzle-orm';
+import { sqliteTable, text, integer, uniqueIndex, primaryKey } from 'drizzle-orm/sqlite-core';
+import { sql, relations } from 'drizzle-orm';
 import { ulid } from 'ulidx'; // Library ringan untuk ULID
 
 export const CATEGORIES = [
@@ -406,3 +406,50 @@ export type InsertPengaduanMasyarakat = typeof pengaduanMasyarakat.$inferInsert;
 export type Berita = typeof berita.$inferSelect;
 export type NewBerita = typeof berita.$inferInsert;
 
+// =========================================================================
+// TABEL BARU: berita_galleries (Pivot / Junction Table 1 Berita -> N Galeri)
+// =========================================================================
+export const beritaGalleries = sqliteTable(
+  'berita_galleries',
+  {
+    beritaId: integer('berita_id')
+      .notNull()
+      .references(() => berita.id, { onDelete: 'cascade' }),
+    galleryId: integer('gallery_id')
+      .notNull()
+      .references(() => galleries.id, { onDelete: 'cascade' }),
+    createdAt: text('created_at')
+      .notNull()
+      .default(sql`(CURRENT_TIMESTAMP)`),
+  },
+  (table) => ({
+    // Composite Primary Key (Mencegah duplikasi galeri yang sama dalam 1 berita)
+    pk: primaryKey({ columns: [table.beritaId, table.galleryId] }),
+  })
+);
+
+// =========================================================================
+// DEFINISI RELASI DRIZZLE (Relational Queries)
+// =========================================================================
+export const beritaRelations = relations(berita, ({ many }) => ({
+  galleries: many(beritaGalleries),
+}));
+
+export const galleriesRelations = relations(galleries, ({ many }) => ({
+  berita: many(beritaGalleries),
+}));
+
+export const beritaGalleriesRelations = relations(beritaGalleries, ({ one }) => ({
+  berita: one(berita, {
+    fields: [beritaGalleries.beritaId],
+    references: [berita.id],
+  }),
+  gallery: one(galleries, {
+    fields: [beritaGalleries.galleryId],
+    references: [galleries.id],
+  }),
+}));
+
+// Types
+export type BeritaGallery = typeof beritaGalleries.$inferSelect;
+export type NewBeritaGallery = typeof beritaGalleries.$inferInsert;

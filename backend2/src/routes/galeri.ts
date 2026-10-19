@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { db } from '../db';
-import { galleries, Category } from '../db/schema';
+import { galleries, beritaGalleries, Category } from '../db/schema';
 import { and, eq, count, gte, lt } from 'drizzle-orm';
 import { authentication } from '../middleware/authentication';
 import { join } from 'node:path';
@@ -17,6 +17,25 @@ const getIp = (c: any) =>
     c.req.header('x-forwarded-for')?.split(',')[0].trim() ||
     c.req.header('x-real-ip') ||
     '127.0.0.1';
+
+// Helper Eksportable untuk menyimpan gambar galeri baru secara internal
+export const processAndSaveGalleryFile = async (
+    file: File,
+    reqUrl: string,
+    description?: string,
+    category?: Category
+) => {
+    const fileName = await saveOptimizedWebp(file, uploadDir);
+    const generatedUrl = getPublicUploadUrl(reqUrl, 'galeri', fileName);
+
+    const [newItem] = await db.insert(galleries).values({
+        url: generatedUrl,
+        description: description || null,
+        category: category || null,
+    }).returning();
+
+    return newItem;
+};
 
 // 1. Ambil Semua Data Galeri
 galeri.get('/', async (c) => {
@@ -73,29 +92,40 @@ galeri.get('/:id', async (c) => {
     return c.json(item);
 });
 
-// 3. Create Gallery (POST)
+// 3. Create / Upload Gallery (POST)
 galeri.post('/upload', authentication, async (c) => {
     const body = await c.req.parseBody();
-    const file = body.gallery as File;
+    
+    // Menerima file unggahan dari berbagai kemungkinan key field ('file', 'gallery', 'img', dll)
+    const file = (body.file || body.gallery || body.img || body.image) as File;
 
     if (!file || !(file instanceof File)) {
-        return c.json({ message: "File tidak ditemukan" }, 400);
+        return c.json({ message: "File gambar tidak ditemukan atau tidak valid" }, 400);
     }
 
-    let fileName: string;
+    const description = (body.description || body.title) as string;
+    const category = body.category as Category;
+
+    const beritaId = body.beritaId ? Number(body.beritaId) : null;
+
+    let newItem;
     try {
-        fileName = await saveOptimizedWebp(file, uploadDir);
+        newItem = await processAndSaveGalleryFile(
+            file,
+            c.req.url,
+            description,
+            category
+        );
+
+        if (beritaId && !isNaN(beritaId) && beritaId > 0) {
+            await db.insert(beritaGalleries).values({
+                beritaId: beritaId,
+                galleryId: newItem.id,
+            });
+        }
     } catch (error) {
         return c.json({ message: error instanceof Error ? error.message : 'Gagal memproses gambar' }, 400);
     }
-
-    const generatedUrl = getPublicUploadUrl(c.req.url, 'galeri', fileName);
-
-    const newItem = await db.insert(galleries).values({
-        url: generatedUrl,
-        description: body.description as string,
-        category: body.category as Category,
-    }).returning();
 
     // Ambil user dari konteks autentikasi
     const user = c.get('user');
@@ -106,12 +136,12 @@ galeri.post('/upload', authentication, async (c) => {
         username: user?.username,
         action: 'CREATE_GALLERY',
         targetEntity: 'galleries',
-        targetId: String(newItem[0].id),
-        details: { category: newItem[0].category, description: newItem[0].description },
+        targetId: String(newItem.id),
+        details: { category: newItem.category, description: newItem.description },
         ipAddress: getIp(c)
     });
 
-    return c.json(newItem[0], 201);
+    return c.json({ data: newItem }, 201);
 });
 
 // 4. Update Gallery (PUT)
@@ -120,7 +150,7 @@ galeri.put('/:id', authentication, async (c) => {
     if (isNaN(id)) return c.json({ message: 'ID tidak valid' }, 400);
 
     const body = await c.req.parseBody();
-    const file = body.gallery as File;
+    const file = (body.file || body.gallery || body.img || body.image) as File;
     const [existingItem] = await db.select().from(galleries).where(eq(galleries.id, id)).all();
 
     if (!existingItem) return c.json({ message: 'Data tidak ditemukan' }, 404);
@@ -140,7 +170,7 @@ galeri.put('/:id', authentication, async (c) => {
     const updatedItem = await db.update(galleries)
         .set({
             url: imageUrl,
-            description: body.description as string,
+            description: (body.description || body.title) as string,
             category: body.category as Category,
         })
         .where(eq(galleries.id, id))
@@ -148,10 +178,8 @@ galeri.put('/:id', authentication, async (c) => {
 
     if (updatedItem.length === 0) return c.json({ message: 'Gagal update' }, 404);
 
-    // Ambil user dari konteks autentikasi
     const user = c.get('user');
 
-    // Catat Admin Log
     await createAdminLog({
         userId: user?.id,
         username: user?.username,
@@ -165,7 +193,7 @@ galeri.put('/:id', authentication, async (c) => {
         ipAddress: getIp(c)
     });
 
-    return c.json(updatedItem[0]);
+    return c.json({ data: updatedItem[0] });
 });
 
 // 5. Delete Gallery
@@ -184,10 +212,8 @@ galeri.delete('/:id', authentication, async (c) => {
         console.error('Gagal menghapus file galeri:', error);
     }
 
-    // Ambil user dari konteks autentikasi
     const user = c.get('user');
 
-    // Catat Admin Log
     await createAdminLog({
         userId: user?.id,
         username: user?.username,

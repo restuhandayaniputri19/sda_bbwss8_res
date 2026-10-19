@@ -71,6 +71,13 @@
       "when": 1792052725772,
       "tag": "0009_naive_vulture",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1792089042526,
+      "tag": "0010_mixed_gauntlet",
+      "breakpoints": true
     }
   ]
 }
