@@ -52,7 +52,7 @@ export interface PrakiraanPayload {
 }
 
 // 3. Terapkan type pada fungsi
-const fetchPrakiraanBmkg = async (c: Context): Promise<PrakiraanPayload> => {
+export const fetchPrakiraanBmkg = async (c?: Context): Promise<PrakiraanPayload> => {
   try {
     const response = await fetch(BMKG_URL);
     const html = await response.text();

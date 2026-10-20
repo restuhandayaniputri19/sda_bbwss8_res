@@ -29,9 +29,24 @@ import openApiSpec from './openapi.json';
 import adminLogsRoute from './routes/admin_logs';
 import manageUsers from './routes/users';
 import { API_BASE_PATH, PUBLIC_BASE_PATH } from './lib/public-url';
+import { fetchPrakiraanBmkg } from './routes/prakiraan';
+import { initPrakiraanScheduler } from './services/scheduler';
 
 const app = new Hono();
 const api = new Hono().basePath(API_BASE_PATH);
+
+(async () => {
+  try {
+    console.log('[BOOTUP] Mengambil data prakiraan cuaca awal dari BMKG...');
+    await fetchPrakiraanBmkg();
+    console.log('[BOOTUP] Data prakiraan cuaca siap!');
+  } catch (err) {
+    console.error('[BOOTUP ERROR] Gagal mempersiapkan prakiraan cuaca:', err);
+  }
+})();
+
+// Inisialisasi Scheduler untuk prakiraan cuaca BMKG
+initPrakiraanScheduler();
 
 // Middleware Global
 app.use('*', logger());
