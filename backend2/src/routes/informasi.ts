@@ -6,6 +6,7 @@ import path from 'path';
 import fs from 'fs/promises';
 import { existsSync } from 'fs';
 import { authentication } from '../middleware/authentication';
+import { getPublicUploadUrl } from '../lib/public-url'; // 👈 Menggunakan helper URL publik resmi
 
 const app = new Hono();
 
@@ -138,25 +139,26 @@ app.get('/:id', async (c) => {
 // 3. Create Informasi
 app.post('/', authentication, async (c) => {
   try {
-    const formData = await c.req.parseBody();
-    const title = formData['title'] as string;
-    const description = formData['description'] as string;
-    const location = formData['location'] as string;
-    const file = formData['file'];
+    const formData = await c.req.parseBody({ all: true });
+    
+    const title = (formData['title'] as string)?.trim();
+    const description = (formData['description'] as string)?.trim();
+    const location = (formData['location'] as string)?.trim() || null;
+    const file = formData['file'] || formData['pdf'] || formData['attachment'];
 
+    // Validasi field mandatory
     if (!title || !description) {
       return c.json({ message: 'Title and description are required' }, 400);
     }
 
     let fileUrl: string | null = null;
 
-    if (file && typeof file !== 'string' && file instanceof File) {
+    // Memastikan file yang diunggah adalah File object yang valid
+    if (file && typeof file !== 'string' && file instanceof File && file.size > 0) {
       const filename = await saveUploadedFile(file, 'informasi');
-      const host = c.req.header('host') || 'localhost:3000';
-      const protocol = getProtocol(c);
       
-      // Menggunakan path lengkap termasuk basePath agar file static menyatu
-      fileUrl = `${protocol}://${host}/balai/bbwssumatera8/api/uploads/informasi/${filename}`;
+      // Menggunakan helper getPublicUploadUrl untuk menyusun URL statis yang tepat
+      fileUrl = getPublicUploadUrl(c.req.url, 'informasi', filename);
     }
 
     const [inserted] = await db
@@ -172,39 +174,46 @@ app.post('/', authentication, async (c) => {
     return c.json({ data: inserted }, 201);
   } catch (error: any) {
     console.error('Error POST /informasi:', error);
-    return c.json({ error: error.message }, 500);
+    return c.json({ error: error.message || 'Internal Server Error' }, 500);
   }
 });
 
 // 4. Update Informasi
 app.put('/:id', authentication, async (c) => {
   try {
-    const id = parseInt(c.req.param('id'));
+    const id = parseInt(c.req.param('id'), 10);
+    if (isNaN(id)) {
+      return c.json({ message: 'Invalid ID format' }, 400);
+    }
+
     const [existing] = await db.select().from(informasi).where(eq(informasi.id, id));
 
     if (!existing) {
       return c.json({ message: 'Informasi not found' }, 404);
     }
 
-    const formData = await c.req.parseBody();
-    const title = (formData['title'] as string) || existing.title;
-    const description = (formData['description'] as string) || existing.description;
-    const location = (formData['location'] as string) || existing.location;
+    const formData = await c.req.parseBody({ all: true });
+    
+    // Ambil nilai teks dengan fallback ke data eksis jika tidak dikirim
+    const title = (formData['title'] as string)?.trim() || existing.title;
+    const description = (formData['description'] as string)?.trim() || existing.description;
+    const location = (formData['location'] as string)?.trim() || existing.location;
     const file = formData['file'];
 
     let newUrl = existing.url;
 
-    if (file && typeof file !== 'string' && file instanceof File) {
+    // Jika ada file baru yang diunggah
+    if (file && typeof file !== 'string' && file instanceof File && file.size > 0) {
+      // Hapus file fisik lama jika ada
       if (existing.url) {
         const oldFileName = path.basename(existing.url);
         await deleteFile('informasi', oldFileName);
       }
 
       const filename = await saveUploadedFile(file, 'informasi');
-      const host = c.req.header('host') || 'localhost:3000';
-      const protocol = getProtocol(c);
       
-      newUrl = `${protocol}://${host}/balai/bbwssumatera8/api/uploads/informasi/${filename}`;
+      // Gunakan helper terpusat getPublicUploadUrl agar konsisten dengan rute lain
+      newUrl = getPublicUploadUrl(c.req.url, 'informasi', filename);
     }
 
     const [updated] = await db
@@ -222,31 +231,37 @@ app.put('/:id', authentication, async (c) => {
     return c.json({ data: updated });
   } catch (error: any) {
     console.error('Error PUT /informasi/:id:', error);
-    return c.json({ error: error.message }, 500);
+    return c.json({ error: error.message || 'Internal Server Error' }, 500);
   }
 });
 
-// 5. Delete Informasi
+// 5. Delete Informasi (DELETE)
 app.delete('/:id', authentication, async (c) => {
   try {
-    const id = parseInt(c.req.param('id'));
+    const id = parseInt(c.req.param('id'), 10);
+    if (isNaN(id)) {
+      return c.json({ message: 'Invalid ID format' }, 400);
+    }
+
     const [existing] = await db.select().from(informasi).where(eq(informasi.id, id));
 
     if (!existing) {
       return c.json({ message: 'Informasi not found' }, 404);
     }
 
+    // Hapus file fisik jika tercatat di database
     if (existing.url) {
       const fileName = path.basename(existing.url);
       await deleteFile('informasi', fileName);
     }
 
+    // Hapus record dari database
     await db.delete(informasi).where(eq(informasi.id, id));
 
     return c.json({ message: 'Informasi deleted successfully' });
   } catch (error: any) {
     console.error('Error DELETE /informasi/:id:', error);
-    return c.json({ error: error.message }, 500);
+    return c.json({ error: error.message || 'Internal Server Error' }, 500);
   }
 });
 

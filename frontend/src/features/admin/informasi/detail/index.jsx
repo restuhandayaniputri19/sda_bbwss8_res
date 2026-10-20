@@ -58,33 +58,39 @@ const DetailPage = () => {
 
   const fileWatcher = form.watch("file");
 
-  const onSubmit = async (data) => {
+const onSubmit = async (data) => {
     const formData = new FormData();
 
-    formData.append("title", data.title);
-    formData.append("description", data.description);
-    formData.append("location", data.location);
+    formData.append("title", data.title || "");
+    formData.append("description", description || data.description || "");
+    formData.append("location", data.location || "");
 
-    // Only append the file if it exists
-    if (data.file && data.file.length > 0) {
-      formData.append("file", data.file[0]);
+    // 🔴 Perbaikan Pengiriman File
+    if (data.file) {
+      if (data.file instanceof FileList && data.file.length > 0) {
+        formData.append("file", data.file[0]);
+      } else if (data.file instanceof File) {
+        formData.append("file", data.file);
+      }
     }
 
     try {
       if (isEdit) {
-        await editInformasi(id, formData); // Pass FormData to edit function
+        await editInformasi(id, formData);
         toast.success("Informasi has been updated");
       } else {
-        await postInformasi(formData); // Pass FormData to post function
+        await postInformasi(formData);
         toast.success("Informasi has been created");
       }
       navigate("/admin/informasi", { replace: true });
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error("Failed to submit form");
+      // Tampilkan detail error dari backend jika ada
+      const errorMsg = error.response?.data?.message || "Failed to submit form";
+      toast.error(errorMsg);
     }
   };
-
+  
   const {
     handleSubmit,
     formState: { isSubmitting },
