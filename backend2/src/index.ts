@@ -54,7 +54,8 @@ app.use('*', logger());
 // 1. CORS
 const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173')
   .split(',')
-  .map((o) => o.trim());
+  .map((o) => o.trim())
+  .filter((o) => o); // Hapus string kosong
 
 const corsMiddleware = cors({
   origin: (incomingOrigin) => {
@@ -64,7 +65,7 @@ const corsMiddleware = cors({
     return allowedOrigins[0];
   },
   credentials: true,
-  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   exposeHeaders: ['Content-Length', 'Authorization'],
   maxAge: 600,
@@ -72,7 +73,6 @@ const corsMiddleware = cors({
 
 // Terapkan CORS ke seluruh rute (Root & API)
 app.use('*', corsMiddleware);
-api.use('*', corsMiddleware);
 
 // Swagger UI & OpenApi JSON
 api.get('/docs', swaggerUI({ url: `${API_BASE_PATH}/docs.json` }));

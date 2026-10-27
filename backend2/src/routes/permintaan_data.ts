@@ -68,7 +68,7 @@ app.post('/', async (c) => {
 });
 
 // PATCH: Update Status & Menambah Status Logs
-app.patch('/:id', async (c) => {
+app.patch('/:id/status', async (c) => {
   try {
     const id = parseInt(c.req.param('id'));
     const body = await c.req.json(); // { status, note }
