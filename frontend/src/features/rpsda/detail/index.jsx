@@ -5,6 +5,8 @@ import { useBeritaData } from "../../home/hooks/useBeritaData";
 import { useRpsdaDetail } from "../hooks/useRpsdaDetail";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "../../../hooks/useQuery";
+import bendungan from "../../../assets/bendungan-DpmE5Nca.jpeg";
+
 
 const DetailRpsda = () => {
   const navigate = useNavigate();
@@ -17,9 +19,7 @@ const DetailRpsda = () => {
     <div className="flex min-h-screen flex-col">
       <img
         className="w-full h-[400px] object-cover"
-        src={
-          "https://mediabbwssviii.sgp1.cdn.digitaloceanspaces.com/image/bendung%20perjaya.jpg"
-        }
+        src={bendungan}
         alt="Bendungan"
       />
 

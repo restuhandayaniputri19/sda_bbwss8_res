@@ -5,6 +5,8 @@ import { useBeritaData } from "../../home/hooks/useBeritaData";
 import { useNavigate } from "react-router-dom";
 import { usePetaGeospasialDetail } from "../hooks/usePetaGeospasialDetail";
 import { useQuery } from "../../../hooks/useQuery";
+import bendungan from "../../../assets/bendungan-DpmE5Nca.jpeg";
+
 
 const DetailPetaGeospasial = () => {
   const navigate = useNavigate();
@@ -17,9 +19,7 @@ const DetailPetaGeospasial = () => {
     <div className="flex min-h-screen flex-col">
       <img
         className="w-full h-[400px] object-cover"
-        src={
-          "https://mediabbwssviii.sgp1.cdn.digitaloceanspaces.com/image/bendung%20perjaya.jpg"
-        }
+        src={bendungan}
         alt="bendungan"
       />
 
