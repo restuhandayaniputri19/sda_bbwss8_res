@@ -51,7 +51,7 @@ const DetailBerita = () => {
                 <img
                   src={beritaDetail.img}
                   alt="article visual"
-                  className="w-full h-[450px] lg:h-[550px] object-cover rounded-md"
+                  className="w-full object-cover rounded-md"
                 />
               </div>
 
