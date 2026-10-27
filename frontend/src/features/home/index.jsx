@@ -395,9 +395,9 @@ useEffect(() => {
           className="snap-section"
           ref={(el) => (sectionRefs.current[4] = el)}
         >
-          <div className="grid grid-cols-12 gap-4 px-8 py-6 h-full">
+          <div className="grid grid-cols-12 gap-4 px-8 py-6">
             {/* Infografis */}
-            <div className="col-span-12 md:col-span-4 flex flex-col border border-indigo rounded-sm">
+            <div className="col-span-12 md:col-span-4 flex flex-col rounded-sm">
               <h1 className="text-lg border-b border-b-indigo p-2 bg-indigo text-white">Infografis</h1>
               {infografisData !== undefined && infografisData.length > 0 ? (
                 <Carousel autoSlide={true} interval={3000} className="relative w-full h-full overflow-hidden">
@@ -422,7 +422,7 @@ useEffect(() => {
             {/* Galeri + Layanan Terpadu */}
             <div className="col-span-12 md:col-span-8 grid gap-4">
               {/* Galeri */}
-              <div className="flex flex-col border border-indigo rounded-sm">
+              <div className="flex flex-col rounded-sm">
                 <h1 className="text-lg border-b border-b-indigo p-2 bg-indigo text-white">Galeri Infrastruktur</h1>
                 {galeriData !== undefined ? (
                   <Carousel autoSlide={true} interval={3000} className="flex items-center w-full h-full overflow-hidden">
@@ -445,7 +445,7 @@ useEffect(() => {
               </div>
 
               {/* Layanan Terpadu */}
-              <div className="flex flex-col space-y-5 border border-indigo rounded-sm">
+              <div className="flex flex-col space-y-5 rounded-sm">
                 <h1 className="text-lg border-b border-b-indigo p-2 bg-indigo text-white">Aplikasi Terkait</h1>
                 <Carousel className="w-full">
                   <CarouselContent className="-ml-1">
