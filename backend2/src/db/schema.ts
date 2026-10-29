@@ -453,3 +453,21 @@ export const beritaGalleriesRelations = relations(beritaGalleries, ({ one }) => 
 // Types
 export type BeritaGallery = typeof beritaGalleries.$inferSelect;
 export type NewBeritaGallery = typeof beritaGalleries.$inferInsert;
+
+export const layananTerpadu = sqliteTable('layanan_terpadu', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  title: text('title').notNull(),
+  url: text('url').notNull(),
+  platform: text('platform').notNull(),
+  description: text('description').notNull(),
+  img: text('img'), // Opsional (bisa null)
+  createdAt: text('created_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+  updatedAt: text('updated_at')
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
+});
+
+export type LayananTerpadu = typeof layananTerpadu.$inferSelect;
+export type NewLayananTerpadu = typeof layananTerpadu.$inferInsert;

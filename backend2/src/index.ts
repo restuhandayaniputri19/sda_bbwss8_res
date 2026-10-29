@@ -23,6 +23,7 @@ import majalahRoute from './routes/majalah';
 import polarencanaRoute from './routes/polarencana';
 import rpsdaRoute from './routes/rpsda';
 import dipaRoute from './routes/dipa';
+import layananTerpaduRoute from './routes/layananterpadu';
 
 import { swaggerUI } from '@hono/swagger-ui';
 import openApiSpec from './openapi.json';
@@ -123,6 +124,7 @@ api.route('/majalah', majalahRoute);
 api.route('/pola-rencana', polarencanaRoute);
 api.route('/rpsda', rpsdaRoute);
 api.route('/dipa', dipaRoute);
+api.route('/layanan-terpadu', layananTerpaduRoute);
 api.get('/', (c) => c.text('Hono Backend API is Active!'));
 
 // Custom 404 Handler (Menangani endpoint yang tidak terdaftar)
