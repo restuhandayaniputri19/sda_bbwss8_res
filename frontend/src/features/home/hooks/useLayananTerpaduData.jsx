@@ -4,22 +4,29 @@ import { getLayananTerpadu } from "../../../services/layanan-terpadu";
 
 export const useLayananTerpaduData = () => {
   const [layananTerpaduData, setLayananTerpaduData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchLayananTerpadu = async () => {
       try {
+        setLoading(true);
         const response = await getLayananTerpadu();
 
         if (response) {
-          setLayananTerpaduData(response.data);
+          // Tangani jika response berbentuk { data: [...] } atau array langsung
+          setLayananTerpaduData(response.data || response);
         }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+      } catch (err) {
+        console.error("Error fetching layanan terpadu data:", err);
+        setError("Gagal memuat data Layanan Terpadu.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchLayananTerpadu();
   }, []);
 
-  return { layananTerpaduData };
+  return { layananTerpaduData, loading, error };
 };
