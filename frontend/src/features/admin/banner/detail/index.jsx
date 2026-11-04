@@ -75,6 +75,9 @@ const DetailPage = () => {
                   variant="file"
                   accept="image/jpeg, image/png, image/gif, image/webp"
                 />
+                <span className="text-xs text-gray-500 mt-1">
+                  <br /> Disarankan ukuran file 200KB - 500KB. Maksimal: 2MB. Lebar/Panjang maksimal 1290 pixel, tingginya sesuaikan secara proporsional, Format yang didukung: WebP, JPEG, PNG, GIF.
+                </span>
               </>
             )}
           </CustomFormField>
