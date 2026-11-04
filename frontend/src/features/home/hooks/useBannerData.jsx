@@ -24,6 +24,7 @@ export const useBannerData = () => {
       key={item.id ?? ""}
       src={item.url ?? ""}
       alt="Banner"
+      loading="lazy"
       className="w-full object-cover h-auto" // Ensure full width
     />
   ));

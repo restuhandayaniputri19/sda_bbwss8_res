@@ -340,6 +340,12 @@ const DetailPage = () => {
                   accept="image/jpeg, image/png, image/gif, image/webp"
                   disabled={isSubmitting}
                 />
+                <span className="text-xs text-gray-500 mt-1">
+                  {isEdit
+                    ? "Pilih file baru untuk mengganti gambar utama. Biarkan kosong untuk mempertahankan gambar saat ini."
+                    : "Unggah gambar utama berita."}
+                    <br /> Disarankan ukuran file 200KB - 500KB. Maksimal: 2MB. Lebar maksimal 1290 pixel, Format yang didukung: WebP, JPEG, PNG, GIF.
+                </span>
               </>
             )}
           </CustomFormField>
@@ -431,6 +437,10 @@ const DetailPage = () => {
                 multiple
                 accept="image/jpeg, image/png, image/gif, image/webp"
               />
+              <span className="text-xs text-gray-500 mt-1">
+                <br /> Disarankan ukuran file 200KB - 500KB. Maksimal: 2MB. Lebar maksimal 1290 pixel, Format yang didukung: WebP, JPEG, PNG, GIF.
+              </span>
+
 
               {newGalleryItems.length > 0 && (
                 <div className="flex flex-col gap-3 p-3 border rounded bg-gray-50 mt-1">
