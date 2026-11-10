@@ -1,0 +1,1 @@
+ALTER TABLE `infografis` ADD `updated_at` integer;

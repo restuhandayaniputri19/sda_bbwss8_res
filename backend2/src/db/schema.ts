@@ -219,6 +219,7 @@ export const infografis = sqliteTable("infografis", {
   // Timestamp untuk pencatatan alamiah (opsional namun manfaat)
   createdAt: integer("created_at", { mode: "timestamp" })
     .$defaultFn(() => new Date()),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
 });
 
 // Type definitions untuk kemudahan coding

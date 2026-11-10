@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { db } from '../db';
 import { infografis, Category } from '../db/schema';
-import { and, eq, gte, lt } from 'drizzle-orm';
+import { and, eq, gte, lt, desc } from 'drizzle-orm';
 import { authentication } from '../middleware/authentication';
 import { join } from 'node:path';
 import { deleteUploadedImage, saveOptimizedWebp } from '../lib/image';
@@ -43,6 +43,7 @@ route.get('/', async (c) => {
     .select()
     .from(infografis)
     .where(whereCondition)
+    .orderBy(desc(infografis.updatedAt))
     .limit(limit)
     .offset(offset)
     .all();
@@ -62,7 +63,7 @@ route.get('/', async (c) => {
         description: item.description,
         category: item.category,
         createdAt: item.createdAt,
-        updatedAt: item.createdAt,
+        updatedAt: item.updatedAt,
       })),
       meta: {
         totalItems: count,
@@ -169,6 +170,7 @@ route.put('/:id', authentication, async (c) => {
       url: imageUrl,
       description: body.description as string,
       category: body.category as Category,
+      updatedAt: new Date(),
     })
     .where(eq(infografis.id, id))
     .returning();
