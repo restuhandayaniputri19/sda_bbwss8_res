@@ -301,7 +301,9 @@ useEffect(() => {
                       >
                         <img
                           src={item.img}
-                          alt="photo"
+                          alt={item.title}
+                          loading={index < 4 ? "eager" : "lazy"}
+                          decoding="async"
                           className="w-full h-48 object-cover rounded-t-md"
                         />
                         <div className="p-4 space-y-2 h-36">
@@ -408,7 +410,7 @@ useEffect(() => {
                           className="flex flex-col justify-center items-center bg-white h-full"
                           onClick={() => handleImageClick(item.url)}
                         >
-                          <img src={item.url} alt="Infografis" className="rounded-sm w-full h-[400px] object-contain" />
+                          <img src={item.url} alt={item.title} loading={index < 1 ? "eager" : "lazy"} decoding="async" className="rounded-sm w-full h-[400px] object-contain" />
                         </div>
                       </CarouselItem>
                     ))}
@@ -433,7 +435,8 @@ useEffect(() => {
                             className="flex flex-col justify-center items-center bg-white rounded-sm shadow-lg"
                             onClick={() => handleImageClick(item.url)}
                           >
-                            <img src={item.url} alt="Galeri" className="object-cover rounded-sm w-full h-36" />
+                            <img src={item.url} alt={item.title} 
+                            loading={index < 4 ? "eager" : "lazy"} decoding="async" className="object-cover rounded-sm w-full h-36" />
                           </div>
                         </CarouselItem>
                       ))}
@@ -444,7 +447,7 @@ useEffect(() => {
                 ) : null}
               </div>
 
-              {/* Layanan Terpadu */}
+              {/* Layanan Terpadu tampil Aplikasi Terkait */}
               <div className="flex flex-col space-y-5 rounded-sm">
                 <h1 className="text-lg border-b border-b-indigo p-2 bg-indigo text-white">Aplikasi Terkait</h1>
                 <Carousel className="w-full">
@@ -454,7 +457,7 @@ useEffect(() => {
                         <a href={item.url} target="_blank" rel="noopener noreferrer">
                           <div className="flex flex-col bg-white rounded-md shadow-md border border-gray-300">
                             <div className="w-full h-36 bg-gray-200">
-                              <img src={item.img} alt={item.title} className="w-full h-full object-contain" />
+                              <img src={item.img} alt={item.title} loading={index < 4 ? "eager" : "lazy"} decoding="async" className="w-full h-full object-contain" />
                             </div>
                             <div className="p-3 bg-indigo text-center">
                               <span className="text-white font-bold block uppercase text-sm">{item.title}</span>
