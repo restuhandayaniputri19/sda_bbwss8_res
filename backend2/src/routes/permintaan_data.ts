@@ -134,10 +134,10 @@ app.post('/', async (c) => {
   }
 });
 
-// 3. PATCH: Update Status & Menambah Status Logs
+// 3. PATCH: Update Status, Menambah Status Logs & Kirim Notifikasi WA
 app.patch('/:id/status', async (c) => {
   try {
-    const id = parseInt(c.req.param('id'));
+    const id = parseInt(c.req.param('id'), 10);
     const body = await c.req.json();
 
     const existing = await db
@@ -150,23 +150,78 @@ app.patch('/:id/status', async (c) => {
       return c.json({ success: false, message: 'Data tidak ditemukan' }, 404);
     }
 
+    const newStatus = body.status || existing.status;
+    const noteText = body.note || `Status diperbarui menjadi ${newStatus}`;
+
     const newLog = {
-      status: body.status || existing.status,
+      status: newStatus,
       timestamp: new Date().toISOString(),
-      note: body.note || `Status diperbarui menjadi ${body.status}`
+      note: noteText
     };
 
     const updatedLogs = [...(existing.statusLogs || []), newLog];
 
+    // 1. Update database terlebih dahulu
     const result = await db
       .update(permintaanData)
       .set({
-        status: body.status || existing.status,
+        status: newStatus,
         statusLogs: updatedLogs,
         updatedAt: new Date()
       })
       .where(eq(permintaanData.id, id))
       .returning();
+
+    // 2. Kirim Notifikasi WA jika status berubah dan nomor WA tersedia
+    if (existing.noWa && body.status && body.status !== existing.status) {
+      // Normalisasi nomor: hilangkan '+', ubah awalan '0' menjadi '62'
+      const cleanPhone = existing.noWa
+        .trim()
+        .replace(/^\+/, '')
+        .replace(/^0/, '62')
+        .replace(/\D/g, '');
+
+      const pesanWa = [
+        `*[BBWS Sumatera VIII] Update Permohonan Data*`,
+        ``,
+        `Halo *${existing.namaLengkap}*,`,
+        `Status permohonan data Anda telah diperbarui:`,
+        `• *ID Permohonan:* #${existing.id}`,
+        `• *Jenis Data:* ${existing.jenisData}`,
+        `• *Status Baru:* *${newStatus.toUpperCase()}*`,
+        body.note ? `• *Catatan:* ${body.note}` : null,
+        ``,
+        `Terima kasih.`
+      ]
+        .filter(Boolean)
+        .join('\n');
+
+      try {
+        const waResponse = await fetch(`${process.env.WA_GATEWAY_URL}/send`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.WA_TOKEN}`
+          },
+          body: JSON.stringify({
+            to: cleanPhone,
+            msg: pesanWa
+          })
+        });
+
+        const responseText = await waResponse.text();
+        console.log('Respon Server WA (Status Update):', responseText);
+
+        if (!waResponse.ok) {
+          console.error(
+            `[WA_ERROR] Gagal mengirim notifikasi status ke user. Status: ${waResponse.status}, Detail: ${responseText}`
+          );
+        }
+      } catch (waError) {
+        // Error jaringan WA hanya di-log agar response update database ke admin tetap sukses
+        console.error('[WA_ERROR] Exception saat memanggil WA Gateway:', waError);
+      }
+    }
 
     return c.json({
       success: true,
