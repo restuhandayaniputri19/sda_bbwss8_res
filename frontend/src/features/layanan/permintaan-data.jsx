@@ -27,6 +27,11 @@ const PermintaanDataPage = () => {
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
 
+  // Validasi apakah file sudah dipilih dan field wajib lainnya sudah diisi
+const isFileSelected = formData.file !== null;
+// Opsional: jika ingin memastikan field utama lain juga sudah diisi
+const isFormValid = isFileSelected && formData.nama && formData.instansi && formData.jenisData;
+
   useEffect(() => {
     const expiry = localStorage.getItem("verified_until");
     const savedNumber = localStorage.getItem("verified_number");
@@ -72,24 +77,33 @@ const PermintaanDataPage = () => {
     fetchHistory(noWa);
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data yang akan dikirim:", formData); // Debug log untuk melihat data sebelum dikirim
-    const dataForBackend = {
-    namaLengkap: formData.nama,        // Pemetaan ke nama_lengkap
-    instansi: formData.instansi,
-    jenisData: formData.jenisData,
-    periodeDari: formData.periodeDari,
-    periodeSampai: formData.periodeSampai,
-    email: formData.email,
-    noWa: verifiedNumber,             // Pemetaan ke no_wa
-    tujuanPenggunaan: formData.tujuan, // Pemetaan ke tujuan_penggunaan
-    fileSurat: formData.file           // Pemetaan ke file_surat
-  };
+
+    if (!formData.file) {
+      alert("Silakan pilih file surat permohonan terlebih dahulu.");
+      return;
+    }
+
+    // 1. Wajib gunakan FormData untuk upload file
+    const payload = new FormData();
+    payload.append("namaLengkap", formData.nama);
+    payload.append("instansi", formData.instansi);
+    payload.append("jenisData", formData.jenisData);
+    payload.append("periodeDari", formData.periodeDari);
+    payload.append("periodeSampai", formData.periodeSampai);
+    payload.append("email", formData.email);
+    payload.append("noWa", verifiedNumber);
+    payload.append("tujuanPenggunaan", formData.tujuan);
+    payload.append("fileSurat", formData.file); // Objek File asli dari <input type="file">
 
     try {
-      // Langsung kirim dataToSend tanpa header multipart
-      const response = await API.post("/api/permintaan-data", dataForBackend);
+      // 2. Kirim payload FormData (Axios otomatis mengatur boundary multipart/form-data)
+      const response = await API.post("/api/permintaan-data", payload, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (response.status === 201 || response.data.success) {
         alert("Permintaan berhasil dikirim!");
@@ -97,12 +111,10 @@ const PermintaanDataPage = () => {
         fetchHistory(verifiedNumber);
       }
     } catch (error) {
-      // Gunakan pesan dari server jika ada agar lebih informatif
       const msg = error.response?.data?.message || "Terjadi kesalahan saat mengirim permintaan.";
       console.error("Detail Error:", error);
       alert(msg);
     }
-
   };
 
   const handleChange = (e) => {
@@ -357,27 +369,39 @@ const PermintaanDataPage = () => {
                 ></textarea>
               </div>
 
-              <div className="flex flex-col space-y-2">
-                <label className="text-sm font-semibold text-gray-700">
-                  Upload Surat (PDF/JPG):
-                </label>
-                <input
-                  name="file"
-                  type="file"
-                  onChange={handleChange}
-                  className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 cursor-pointer"
-                />
-              </div>
+<div className="flex flex-col space-y-2">
+        <label className="text-sm font-semibold text-gray-700">
+          Upload Surat (PDF/JPG/PNG maks. 5MB) <span class="text-red-500">*Wajib</span>:
+        </label>
+        <input
+          name="file"
+          type="file"
+          accept=".pdf,.jpg,.jpeg,.png"
+          onChange={handleChange}
+          required
+          className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 cursor-pointer"
+        />
+        {!isFileSelected && (
+          <p className="text-xs text-amber-600 italic">
+            * Lampirkan file surat permohonan untuk mengaktifkan tombol kirim.
+          </p>
+        )}
+      </div>
 
-              <div className="flex justify-end pt-4">
-                <button
-                  type="submit"
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-10 rounded shadow-lg transition-all"
-                >
-                  Kirim Permohonan
-                </button>
-              </div>
-            </form>
+      <div className="flex justify-end pt-4">
+        <button
+          type="submit"
+          disabled={!isFileSelected}
+          className={`font-bold py-3 px-10 rounded shadow-lg transition-all ${
+            isFileSelected
+              ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none"
+          }`}
+        >
+          Kirim Permohonan
+        </button>
+      </div>
+                  </form>
           </section>
         </div>
       )}
