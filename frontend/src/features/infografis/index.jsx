@@ -110,24 +110,6 @@ const filteredInfografis = data.filter((item) => {
       <section className="p-10">
         <h1 className="text-2xl font-bold text-indigo mb-6">Infografis</h1>
 
-        {/* Tombol Kategori */}
-        <div className="flex flex-wrap items-center gap-3 mb-6">
-          <span className="font-bold text-gray-700">Kategori :</span>
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-md font-semibold text-sm transition-all ${
-                selectedCategory === cat
-                  ? "bg-mango text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-mango hover:text-white"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
 
         {/* Month Dropdown */}
         <DropdownSelect
