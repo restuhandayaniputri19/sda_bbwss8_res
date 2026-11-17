@@ -26,6 +26,7 @@ const categories = [
   "Danau",
   "Embung",
   "Air Tanah & Air Baku",
+  "Bendung"
 ];
 
 const DetailPage = () => {

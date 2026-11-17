@@ -54,7 +54,7 @@ const GaleriPage = () => {
     fetchGallery();
   }, []);
 
-  const categories = ["Semua", "Bendungan", "Irigasi & Rawa", "Sungai", "Danau", "Embung", "Air Tanah & Air Baku"];
+  const categories = ["Semua", "Bendungan", "Irigasi & Rawa", "Sungai", "Danau", "Embung", "Air Tanah & Air Baku", "Bendung"];
   const handleMonthChange = (event) => {
     setSelectedMonth(event.target.value);
   };

@@ -25,6 +25,7 @@ const categories = [
   { label: "Danau", value: "danau" },
   { label: "Embung", value: "embung" },
   { label: "Air Tanah & Air Baku", value: "air tanah & air baku" },
+  { label: "Bendung", value: "bendung" }
 ];
 
 const formatCreatedAt = (createdAt) => {
