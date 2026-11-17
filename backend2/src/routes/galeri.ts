@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { db } from '../db';
 import { galleries, beritaGalleries, Category } from '../db/schema';
-import { and, eq, count, gte, lt } from 'drizzle-orm';
+import { and, eq, count, gte, lt, notExists } from 'drizzle-orm';
 import { authentication } from '../middleware/authentication';
 import { join } from 'node:path';
 import { deleteUploadedImage, saveOptimizedWebp } from '../lib/image';
@@ -52,6 +52,11 @@ galeri.get('/', async (c) => {
         : undefined;
 
     const whereCondition = and(
+        notExists(
+            db.select({ galleryId: beritaGalleries.galleryId })
+                .from(beritaGalleries)
+                .where(eq(beritaGalleries.galleryId, galleries.id))
+        ),
         categoryFilter ? eq(galleries.category, categoryFilter as Category) : undefined,
         monthStart && monthEnd
             ? and(gte(galleries.createdAt, monthStart), lt(galleries.createdAt, monthEnd))
