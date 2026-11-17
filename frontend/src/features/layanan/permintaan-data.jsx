@@ -3,10 +3,16 @@ import { API } from "../../services";
 import VerificationForm from "../../components/VerificationForm";
 import heroImage from "../../assets/Permintaan-data-gambar.jpeg";
 
+const JENIS_DATA_OPTIONS = [
+  { value: "debit", label: "Data Debit" },
+  { value: "curahhujan", label: "Data Curah Hujan" },
+  { value: "kualitasair", label: "Data Kualitas Air" },
+];
+
 const initialFormState = {
   nama: "",
   instansi: "",
-  jenisData: "",
+  jenisData: [],
   periodeDari: "",
   periodeSampai: "",
   email: "",
@@ -16,14 +22,14 @@ const initialFormState = {
 };
 
 const getFileUrl = (filePath) => {
-    if (!filePath) return "";
-    if (filePath.startsWith("http://") || filePath.startsWith("https://")) {
-      return filePath;
-    }
-    const baseUrl = import.meta.env.VITE_API_URL || "";
-    const cleanPath = filePath.startsWith("/") ? filePath : `/${filePath}`;
-    return `${baseUrl}${cleanPath}`;
-  };
+  if (!filePath) return "";
+  if (filePath.startsWith("http://") || filePath.startsWith("https://")) {
+    return filePath;
+  }
+  const baseUrl = import.meta.env.VITE_API_URL || "";
+  const cleanPath = filePath.startsWith("/") ? filePath : `/${filePath}`;
+  return `${baseUrl}${cleanPath}`;
+};
 
 const PermintaanDataPage = () => {
   // State untuk alur Verifikasi
@@ -41,6 +47,8 @@ const PermintaanDataPage = () => {
   const fileInputRef = useRef(null);
 
   const isFileSelected = formData.file !== null;
+  const isJenisDataSelected = formData.jenisData.length > 0;
+  const isFormValid = isFileSelected && isJenisDataSelected;
 
   useEffect(() => {
     const expiry = localStorage.getItem("verified_until");
@@ -100,8 +108,34 @@ const PermintaanDataPage = () => {
     }
   };
 
+  const handleJenisDataChange = (value) => {
+    setFormData((prev) => {
+      const exists = prev.jenisData.includes(value);
+      return {
+        ...prev,
+        jenisData: exists
+          ? prev.jenisData.filter((item) => item !== value)
+          : [...prev.jenisData, value],
+      };
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isJenisDataSelected) {
+      alert("Silakan pilih minimal satu jenis data terlebih dahulu.");
+      return;
+    }
+
+    if (
+      formData.periodeDari &&
+      formData.periodeSampai &&
+      formData.periodeSampai < formData.periodeDari
+    ) {
+      alert("Tanggal 'Sampai' tidak boleh lebih awal dari tanggal 'Dari'.");
+      return;
+    }
 
     if (!formData.file) {
       alert("Silakan pilih file surat permohonan terlebih dahulu.");
@@ -111,7 +145,8 @@ const PermintaanDataPage = () => {
     const payload = new FormData();
     payload.append("namaLengkap", formData.nama);
     payload.append("instansi", formData.instansi);
-    payload.append("jenisData", formData.jenisData);
+    // Dikirim sebagai string dipisahkan koma agar kompatibel dengan kolom teks backend
+    payload.append("jenisData", formData.jenisData.join(", "));
     payload.append("periodeDari", formData.periodeDari);
     payload.append("periodeSampai", formData.periodeSampai);
     payload.append("email", formData.email);
@@ -133,7 +168,9 @@ const PermintaanDataPage = () => {
         fetchHistory(verifiedNumber);
       }
     } catch (error) {
-      const msg = error.response?.data?.message || "Terjadi kesalahan saat mengirim permintaan.";
+      const msg =
+        error.response?.data?.message ||
+        "Terjadi kesalahan saat mengirim permintaan.";
       console.error("Detail Error:", error);
       alert(msg);
     }
@@ -157,7 +194,8 @@ const PermintaanDataPage = () => {
         </h1>
         <div className="h-1 w-20 bg-blue-600 mx-auto mb-4"></div>
         <p className="text-gray-500 text-lg">
-          Layanan permintaan data hidrologi, klimatologi, dan sumber daya air wilayah BBWS Sumatera VIII
+          Layanan permintaan data hidrologi, klimatologi, dan sumber daya air
+          wilayah BBWS Sumatera VIII
         </p>
         <img
           src={heroImage}
@@ -192,7 +230,8 @@ const PermintaanDataPage = () => {
               {!showAuthForm ? (
                 <div className="w-full">
                   <p className="mb-6">
-                    Untuk layanan Permintaan Data Lakukan verifikasi nomor Whatsapp.
+                    Untuk layanan Permintaan Data Lakukan verifikasi nomor
+                    Whatsapp.
                   </p>
                   <button
                     onClick={() => setShowAuthForm(true)}
@@ -230,7 +269,7 @@ const PermintaanDataPage = () => {
               {loadingHistory ? (
                 <p className="text-gray-500 text-sm">Memuat riwayat...</p>
               ) : history.length > 0 ? (
-<table className="w-full text-left text-sm min-w-[650px]">
+                <table className="w-full text-left text-sm min-w-[650px]">
                   <thead>
                     <tr className="border-b text-gray-400">
                       <th className="py-2">JENIS DATA</th>
@@ -240,13 +279,18 @@ const PermintaanDataPage = () => {
                       <th className="py-2 text-right">LOG STATUS</th>
                     </tr>
                   </thead>
-<tbody>
+                  <tbody>
                     {history.map((item) => {
                       const isExpanded = expandedRowId === item.id;
-                      const logs = Array.isArray(item.statusLogs) ? item.statusLogs : [];
-                      const latestLog = logs.length > 0 ? logs[logs.length - 1] : null;
+                      const logs = Array.isArray(item.statusLogs)
+                        ? item.statusLogs
+                        : [];
+                      const latestLog =
+                        logs.length > 0 ? logs[logs.length - 1] : null;
                       const fileUrl = getFileUrl(item.fileSurat);
-                      const fileName = item.fileSurat ? item.fileSurat.split("/").pop() : "surat-permohonan";
+                      const fileName = item.fileSurat
+                        ? item.fileSurat.split("/").pop()
+                        : "surat-permohonan";
 
                       return (
                         <Fragment key={item.id}>
@@ -257,10 +301,13 @@ const PermintaanDataPage = () => {
                             }`}
                           >
                             <td className="py-3 font-bold uppercase text-gray-800">
-                              {item.jenisData}
+                              {Array.isArray(item.jenisData)
+                                ? item.jenisData.join(", ")
+                                : item.jenisData}
                             </td>
                             <td className="py-3 text-gray-600">
-                              {item.periodeDari || "-"} s/d {item.periodeSampai || "-"}
+                              {item.periodeDari || "-"} s/d{" "}
+                              {item.periodeSampai || "-"}
                             </td>
                             <td className="py-3 text-center">
                               {item.fileSurat ? (
@@ -290,7 +337,9 @@ const PermintaanDataPage = () => {
                                   Unduh
                                 </a>
                               ) : (
-                                <span className="text-xs text-gray-400 italic">-</span>
+                                <span className="text-xs text-gray-400 italic">
+                                  -
+                                </span>
                               )}
                             </td>
 
@@ -324,7 +373,9 @@ const PermintaanDataPage = () => {
                                 }}
                                 className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800"
                               >
-                                <span>{isExpanded ? "Tutup" : `Lihat (${logs.length})`}</span>
+                                <span>
+                                  {isExpanded ? "Tutup" : `Lihat (${logs.length})`}
+                                </span>
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   className={`h-4 w-4 transition-transform duration-200 ${
@@ -361,7 +412,9 @@ const PermintaanDataPage = () => {
                                           {log.status}
                                         </p>
                                         <p className="text-xs text-gray-500">
-                                          {new Date(log.timestamp).toLocaleString("id-ID")}
+                                          {new Date(log.timestamp).toLocaleString(
+                                            "id-ID"
+                                          )}
                                         </p>
                                         {log.note && (
                                           <p className="text-sm text-gray-600 mt-1 italic">
@@ -401,7 +454,7 @@ const PermintaanDataPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col space-y-2">
                   <label className="text-sm font-semibold text-gray-700">
-                    Nama Lengkap:
+                    Nama Lengkap: <span className="text-red-500">*</span>
                   </label>
                   <input
                     name="nama"
@@ -422,51 +475,59 @@ const PermintaanDataPage = () => {
                     onChange={handleChange}
                     type="text"
                     className="border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-600 outline-none"
-                    required
                   />
                 </div>
               </div>
 
+              {/* Jenis Data (Checkbox) + Periode */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="flex flex-col space-y-2">
                   <label className="text-sm font-semibold text-gray-700">
-                    Jenis Data:
+                    Jenis Data: <span className="text-red-500">*</span>
                   </label>
-                  <select
-                    name="jenisData"
-                    value={formData.jenisData}
-                    onChange={handleChange}
-                    className="border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-600 bg-white outline-none"
-                    required
-                  >
-                    <option value="">Pilih Jenis Data</option>
-                    <option value="debit">Data Debit</option>
-                    <option value="curahhujan">Data Curah Hujan</option>
-                    <option value="kualitasair">Data Kualitas Air</option>
-                  </select>
+                  <div className="flex flex-col space-y-2 pt-1">
+                    {JENIS_DATA_OPTIONS.map((option) => (
+                      <label
+                        key={option.value}
+                        className="inline-flex items-center space-x-2.5 cursor-pointer text-sm text-gray-700"
+                      >
+                        <input
+                          type="checkbox"
+                          value={option.value}
+                          checked={formData.jenisData.includes(option.value)}
+                          onChange={() => handleJenisDataChange(option.value)}
+                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                        />
+                        <span>{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
                 <div className="flex flex-col space-y-2">
                   <label className="text-sm font-semibold text-gray-700">
-                    Dari:
+                    Dari: <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
                     name="periodeDari"
                     value={formData.periodeDari}
                     onChange={handleChange}
-                    className="border border-gray-300 p-2 rounded outline-none"
+                    className="border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-600 outline-none"
+                    required
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
                   <label className="text-sm font-semibold text-gray-700">
-                    Sampai:
+                    Sampai: <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
                     name="periodeSampai"
                     value={formData.periodeSampai}
                     onChange={handleChange}
-                    className="border border-gray-300 p-2 rounded outline-none"
+                    min={formData.periodeDari || undefined}
+                    className="border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-600 outline-none"
+                    required
                   />
                 </div>
               </div>
@@ -474,14 +535,15 @@ const PermintaanDataPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col space-y-2">
                   <label className="text-sm font-semibold text-gray-700">
-                    Email:
+                    Email: <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="border border-gray-300 p-2 rounded outline-none"
+                    className="border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-600 outline-none"
+                    required
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
@@ -500,14 +562,15 @@ const PermintaanDataPage = () => {
 
               <div className="flex flex-col space-y-2">
                 <label className="text-sm font-semibold text-gray-700">
-                  Tujuan Penggunaan:
+                  Tujuan Penggunaan: <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   name="tujuan"
                   value={formData.tujuan}
                   onChange={handleChange}
                   rows="4"
-                  className="border border-gray-300 p-2 rounded outline-none"
+                  className="border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-600 outline-none"
+                  required
                 ></textarea>
               </div>
 
@@ -525,9 +588,10 @@ const PermintaanDataPage = () => {
                   required
                   className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 cursor-pointer"
                 />
-                {!isFileSelected && (
+                {(!isJenisDataSelected || !isFileSelected) && (
                   <p className="text-xs text-amber-600 italic">
-                    * Lampirkan file surat permohonan untuk mengaktifkan tombol kirim.
+                    - Pilih minimal satu jenis data dan lampirkan file surat
+                    permohonan untuk mengaktifkan tombol kirim.
                   </p>
                 )}
               </div>
@@ -535,9 +599,9 @@ const PermintaanDataPage = () => {
               <div className="flex justify-end pt-4">
                 <button
                   type="submit"
-                  disabled={!isFileSelected}
+                  disabled={!isFormValid}
                   className={`font-bold py-3 px-10 rounded shadow-lg transition-all ${
-                    isFileSelected
+                    isFormValid
                       ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
                       : "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none"
                   }`}
