@@ -10,8 +10,14 @@ export const getLayananTerpadu = async (params) => {
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw new Error("An unexpected error occurred.");
+      throw new Error(
+        error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "Gagal mengambil data layanan terpadu."
+      );
     }
+    throw error;
   }
 };
 
@@ -56,7 +62,13 @@ export const getLayananTerpaduDetail = async (id) => {
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw new Error("An unexpected error occurred.");
+      throw new Error(
+        error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "Gagal mengambil detail layanan terpadu."
+      );
     }
+    throw error;
   }
 };

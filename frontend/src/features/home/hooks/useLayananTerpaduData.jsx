@@ -11,7 +11,7 @@ export const useLayananTerpaduData = () => {
     const fetchLayananTerpadu = async () => {
       try {
         setLoading(true);
-        const response = await getLayananTerpadu();
+        const response = await getLayananTerpadu({ publicOnly: true, limit: 1000 });
 
         if (response) {
           // Tangani jika response berbentuk { data: [...] } atau array langsung

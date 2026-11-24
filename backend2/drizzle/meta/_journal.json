@@ -92,6 +92,20 @@
       "when": 1794282667901,
       "tag": "0012_workable_triathlon",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1795449600000,
+      "tag": "0013_layanan_visibility_order",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1795536000000,
+      "tag": "0014_layanan_clickable_platforms",
+      "breakpoints": true
     }
   ]
 }

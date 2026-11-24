@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { db } from '../db';
 import { layananTerpadu } from '../db/schema';
-import { eq, like, desc, asc, count } from 'drizzle-orm';
+import { eq, like, desc, asc, count, and } from 'drizzle-orm';
 import path from 'path';
 import fs from 'fs/promises';
 import { existsSync } from 'fs';
@@ -9,6 +9,12 @@ import { authentication } from '../middleware/authentication';
 import { getPublicUploadUrl } from '../lib/public-url';
 
 const app = new Hono();
+const supportedPlatforms = ['internal', 'external', 'android', 'ios', 'deeplink', 'download'];
+
+const parseBoolean = (value: unknown, fallback: boolean) => {
+  if (value === undefined) return fallback;
+  return value === true || value === 'true' || value === '1';
+};
 
 // Helper penentuan protokol (HTTPS / HTTP)
 const getProtocol = (c: any) =>
@@ -43,6 +49,18 @@ const deleteFile = async (folderName: string, fileName: string) => {
   }
 };
 
+const deleteUploadedLayananImage = async (imageValue: string | null) => {
+  if (!imageValue) return;
+
+  try {
+    const imagePath = new URL(imageValue).pathname;
+    if (!imagePath.includes('/uploads/layanan-terpadu/')) return;
+    await deleteFile('layanan-terpadu', path.basename(imagePath));
+  } catch {
+    // Icon names and non-URL values are stored in img too; they are not files.
+  }
+};
+
 // ==========================================
 // RUTE PUBLIK (READ / GET)
 // ==========================================
@@ -55,12 +73,16 @@ app.get('/', async (c) => {
     const offset = (page - 1) * limit;
 
     const searchQuery = (c.req.query('search') || '').toLowerCase();
+    const publicOnly = c.req.query('publicOnly') === 'true';
     const sortParam = c.req.query('sort') || 'newest';
-    const orderBy = sortParam === 'oldest' ? asc(layananTerpadu.createdAt) : desc(layananTerpadu.createdAt);
+    const orderBy = publicOnly || sortParam === 'displayOrder'
+      ? [asc(layananTerpadu.displayOrder), asc(layananTerpadu.id)]
+      : [sortParam === 'oldest' ? asc(layananTerpadu.createdAt) : desc(layananTerpadu.createdAt)];
 
-    const whereClause = searchQuery
-      ? like(layananTerpadu.title, `%${searchQuery}%`)
-      : undefined;
+    const filters = [];
+    if (searchQuery) filters.push(like(layananTerpadu.title, `%${searchQuery}%`));
+    if (publicOnly) filters.push(eq(layananTerpadu.isVisible, true));
+    const whereClause = filters.length ? and(...filters) : undefined;
 
     // Hitung Total Data
     const [{ totalItems }] = await db
@@ -73,7 +95,7 @@ app.get('/', async (c) => {
       .select()
       .from(layananTerpadu)
       .where(whereClause)
-      .orderBy(orderBy)
+      .orderBy(...orderBy)
       .limit(limit)
       .offset(offset);
 
@@ -87,6 +109,9 @@ app.get('/', async (c) => {
       platform: item.platform,
       description: item.description,
       img: item.img ? item.img.replace(/^https?:\/\//i, `${protocol}://`) : null,
+      isVisible: item.isVisible,
+      isClickable: item.isClickable,
+      displayOrder: item.displayOrder,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
     }));
@@ -131,6 +156,9 @@ app.get('/:id', async (c) => {
         platform: item.platform,
         description: item.description,
         img: item.img ? item.img.replace(/^https?:\/\//i, `${protocol}://`) : null,
+        isVisible: item.isVisible,
+        isClickable: item.isClickable,
+        displayOrder: item.displayOrder,
         createdAt: item.createdAt,
         updatedAt: item.updatedAt,
       },
@@ -154,18 +182,26 @@ app.post('/', authentication, async (c) => {
     const url = (formData['url'] as string)?.trim();
     const platform = (formData['platform'] as string)?.trim();
     const description = (formData['description'] as string)?.trim();
+    const isVisible = parseBoolean(formData['isVisible'], true);
+    const isClickable = parseBoolean(formData['isClickable'], true);
+    const displayOrderRaw = Number(formData['displayOrder'] ?? 0);
+    const displayOrder = Number.isInteger(displayOrderRaw) ? displayOrderRaw : 0;
 
     const file = (formData['img'] || formData['file'] || formData['image']) as File;
+    const iconName = (formData['imgIcon'] as string | undefined)?.trim();
 
     if (!title || !url || !platform || !description) {
       return c.json({ message: 'Title, URL, platform, and description are required' }, 400);
     }
+    if (!supportedPlatforms.includes(platform)) {
+      return c.json({ message: 'Unsupported platform' }, 400);
+    }
 
-    let imageUrl: string | null = null;
+    let imageValue: string | null = iconName || null;
 
     if (file && typeof file !== 'string' && file instanceof File && file.size > 0) {
       const filename = await saveUploadedFile(file, 'layanan-terpadu');
-      imageUrl = getPublicUploadUrl(c.req.url, 'layanan-terpadu', filename);
+      imageValue = getPublicUploadUrl(c.req.url, 'layanan-terpadu', filename);
     }
 
     const [inserted] = await db
@@ -175,7 +211,10 @@ app.post('/', authentication, async (c) => {
         url,
         platform,
         description,
-        img: imageUrl,
+        img: imageValue,
+        isVisible,
+        isClickable,
+        displayOrder,
       })
       .returning();
 
@@ -207,16 +246,28 @@ app.put('/:id', authentication, async (c) => {
     const url = (formData['url'] as string)?.trim() || existing.url;
     const platform = (formData['platform'] as string)?.trim() || existing.platform;
     const description = (formData['description'] as string)?.trim() || existing.description;
+    const isVisible = parseBoolean(formData['isVisible'], existing.isVisible);
+    const isClickable = parseBoolean(formData['isClickable'], existing.isClickable);
+    const displayOrderRaw = formData['displayOrder'] === undefined
+      ? existing.displayOrder
+      : Number(formData['displayOrder']);
+    const displayOrder = Number.isInteger(displayOrderRaw) ? displayOrderRaw : existing.displayOrder;
 
     const file = (formData['img'] || formData['file'] || formData['image']) as File;
+    const iconName = (formData['imgIcon'] as string | undefined)?.trim();
+    const clearImage = parseBoolean(formData['clearImg'], false);
+
+    if (!supportedPlatforms.includes(platform)) {
+      return c.json({ message: 'Unsupported platform' }, 400);
+    }
 
     let newImageUrl = existing.img;
 
-    if (file && typeof file !== 'string' && file instanceof File && file.size > 0) {
-      if (existing.img) {
-        const oldFileName = path.basename(existing.img);
-        await deleteFile('layanan-terpadu', oldFileName);
-      }
+    if (clearImage || iconName) {
+      await deleteUploadedLayananImage(existing.img);
+      newImageUrl = clearImage ? null : iconName;
+    } else if (file && typeof file !== 'string' && file instanceof File && file.size > 0) {
+      await deleteUploadedLayananImage(existing.img);
       const filename = await saveUploadedFile(file, 'layanan-terpadu');
       newImageUrl = getPublicUploadUrl(c.req.url, 'layanan-terpadu', filename);
     }
@@ -229,6 +280,9 @@ app.put('/:id', authentication, async (c) => {
         platform,
         description,
         img: newImageUrl,
+        isVisible,
+        isClickable,
+        displayOrder,
         updatedAt: new Date().toISOString(),
       })
       .where(eq(layananTerpadu.id, id))
@@ -256,10 +310,7 @@ app.delete('/:id', authentication, async (c) => {
       return c.json({ message: 'Layanan not found' }, 404);
     }
 
-    if (existing.img) {
-      const fileName = path.basename(existing.img);
-      await deleteFile('layanan-terpadu', fileName);
-    }
+    await deleteUploadedLayananImage(existing.img);
 
     await db.delete(layananTerpadu).where(eq(layananTerpadu.id, id));
 

@@ -9,6 +9,34 @@ import { deleteLayananTerpadu } from "../../../../services/layanan-terpadu";
 import { toast } from "sonner";
 import { useLayananTerpaduData } from "../hooks/useLayananTerpaduData";
 import { useNavigate } from "react-router-dom";
+import { Globe } from "lucide-react";
+import {
+  isLayananIcon,
+  isLayananImageUrl,
+  LAYANAN_COLOR_PALETTE,
+  LAYANAN_ICON_MAP,
+} from "../../../layanan/layanan-terpadu/icons";
+
+const IconCell = ({ item }) => {
+  const [imageFailed, setImageFailed] = useState(false);
+  const palette = LAYANAN_COLOR_PALETTE[(item.displayOrder || 0) % LAYANAN_COLOR_PALETTE.length];
+  const Icon = isLayananIcon(item.img) ? LAYANAN_ICON_MAP[item.img] : Globe;
+
+  return (
+    <div className={`flex h-10 w-10 items-center justify-center overflow-hidden rounded-full ${palette.background}`}>
+      {isLayananImageUrl(item.img) && !imageFailed ? (
+        <img
+          src={item.img}
+          alt={item.title}
+          onError={() => setImageFailed(true)}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        <Icon className={`h-5 w-5 ${palette.color}`} />
+      )}
+    </div>
+  );
+};
 
 const ListPage = () => {
   const navigate = useNavigate();
@@ -29,8 +57,23 @@ const ListPage = () => {
       headerClassName: "text-left font-bold",
     },
     {
+      header: "Icon",
+      accessor: "icon",
+      headerClassName: "text-left font-bold",
+    },
+    {
       header: "Platform",
       accessor: "platform",
+      headerClassName: "text-left font-bold",
+    },
+    {
+      header: "Urutan",
+      accessor: "displayOrder",
+      headerClassName: "text-left font-bold",
+    },
+    {
+      header: "Aktif",
+      accessor: "isVisible",
       headerClassName: "text-left font-bold",
     },
     {
@@ -43,6 +86,8 @@ const ListPage = () => {
   const data = layananTerpaduData.map((item) => {
     return {
       ...item,
+      icon: <IconCell item={item} />,
+      isVisible: item.isVisible ? "Ya" : "Tidak",
       action: (
         <div className="flex flex-row gap-3">
           <Button onClick={() => handleDetail(item.id)}>Edit</Button>

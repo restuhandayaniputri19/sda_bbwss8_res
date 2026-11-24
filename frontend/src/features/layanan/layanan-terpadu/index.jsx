@@ -1,69 +1,31 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  FileText,
-  AlertTriangle,
-  Database,
-  MessageSquare,
-  ShieldAlert,
-  Globe,
-  ExternalLink,
-} from "lucide-react";
+import { ExternalLink, Globe } from "lucide-react";
 import { useLayananTerpaduData } from "../../home/hooks/useLayananTerpaduData";
+import {
+  isLayananIcon,
+  isLayananImageUrl,
+  LAYANAN_COLOR_PALETTE,
+  LAYANAN_ICON_MAP,
+} from "./icons";
 
-// 1. Daftar Layanan Fixed/Statis Internal Aplikasi
-const fixedLayananItems = [
-  {
-    id: "fixed-rekomtek",
-    to: "/layanan/rekomtek",
-    label: "Rekomtek",
-    desc: "Rekomendasi Teknis SDA",
-    icon: FileText,
-    color: "text-blue-500",
-    bg: "bg-blue-50",
-    isExternal: false,
-  },
-  {
-    id: "fixed-posko-banjir",
-    to: "/layanan/posko-banjir",
-    label: "Posko Banjir",
-    desc: "Informasi Posko Banjir",
-    icon: AlertTriangle,
-    color: "text-amber-500",
-    bg: "bg-amber-50",
-    isExternal: false,
-  },
-  {
-    id: "fixed-permintaan-data",
-    to: "/layanan/permintaan-data",
-    label: "Permintaan Data",
-    desc: "Ajukan Permintaan Data SDA",
-    icon: Database,
-    color: "text-green-500",
-    bg: "bg-green-50",
-    isExternal: false,
-  },
-  {
-    id: "fixed-pengaduan",
-    to: "/layanan/pengaduan-masyarakat",
-    label: "Pengaduan Masyarakat",
-    desc: "Sampaikan Pengaduan Anda",
-    icon: MessageSquare,
-    color: "text-purple-500",
-    bg: "bg-purple-50",
-    isExternal: false,
-  },
-  {
-    id: "fixed-whistleblowing",
-    to: "/whistleblowing",
-    label: "Whistleblowing",
-    desc: "Laporkan Pelanggaran Secara Aman",
-    icon: ShieldAlert,
-    color: "text-red-500",
-    bg: "bg-red-50",
-    isExternal: false,
-  },
-];
+const LayananVisual = ({ item }) => {
+  const [imageFailed, setImageFailed] = useState(false);
+  const Icon = item.icon || Globe;
+
+  if (item.img && !imageFailed) {
+    return (
+      <img
+        src={item.img}
+        alt={item.label}
+        onError={() => setImageFailed(true)}
+        className="w-full h-full object-cover"
+      />
+    );
+  }
+
+  return <Icon className={`w-7 h-7 ${item.color}`} />;
+};
 
 const LayananTerpaduPage = () => {
   // Ambil data dinamis dari database backend via Hook
@@ -71,23 +33,27 @@ const LayananTerpaduPage = () => {
 
   // Gabungkan items fixed dengan item dari database
   const combinedLayananItems = useMemo(() => {
-    if (!Array.isArray(layananTerpaduData)) return fixedLayananItems;
+    if (!Array.isArray(layananTerpaduData)) return [];
 
-    // Mapping item database agar memiliki format/struktur objek yang sama
-    const dynamicItems = layananTerpaduData.map((dbItem) => ({
-      id: dbItem.id,
-      to: dbItem.url || "#",
-      label: dbItem.title,
-      desc: dbItem.description,
-      platform: dbItem.platform,
-      img: dbItem.img, // Menggunakan gambar dari upload jika ada
-      icon: Globe, // Default icon lucide jika tidak ada gambar
-      color: "text-indigo-600",
-      bg: "bg-indigo-50",
-      isExternal: true, // Item dari database umumnya mengarah ke URL eksternal/portal
-    }));
+    return layananTerpaduData
+      .filter((item) => item.isVisible !== false)
+      .map((item, index) => {
+        const palette = LAYANAN_COLOR_PALETTE[index % LAYANAN_COLOR_PALETTE.length];
+        const iconName = isLayananIcon(item.img) ? item.img : "Globe";
 
-    return [...fixedLayananItems, ...dynamicItems];
+        return {
+          id: item.id,
+          to: item.url || "#",
+          label: item.title,
+          desc: item.description,
+          platform: item.platform,
+          img: isLayananImageUrl(item.img) ? item.img : null,
+          icon: LAYANAN_ICON_MAP[iconName] || Globe,
+          color: palette.color,
+          bg: palette.background,
+          isClickable: item.isClickable !== false,
+        };
+      });
   }, [layananTerpaduData]);
 
   return (
@@ -122,17 +88,15 @@ const LayananTerpaduPage = () => {
         </div>
       )}
 
-      {/* Grid Layanan (Fixed + Database) */}
+      {/* Grid Layanan dari database */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {combinedLayananItems.map((item, i) => {
-          const Icon = item.icon;
-
-          // Render tautan eksternal (Database) vs internal (React Router)
-          const isExternal = item.isExternal;
+          const isInternal = item.platform === "internal";
+          const opensExternally = ["external", "android", "ios"].includes(item.platform);
+          const isDownload = item.platform === "download";
 
           const cardContent = (
-            <div className="flex flex-col items-center text-center p-8 border border-gray-100 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all group relative h-full justify-between bg-white">
-              {/* Badge Eksternal / Platform */}
+            <div className={`flex flex-col items-center text-center p-8 border border-gray-100 rounded-xl shadow-sm transition-all group relative h-full justify-between bg-white ${item.isClickable ? "hover:shadow-md hover:-translate-y-1" : ""}`}>
               {item.platform && (
                 <span className="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full">
                   {item.platform}
@@ -140,26 +104,17 @@ const LayananTerpaduPage = () => {
               )}
 
               <div className="flex flex-col items-center">
-                {/* Visual Icon / Custom Image */}
                 <div
                   className={`w-16 h-16 rounded-full ${
                     item.bg || "bg-indigo-50"
                   } flex items-center justify-center mb-4 overflow-hidden shadow-inner`}
                 >
-                  {item.img ? (
-                    <img
-                      src={item.img}
-                      alt={item.label}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <Icon className={`w-7 h-7 ${item.color || "text-indigo-600"}`} />
-                  )}
+                  <LayananVisual item={item} />
                 </div>
 
                 <h2 className="text-lg font-bold text-gray-800 group-hover:text-indigo transition-colors flex items-center gap-1">
                   {item.label}
-                  {isExternal && (
+                  {item.isClickable && !isInternal && (
                     <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-indigo" />
                   )}
                 </h2>
@@ -171,13 +126,30 @@ const LayananTerpaduPage = () => {
             </div>
           );
 
-          if (isExternal) {
+          if (!item.isClickable) {
+            return (
+              <div key={item.id || i} className="h-full">
+                {cardContent}
+              </div>
+            );
+          }
+
+          if (isInternal) {
+            return (
+              <Link key={item.id || i} to={item.to} className="block h-full">
+                {cardContent}
+              </Link>
+            );
+          }
+
+          if (opensExternally || item.platform === "deeplink" || isDownload) {
             return (
               <a
                 key={item.id || i}
                 href={item.to}
-                target="_blank"
-                rel="noopener noreferrer"
+                target={item.platform === "deeplink" ? "_self" : "_blank"}
+                rel={item.platform === "deeplink" ? undefined : "noopener noreferrer"}
+                download={isDownload ? true : undefined}
                 className="block h-full"
               >
                 {cardContent}
@@ -186,9 +158,9 @@ const LayananTerpaduPage = () => {
           }
 
           return (
-            <Link key={item.id || i} to={item.to} className="block h-full">
+            <a key={item.id || i} href={item.to} target="_blank" rel="noopener noreferrer" className="block h-full">
               {cardContent}
-            </Link>
+            </a>
           );
         })}
       </div>

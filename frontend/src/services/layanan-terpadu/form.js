@@ -1,19 +1,19 @@
 import { z } from "zod";
 
 // Define the schema
-export const layananTerpaduSchema = (isEdit) =>
+export const layananTerpaduSchema = () =>
   z.object({
     title: z
       .string()
       .min(3, { message: "Title must be at least 3 characters" }),
-    platform: z.enum(["website", "mobile"], {
+    platform: z.enum(["internal", "external", "android", "ios", "deeplink", "download"], {
       errorMap: () => ({ message: "Platform selection is required" }),
     }),
     url: z.string().min(1, { message: "url is required" }),
     description: z.string(),
-    img: isEdit
-      ? z.any().optional() // Optional when editing
-      : z
-          .any()
-          .refine((file) => file?.length > 0, { message: "Image is required" }), // Required when creating
+    isVisible: z.boolean().default(true),
+    isClickable: z.boolean().default(true),
+    displayOrder: z.coerce.number().int().min(0, { message: "Urutan harus 0 atau lebih" }),
+    imgIcon: z.string().optional(),
+    img: z.any().optional(),
   });

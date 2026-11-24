@@ -6,7 +6,7 @@ export const useLayananTerpaduData = () => {
   const [layananTerpaduData, setLayananTerpaduData] = useState([]);
   const [params, setParams] = useState({
     page: 0,
-    sort: "newest",
+    sort: "displayOrder",
     search: "",
   });
   const [paginationInfo, setPaginationInfo] = useState({

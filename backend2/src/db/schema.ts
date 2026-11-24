@@ -462,6 +462,9 @@ export const layananTerpadu = sqliteTable('layanan_terpadu', {
   platform: text('platform').notNull(),
   description: text('description').notNull(),
   img: text('img'), // Opsional (bisa null)
+  isVisible: integer('is_visible', { mode: 'boolean' }).notNull().default(true),
+  isClickable: integer('is_clickable', { mode: 'boolean' }).notNull().default(true),
+  displayOrder: integer('display_order').notNull().default(0),
   createdAt: text('created_at')
     .notNull()
     .default(sql`(CURRENT_TIMESTAMP)`),
