@@ -18,7 +18,9 @@ const initialFormState = {
   email: "",
   telepon: "",
   tujuan: "",
-  file: null,
+  fileSurat: null,
+  fileIdentitas: null,
+  fileTambahan: null,
 };
 
 const getFileUrl = (filePath) => {
@@ -44,11 +46,24 @@ const PermintaanDataPage = () => {
 
   // State untuk dropdown/accordion Log Status pada tabel riwayat
   const [expandedRowId, setExpandedRowId] = useState(null);
-  const fileInputRef = useRef(null);
+  const fileSuratInputRef = useRef(null);
+  const fileIdentitasInputRef = useRef(null);
+  const fileTambahanInputRef = useRef(null);
 
-  const isFileSelected = formData.file !== null;
   const isJenisDataSelected = formData.jenisData.length > 0;
-  const isFormValid = isFileSelected && isJenisDataSelected;
+  const isPhoneVerified = formData.telepon.trim() === verifiedNumber.trim();
+  const isFormValid =
+    Boolean(formData.nama.trim()) &&
+    Boolean(formData.telepon.trim()) &&
+    isPhoneVerified &&
+    Boolean(formData.email.trim()) &&
+    Boolean(formData.periodeDari) &&
+    Boolean(formData.periodeSampai) &&
+    formData.periodeSampai >= formData.periodeDari &&
+    Boolean(formData.tujuan.trim()) &&
+    isJenisDataSelected &&
+    Boolean(formData.fileSurat) &&
+    Boolean(formData.fileIdentitas);
 
   useEffect(() => {
     const expiry = localStorage.getItem("verified_until");
@@ -76,6 +91,16 @@ const PermintaanDataPage = () => {
       });
       if (response.data.success) {
         setHistory(response.data.data);
+        const latestRequest = response.data.data?.[0];
+        if (latestRequest) {
+          setFormData((prev) => ({
+            ...prev,
+            nama: prev.nama || latestRequest.namaLengkap || "",
+            instansi: prev.instansi || latestRequest.instansi || "",
+            email: prev.email || latestRequest.email || "",
+            telepon: prev.telepon || latestRequest.noWa || noWa,
+          }));
+        }
       }
     } catch (error) {
       console.error("Gagal mengambil riwayat:", error);
@@ -87,6 +112,7 @@ const PermintaanDataPage = () => {
   const handleVerificationSuccess = (noWa) => {
     setIsVerified(true);
     setVerifiedNumber(noWa);
+    setShowAuthForm(false);
     setFormData((prev) => ({ ...prev, telepon: noWa }));
     fetchHistory(noWa);
   };
@@ -128,6 +154,16 @@ const PermintaanDataPage = () => {
       return;
     }
 
+    if (!formData.nama.trim() || !formData.telepon.trim()) {
+      alert("Nama dan telepon wajib diisi.");
+      return;
+    }
+
+    if (!isPhoneVerified) {
+      alert("Verifikasi nomor telepon yang baru sebelum mengirim permintaan.");
+      return;
+    }
+
     if (
       formData.periodeDari &&
       formData.periodeSampai &&
@@ -137,8 +173,8 @@ const PermintaanDataPage = () => {
       return;
     }
 
-    if (!formData.file) {
-      alert("Silakan pilih file surat permohonan terlebih dahulu.");
+    if (!formData.fileSurat || !formData.fileIdentitas) {
+      alert("Surat Permintaan dan Identitas diri wajib dilampirkan.");
       return;
     }
 
@@ -150,9 +186,11 @@ const PermintaanDataPage = () => {
     payload.append("periodeDari", formData.periodeDari);
     payload.append("periodeSampai", formData.periodeSampai);
     payload.append("email", formData.email);
-    payload.append("noWa", verifiedNumber);
+    payload.append("noWa", formData.telepon.trim());
     payload.append("tujuanPenggunaan", formData.tujuan);
-    payload.append("fileSurat", formData.file);
+    payload.append("fileSurat", formData.fileSurat);
+    payload.append("fileIdentitas", formData.fileIdentitas);
+    if (formData.fileTambahan) payload.append("fileTambahan", formData.fileTambahan);
 
     try {
       const response = await API.post("/api/permintaan-data", payload, {
@@ -163,9 +201,11 @@ const PermintaanDataPage = () => {
 
       if (response.status === 201 || response.data.success) {
         alert("Permintaan berhasil dikirim!");
-        setFormData({ ...initialFormState, telepon: verifiedNumber });
-        if (fileInputRef.current) fileInputRef.current.value = "";
-        fetchHistory(verifiedNumber);
+        setFormData({ ...initialFormState, telepon: formData.telepon.trim() });
+        if (fileSuratInputRef.current) fileSuratInputRef.current.value = "";
+        if (fileIdentitasInputRef.current) fileIdentitasInputRef.current.value = "";
+        if (fileTambahanInputRef.current) fileTambahanInputRef.current.value = "";
+        fetchHistory(formData.telepon.trim());
       }
     } catch (error) {
       const msg =
@@ -180,8 +220,7 @@ const PermintaanDataPage = () => {
     const { name, value, files } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: files ? files[0] : value,
-      telepon: name === "telepon" ? verifiedNumber : prev.telepon,
+      [name]: files ? files[0] || null : value,
     }));
   };
 
@@ -274,7 +313,7 @@ const PermintaanDataPage = () => {
                     <tr className="border-b text-gray-400">
                       <th className="py-2">JENIS DATA</th>
                       <th className="py-2">PERIODE</th>
-                      <th className="py-2 text-center">SURAT</th>
+                      <th className="py-2 text-center">LAMPIRAN</th>
                       <th className="py-2 text-center">STATUS TERAKHIR</th>
                       <th className="py-2 text-right">LOG STATUS</th>
                     </tr>
@@ -287,10 +326,11 @@ const PermintaanDataPage = () => {
                         : [];
                       const latestLog =
                         logs.length > 0 ? logs[logs.length - 1] : null;
-                      const fileUrl = getFileUrl(item.fileSurat);
-                      const fileName = item.fileSurat
-                        ? item.fileSurat.split("/").pop()
-                        : "surat-permohonan";
+                      const attachments = [
+                        { label: "Surat Permintaan", path: item.fileSurat },
+                        { label: "Identitas", path: item.fileIdentitas },
+                        { label: "Dokumen Tambahan", path: item.fileTambahan },
+                      ].filter((attachment) => attachment.path);
 
                       return (
                         <Fragment key={item.id}>
@@ -310,37 +350,25 @@ const PermintaanDataPage = () => {
                               {item.periodeSampai || "-"}
                             </td>
                             <td className="py-3 text-center">
-                              {item.fileSurat ? (
-                                <a
-                                  href={fileUrl}
-                                  download={fileName}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded text-xs font-semibold hover:bg-blue-100 transition"
-                                  title={`Unduh ${fileName}`}
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-3.5 w-3.5"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
-                                    />
-                                  </svg>
-                                  Unduh
-                                </a>
-                              ) : (
-                                <span className="text-xs text-gray-400 italic">
-                                  -
-                                </span>
-                              )}
+                              <div className="flex flex-col items-center gap-1">
+                                {attachments.map((attachment) => {
+                                  const fileName = attachment.path.split("/").pop();
+                                  return (
+                                    <a
+                                      key={attachment.label}
+                                      href={getFileUrl(attachment.path)}
+                                      download={fileName}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="text-xs font-semibold text-blue-700 hover:underline"
+                                    >
+                                      {attachment.label}
+                                    </a>
+                                  );
+                                })}
+                                {attachments.length === 0 && <span className="text-xs text-gray-400">-</span>}
+                              </div>
                             </td>
 
                             {/* Kolom Status Terakhir + Note Terbaru */}
@@ -450,6 +478,14 @@ const PermintaanDataPage = () => {
             <div className="bg-[#1e3a8a] py-4 px-6 text-white font-bold uppercase tracking-widest">
               Form Permintaan Baru
             </div>
+            {showAuthForm && (
+              <div className="max-w-md m-8 rounded-lg border border-blue-100 bg-blue-50 p-4">
+                <VerificationForm
+                  onSuccess={handleVerificationSuccess}
+                  onCancel={() => setShowAuthForm(false)}
+                />
+              </div>
+            )}
             <form className="p-8 bg-white space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col space-y-2">
@@ -548,15 +584,28 @@ const PermintaanDataPage = () => {
                 </div>
                 <div className="flex flex-col space-y-2">
                   <label className="text-sm font-semibold text-gray-700">
-                    No Telepon (Verified):
+                    No Telepon: <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="tel"
                     name="telepon"
                     value={formData.telepon}
-                    disabled
-                    className="bg-gray-100 border border-gray-300 p-2 rounded cursor-not-allowed"
+                    onChange={handleChange}
+                    required
+                    className="border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-600 outline-none"
                   />
+                  {!isPhoneVerified && (
+                    <>
+                      <p className="text-xs text-amber-700">Nomor baru perlu diverifikasi sebelum permintaan dikirim.</p>
+                      <button
+                        type="button"
+                        onClick={() => setShowAuthForm(true)}
+                        className="self-start text-sm font-semibold text-blue-700 hover:underline"
+                      >
+                        Verifikasi nomor ini
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -576,25 +625,55 @@ const PermintaanDataPage = () => {
 
               <div className="flex flex-col space-y-2">
                 <label className="text-sm font-semibold text-gray-700">
-                  Upload Surat (PDF/JPG/PNG maks. 5MB){" "}
+                  Surat Permintaan (PDF/JPG/PNG maks. 5MB){" "}
                   <span className="text-red-500">*Wajib</span>:
                 </label>
                 <input
-                  ref={fileInputRef}
-                  name="file"
+                  ref={fileSuratInputRef}
+                  name="fileSurat"
                   type="file"
                   accept=".pdf,.jpg,.jpeg,.png"
                   onChange={handleChange}
                   required
                   className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 cursor-pointer"
                 />
-                {(!isJenisDataSelected || !isFileSelected) && (
-                  <p className="text-xs text-amber-600 italic">
-                    - Pilih minimal satu jenis data dan lampirkan file surat
-                    permohonan untuk mengaktifkan tombol kirim.
-                  </p>
-                )}
               </div>
+
+              <div className="flex flex-col space-y-2">
+                <label className="text-sm font-semibold text-gray-700">
+                  Identitas Diri (KTP atau Kartu Mahasiswa, PDF/JPG/PNG maks. 5MB){" "}
+                  <span className="text-red-500">*Wajib</span>:
+                </label>
+                <input
+                  ref={fileIdentitasInputRef}
+                  name="fileIdentitas"
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={handleChange}
+                  required
+                  className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 cursor-pointer"
+                />
+              </div>
+
+              <div className="flex flex-col space-y-2">
+                <label className="text-sm font-semibold text-gray-700">
+                  Dokumen Tambahan (PDF/JPG/PNG maks. 5MB, opsional):
+                </label>
+                <input
+                  ref={fileTambahanInputRef}
+                  name="fileTambahan"
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={handleChange}
+                  className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 cursor-pointer"
+                />
+              </div>
+
+              {(!isJenisDataSelected || !formData.fileSurat || !formData.fileIdentitas) && (
+                <p className="text-xs text-amber-600 italic">
+                  - Pilih minimal satu jenis data dan lampirkan Surat Permintaan serta Identitas Diri untuk mengaktifkan tombol kirim.
+                </p>
+              )}
 
               <div className="flex justify-end pt-4">
                 <button

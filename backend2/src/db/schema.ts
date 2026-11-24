@@ -290,6 +290,10 @@ export const permintaanData = sqliteTable('permintaan_data', {
   tujuanPenggunaan: text('tujuan_penggunaan').notNull(),
   
   fileSurat: text('file_surat'),
+
+  fileIdentitas: text('file_identitas'),
+
+  fileTambahan: text('file_tambahan'),
   
   // SQLite tidak memiliki tipe ENUM asli, kita gunakan text dengan pengecekan di level aplikasi
   status: text('status', { enum: ["pending", "diproses", "selesai", "ditolak"] })

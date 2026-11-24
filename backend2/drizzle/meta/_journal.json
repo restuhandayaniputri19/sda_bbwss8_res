@@ -106,6 +106,13 @@
       "when": 1795536000000,
       "tag": "0014_layanan_clickable_platforms",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "6",
+      "when": 1795622400000,
+      "tag": "0015_permintaan_data_attachments",
+      "breakpoints": true
     }
   ]
 }

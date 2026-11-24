@@ -80,6 +80,10 @@ const AdminDetailPermintaanData = () => {
 
   const fullFileUrl = getFileUrl(permohonan.fileSurat);
   const fileName = permohonan.fileSurat ? permohonan.fileSurat.split('/').pop() : "";
+  const fileIdentitasUrl = getFileUrl(permohonan.fileIdentitas);
+  const fileIdentitasName = permohonan.fileIdentitas ? permohonan.fileIdentitas.split('/').pop() : "";
+  const fileTambahanUrl = getFileUrl(permohonan.fileTambahan);
+  const fileTambahanName = permohonan.fileTambahan ? permohonan.fileTambahan.split('/').pop() : "";
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -167,7 +171,7 @@ const AdminDetailPermintaanData = () => {
         </div>
         <div>
           <label className="text-xs font-bold text-gray-400 uppercase">Instansi</label>
-          <p className="text-lg text-gray-900">{permohonan.instansi}</p>
+          <p className="text-lg text-gray-900">{permohonan.instansi || "-"}</p>
         </div>
         <div>
           <label className="text-xs font-bold text-gray-400 uppercase">No. WhatsApp</label>
@@ -210,6 +214,26 @@ const AdminDetailPermintaanData = () => {
             </div>
           ) : (
             <p className="text-gray-400 italic mt-1 text-sm">Tidak ada lampiran file</p>
+          )}
+        </div>
+        <div>
+          <label className="text-xs font-bold text-gray-400 uppercase">Identitas Diri</label>
+          {permohonan.fileIdentitas ? (
+            <a href={fileIdentitasUrl} download={fileIdentitasName} target="_blank" rel="noopener noreferrer" className="mt-2 block text-sm text-blue-700 underline">
+              Unduh {fileIdentitasName}
+            </a>
+          ) : (
+            <p className="text-gray-400 italic mt-1 text-sm">Tidak ada lampiran</p>
+          )}
+        </div>
+        <div>
+          <label className="text-xs font-bold text-gray-400 uppercase">Dokumen Tambahan</label>
+          {permohonan.fileTambahan ? (
+            <a href={fileTambahanUrl} download={fileTambahanName} target="_blank" rel="noopener noreferrer" className="mt-2 block text-sm text-blue-700 underline">
+              Unduh {fileTambahanName}
+            </a>
+          ) : (
+            <p className="text-gray-400 italic mt-1 text-sm">Tidak ada lampiran</p>
           )}
         </div>
         <div className="md:col-span-2">

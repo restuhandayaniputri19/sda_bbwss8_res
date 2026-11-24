@@ -9,6 +9,39 @@ const app = new Hono();
 
 const VALID_STATUSES = ['pending', 'diproses', 'selesai', 'ditolak'] as const;
 type ValidStatus = (typeof VALID_STATUSES)[number];
+const MAX_ATTACHMENT_SIZE = 5 * 1024 * 1024;
+const ALLOWED_MIME_TYPES = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+const ALLOWED_EXTENSIONS = ['.pdf', '.jpg', '.jpeg', '.png'];
+
+const getUploadedFile = (value: unknown): File | null =>
+  value && typeof value !== 'string' && value instanceof File && value.size > 0
+    ? value
+    : null;
+
+const validateAttachment = (file: File, label: string) => {
+  const fileExt = path.extname(file.name).toLowerCase();
+  if (
+    file.size > MAX_ATTACHMENT_SIZE ||
+    !ALLOWED_MIME_TYPES.includes(file.type) ||
+    !ALLOWED_EXTENSIONS.includes(fileExt)
+  ) {
+    return `${label}: unggah PDF, JPG, JPEG, atau PNG dengan ukuran maksimal 5 MB.`;
+  }
+  return null;
+};
+
+const saveAttachment = async (file: File, label: string) => {
+  const uploadDir = path.resolve(process.cwd(), 'uploads', 'surat');
+  await mkdir(uploadDir, { recursive: true });
+
+  const cleanFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+  const fileName = `${Date.now()}-${label}-${cleanFileName}`;
+  const fullPath = path.join(uploadDir, fileName);
+  const arrayBuffer = await file.arrayBuffer();
+  await writeFile(fullPath, Buffer.from(arrayBuffer));
+
+  return `/uploads/surat/${fileName}`;
+};
 
 // 1. GET: Mendapatkan List Permintaan Data
 app.get('/', async (c) => {
@@ -46,77 +79,61 @@ app.get('/', async (c) => {
 app.post('/', async (c) => {
   try {
     const body = await c.req.parseBody();
-    console.log("Data yang diterima untuk permintaan baru:", body);
+    const namaLengkap = typeof body.namaLengkap === 'string' ? body.namaLengkap.trim() : '';
+    const instansi = typeof body.instansi === 'string' ? body.instansi.trim() : '';
+    const jenisData = typeof body.jenisData === 'string' ? body.jenisData.trim() : '';
+    const periodeDari = typeof body.periodeDari === 'string' ? body.periodeDari.trim() : '';
+    const periodeSampai = typeof body.periodeSampai === 'string' ? body.periodeSampai.trim() : '';
+    const email = typeof body.email === 'string' ? body.email.trim() : '';
+    const noWaValue = body.noWa ?? body.noTelepon;
+    const noWa = typeof noWaValue === 'string' ? noWaValue.trim() : '';
+    const tujuanPenggunaan = typeof body.tujuanPenggunaan === 'string' ? body.tujuanPenggunaan.trim() : '';
 
-    let filePath: string | null = null;
-    const file = body['fileSurat'] || body['file'];
-
-    // Konfigurasi aturan validasi file
-    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
-    const ALLOWED_MIME_TYPES = [
-      'application/pdf',
-      'image/jpeg',
-      'image/jpg',
-      'image/png'
-    ];
-    const ALLOWED_EXTENSIONS = ['.pdf', '.jpg', '.jpeg', '.png'];
-
-    // Validasi & Simpan File
-    if (file && typeof file !== 'string') {
-      const fileObject = file as File;
-
-      // A. Validasi Ukuran File
-      if (fileObject.size > MAX_FILE_SIZE) {
-        return c.json({
-          success: false,
-          message: 'Ukuran file terlalu besar! Maksimal ukuran file adalah 5 MB.'
-        }, 400);
-      }
-
-      // B. Validasi Ekstensi / Tipe MIME File
-      const fileExt = path.extname(fileObject.name).toLowerCase();
-      const fileMime = fileObject.type;
-
-      const isMimeValid = ALLOWED_MIME_TYPES.includes(fileMime);
-      const isExtValid = ALLOWED_EXTENSIONS.includes(fileExt);
-
-      if (!isMimeValid || !isExtValid) {
-        return c.json({
-          success: false,
-          message: 'Format file tidak didukung! Harap unggah file berformat PDF, JPG, JPEG, atau PNG.'
-        }, 400);
-      }
-
-      // C. Simpan File ke Disk
-      const uploadDir = path.resolve(process.cwd(), 'uploads', 'surat');
-      await mkdir(uploadDir, { recursive: true });
-
-      const cleanFileName = fileObject.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-      const fileName = `${Date.now()}-${cleanFileName}`;
-      const fullPath = path.join(uploadDir, fileName);
-
-      const arrayBuffer = await fileObject.arrayBuffer();
-      await writeFile(fullPath, Buffer.from(arrayBuffer));
-
-      filePath = `/uploads/surat/${fileName}`;
-    } else {
+    if (!namaLengkap || !noWa || !jenisData || !periodeDari || !periodeSampai || !email || !tujuanPenggunaan) {
       return c.json({
         success: false,
-        message: 'File surat permohonan wajib diunggah!'
+        message: 'Nama, telepon, email, jenis data, periode, dan tujuan penggunaan wajib diisi.'
       }, 400);
     }
 
-    // Insert Data ke Database (Menggunakan filePath, bukan body.fileSurat)
+    const fileSurat = getUploadedFile(body.fileSurat || body.file);
+    const fileIdentitas = getUploadedFile(body.fileIdentitas);
+    const fileTambahan = getUploadedFile(body.fileTambahan);
+
+    if (!fileSurat) {
+      return c.json({ success: false, message: 'Surat permintaan wajib diunggah.' }, 400);
+    }
+    if (!fileIdentitas) {
+      return c.json({ success: false, message: 'Identitas diri (KTP atau Kartu Mahasiswa) wajib diunggah.' }, 400);
+    }
+
+    const attachmentErrors = [
+      validateAttachment(fileSurat, 'Surat permintaan'),
+      validateAttachment(fileIdentitas, 'Identitas diri'),
+      fileTambahan ? validateAttachment(fileTambahan, 'Dokumen tambahan') : null,
+    ].filter(Boolean);
+    if (attachmentErrors.length > 0) {
+      return c.json({ success: false, message: attachmentErrors[0] }, 400);
+    }
+
+    const [fileSuratPath, fileIdentitasPath, fileTambahanPath] = await Promise.all([
+      saveAttachment(fileSurat, 'surat-permintaan'),
+      saveAttachment(fileIdentitas, 'identitas'),
+      fileTambahan ? saveAttachment(fileTambahan, 'tambahan') : Promise.resolve(null),
+    ]);
+
     const result = await db.insert(permintaanData).values({
-      namaLengkap: body.namaLengkap as string,
-      instansi: body.instansi as string,
-      jenisData: body.jenisData as string,
-      periodeDari: body.periodeDari as string,
-      periodeSampai: body.periodeSampai as string,
-      email: body.email as string,
-      noWa: (body.noWa ?? body.noTelepon) as string,
-      tujuanPenggunaan: body.tujuanPenggunaan as string,
-      fileSurat: filePath, // <-- Diperbaiki: simpan path string URL-nya
+      namaLengkap,
+      instansi: instansi || null,
+      jenisData,
+      periodeDari,
+      periodeSampai,
+      email,
+      noWa,
+      tujuanPenggunaan,
+      fileSurat: fileSuratPath,
+      fileIdentitas: fileIdentitasPath,
+      fileTambahan: fileTambahanPath,
       status: 'pending',
       statusLogs: [{
         status: 'pending',
