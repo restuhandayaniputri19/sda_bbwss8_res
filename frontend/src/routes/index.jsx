@@ -54,6 +54,8 @@ import KontakLokasi from "../features/profil/KontakLokasi";
 import PermintaanDataPage from "../features/layanan/permintaan-data";
 import AdminPermintaan from "../features/admin/permintaan-data";
 import AdminDetailPermintaanData from "../features/admin/permintaan-data/detail";
+import AdminPengaduanMasyarakat from "../features/admin/pengaduan-masyarakat";
+import AdminDetailPengaduanMasyarakat from "../features/admin/pengaduan-masyarakat/detail";
 import SatuanKerja from "../features/profil/SatuanKerja";
 import PoskoBanjirPage from "../features/layanan/poskobanjir";
 import RekomtekPage from "../features/layanan/rekomtek";
@@ -350,6 +352,13 @@ export const router = createBrowserRouter(
                   path: ":id", // Ini untuk /layanan/adm-permintaan-data/<id>
                   element: <AdminDetailPermintaanData />,
                 },
+              ],
+            },
+            {
+              path: "pengaduan-masyarakat",
+              children: [
+                { index: true, element: <AdminPengaduanMasyarakat /> },
+                { path: ":id", element: <AdminDetailPengaduanMasyarakat /> },
               ],
             },
             {

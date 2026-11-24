@@ -40,6 +40,10 @@ const LayoutAdmin = () => {
       label: "Permintaan Data",
     },
     {
+      path: "/admin/pengaduan-masyarakat",
+      label: "Pengaduan Masyarakat",
+    },
+    {
       path: "/admin/layanan-terpadu",
       label: "Layanan Terpadu",
     },

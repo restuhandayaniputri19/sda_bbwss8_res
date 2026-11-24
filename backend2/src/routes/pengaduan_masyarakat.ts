@@ -4,6 +4,7 @@ import { pengaduanMasyarakat } from '../db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { authentication } from '../middleware/authentication';
 
 const app = new Hono();
 const ALLOWED_ATTACHMENT_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.pdf', '.doc', '.docx'];
@@ -16,27 +17,19 @@ const ALLOWED_ATTACHMENT_MIME_TYPES = [
 ];
 const MAX_ATTACHMENT_SIZE = 5 * 1024 * 1024;
 
-// 1. GET: List Pengaduan (Filter no_wa atau Ambil Semua)
+// Riwayat publik hanya tersedia dengan filter nomor WhatsApp.
 app.get('/', async (c) => {
   try {
     const noWa = c.req.query('no_wa');
-    console.log(`Mencari pengaduan dengan no_wa: ${noWa}`); // Debug log untuk memastikan query parameter diterima dengan benar
-
-    let results;
-    if (noWa) {
-      results = await db
-        .select()
-        .from(pengaduanMasyarakat)
-        .where(eq(pengaduanMasyarakat.noWa, noWa))
-        .orderBy(desc(pengaduanMasyarakat.createdAt))
-        .all();
-    } else {
-      results = await db
-        .select()
-        .from(pengaduanMasyarakat)
-        .orderBy(desc(pengaduanMasyarakat.createdAt))
-        .all();
+    if (!noWa?.trim()) {
+      return c.json({ success: false, message: 'Gunakan filter no_wa untuk melihat riwayat pengaduan.' }, 400);
     }
+    const results = await db
+      .select()
+      .from(pengaduanMasyarakat)
+      .where(eq(pengaduanMasyarakat.noWa, noWa.trim()))
+      .orderBy(desc(pengaduanMasyarakat.createdAt))
+      .all();
 
     return c.json({
       success: true,
@@ -47,8 +40,22 @@ app.get('/', async (c) => {
   }
 });
 
+// Daftar lengkap hanya untuk pengguna admin yang memiliki JWT valid.
+app.get('/admin', authentication, async (c) => {
+  try {
+    const results = await db
+      .select()
+      .from(pengaduanMasyarakat)
+      .orderBy(desc(pengaduanMasyarakat.createdAt))
+      .all();
+    return c.json({ success: true, data: results });
+  } catch (error) {
+    return c.json({ success: false, message: (error as Error).message }, 500);
+  }
+});
+
 // 2. GET: Detail Pengaduan Berdasarkan ID
-app.get('/:id', async (c) => {
+app.get('/:id', authentication, async (c) => {
   try {
     const id = parseInt(c.req.param('id'), 10);
 
@@ -153,13 +160,18 @@ app.post('/', async (c) => {
 });
 
 // 4. PATCH: Update Status & Log Catatan Penanganan
-app.patch('/:id', async (c) => {
+app.patch('/:id', authentication, async (c) => {
   try {
     const id = parseInt(c.req.param('id'), 10);
     const body = await c.req.json(); // { status, note }
 
     if (isNaN(id)) {
       return c.json({ success: false, message: 'ID tidak valid' }, 400);
+    }
+
+    const allowedStatuses = ['pending', 'diproses', 'selesai', 'ditolak'];
+    if (body.status !== undefined && !allowedStatuses.includes(body.status)) {
+      return c.json({ success: false, message: 'Status pengaduan tidak valid.' }, 400);
     }
 
     const existing = await db
@@ -190,9 +202,57 @@ app.patch('/:id', async (c) => {
       .where(eq(pengaduanMasyarakat.id, id))
       .returning();
 
+    // Kirim status terbaru kepada pelapor hanya saat status benar-benar berubah.
+    let whatsappSent: boolean | null = null;
+    if (existing.noWa && body.status && body.status !== existing.status) {
+      const cleanPhone = existing.noWa
+        .trim()
+        .replace(/^\+/, '')
+        .replace(/^0/, '62')
+        .replace(/\D/g, '');
+      const message = [
+        `*[BBWS Sumatera VIII] Update Pengaduan Masyarakat*`,
+        ``,
+        `Halo *${existing.namaPelapor}*,`,
+        `Status pengaduan Anda telah diperbarui:`,
+        `• *ID Pengaduan:* #${existing.id}`,
+        `• *Kategori:* ${existing.kategori}`,
+        `• *Status Baru:* *${body.status.toUpperCase()}*`,
+        body.note ? `• *Catatan:* ${String(body.note).trim()}` : null,
+        ``,
+        `Terima kasih telah menyampaikan pengaduan kepada BBWS Sumatera VIII.`
+      ].filter(Boolean).join('\n');
+
+      try {
+        if (!process.env.WA_GATEWAY_URL || !process.env.WA_TOKEN) {
+          throw new Error('WA_GATEWAY_URL atau WA_TOKEN belum dikonfigurasi.');
+        }
+        const waResponse = await fetch(`${process.env.WA_GATEWAY_URL}/send`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.WA_TOKEN}`
+          },
+          body: JSON.stringify({ to: cleanPhone, msg: message })
+        });
+        const responseText = await waResponse.text();
+        if (!waResponse.ok) {
+          whatsappSent = false;
+          console.error(`[WA_ERROR] Gagal mengirim status pengaduan. Status: ${waResponse.status}, Detail: ${responseText}`);
+        } else {
+          whatsappSent = true;
+        }
+      } catch (waError) {
+        whatsappSent = false;
+        // Kegagalan gateway tidak membatalkan perubahan status yang sudah tersimpan.
+        console.error('[WA_ERROR] Exception saat mengirim status pengaduan:', waError);
+      }
+    }
+
     return c.json({
       success: true,
-      data: result[0]
+      data: result[0],
+      whatsappSent
     });
   } catch (error) {
     return c.json({ success: false, message: (error as Error).message }, 400);
