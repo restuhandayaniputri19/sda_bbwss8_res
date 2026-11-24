@@ -2,8 +2,19 @@ import { Hono } from 'hono';
 import { db } from '../db'; // Sesuaikan dengan path database Anda
 import { pengaduanMasyarakat } from '../db/schema';
 import { eq, desc } from 'drizzle-orm';
+import { mkdir, writeFile } from 'node:fs/promises';
+import path from 'node:path';
 
 const app = new Hono();
+const ALLOWED_ATTACHMENT_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.pdf', '.doc', '.docx'];
+const ALLOWED_ATTACHMENT_MIME_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+];
+const MAX_ATTACHMENT_SIZE = 5 * 1024 * 1024;
 
 // 1. GET: List Pengaduan (Filter no_wa atau Ambil Semua)
 app.get('/', async (c) => {
@@ -67,29 +78,67 @@ app.get('/:id', async (c) => {
 // 3. POST: Insert Pengaduan Baru
 app.post('/', async (c) => {
   try {
-    const body = await c.req.json();
-    console.log("Data yang diterima untuk pengaduan baru:", body); // Debug log untuk melihat data yang masuk
+    const body = await c.req.parseBody();
+    const namaPelapor = typeof body.namaPelapor === 'string' ? body.namaPelapor.trim() : '';
+    const noWaValue = body.noWa ?? body.telepon;
+    const noWa = typeof noWaValue === 'string' ? noWaValue.trim() : '';
+    const kategori = typeof body.kategori === 'string' ? body.kategori.trim() : '';
+    const lokasi = typeof body.lokasi === 'string' ? body.lokasi.trim() : '';
+    const deskripsi = typeof body.deskripsi === 'string' ? body.deskripsi.trim() : '';
+    const latitude = Number(body.latitude);
+    const longitude = Number(body.longitude);
+    const email = typeof body.email === 'string' ? body.email.trim() : '';
+    const allowedCategories = ['banjir', 'infrastruktur', 'perizinan', 'lainnya'];
 
-    const result = await db
-      .insert(pengaduanMasyarakat)
-      .values({
-        namaPelapor: body.namaPelapor,
-        noWa: body.noWa ?? body.telepon,
-        email: body.email || null,
-        kategori: body.kategori,
-        lokasi: body.lokasi,
-        deskripsi: body.deskripsi,
-        fileLampiran: body.fileLampiran || null,
+    if (!namaPelapor || !noWa || !allowedCategories.includes(kategori) || !lokasi || !deskripsi) {
+      return c.json({ success: false, message: 'Nama, telepon, kategori, lokasi, dan deskripsi wajib diisi.' }, 400);
+    }
+    if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90 || !Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+      return c.json({ success: false, message: 'Titik lokasi pengaduan wajib dipilih dari peta atau lokasi perangkat.' }, 400);
+    }
+
+    const fileValue = body.fileLampiran;
+    const file = fileValue && typeof fileValue !== 'string' && fileValue instanceof File && fileValue.size > 0
+      ? fileValue
+      : null;
+    let filePath: string | null = null;
+
+    if (file) {
+      const extension = path.extname(file.name).toLowerCase();
+      if (file.size > MAX_ATTACHMENT_SIZE) {
+        return c.json({ success: false, message: 'Ukuran lampiran maksimal 5 MB.' }, 400);
+      }
+      if (!ALLOWED_ATTACHMENT_EXTENSIONS.includes(extension) || (file.type && !ALLOWED_ATTACHMENT_MIME_TYPES.includes(file.type))) {
+        return c.json({ success: false, message: 'Format lampiran yang didukung: JPG, PNG, PDF, DOC, atau DOCX.' }, 400);
+      }
+
+      const uploadDir = path.resolve(process.cwd(), 'uploads', 'pengaduan-masyarakat');
+      await mkdir(uploadDir, { recursive: true });
+      const cleanFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const storedFileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}-${cleanFileName}`;
+      const fullPath = path.join(uploadDir, storedFileName);
+      const arrayBuffer = await file.arrayBuffer();
+      await writeFile(fullPath, Buffer.from(arrayBuffer));
+      filePath = `/uploads/pengaduan-masyarakat/${storedFileName}`;
+    }
+
+    const result = await db.insert(pengaduanMasyarakat).values({
+      namaPelapor,
+      noWa,
+      email: email || null,
+      kategori: kategori as 'banjir' | 'infrastruktur' | 'perizinan' | 'lainnya',
+      lokasi,
+      latitude,
+      longitude,
+      deskripsi,
+      fileLampiran: filePath,
+      status: 'pending',
+      statusLogs: [{
         status: 'pending',
-        statusLogs: [
-          {
-            status: 'pending',
-            timestamp: new Date().toISOString(),
-            note: 'Pengaduan berhasil dibuat'
-          }
-        ]
-      })
-      .returning();
+        timestamp: new Date().toISOString(),
+        note: 'Pengaduan berhasil dibuat'
+      }]
+    }).returning();
 
     return c.json(
       {

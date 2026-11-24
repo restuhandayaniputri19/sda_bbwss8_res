@@ -2,7 +2,7 @@
 // Tabel untuk verifikasi OTP dan proteksi Rate Limit
 
 
-import { sqliteTable, text, integer, uniqueIndex, primaryKey } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, real, uniqueIndex, primaryKey } from 'drizzle-orm/sqlite-core';
 import { sql, relations } from 'drizzle-orm';
 import { ulid } from 'ulidx'; // Library ringan untuk ULID
 
@@ -335,6 +335,10 @@ export const pengaduanMasyarakat = sqliteTable('pengaduan_masyarakat', {
   kategori: text('kategori', { enum: KATEGORI_PENGADUAN }).notNull(),
   
   lokasi: text('lokasi').notNull(),
+
+  latitude: real('latitude'),
+
+  longitude: real('longitude'),
   
   deskripsi: text('deskripsi').notNull(),
   

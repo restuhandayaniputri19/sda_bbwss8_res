@@ -181,41 +181,40 @@ auth.post("/send-otp", async (c) => {
       });
 
     const isDev = process.env.NODE_ENV !== "production";
-    
-    if (isDev) {
-      console.log(`[DEV MODE] OTP untuk ${phoneNumber}: ${otpCode} (kadaluwarsa pada ${expiresAt.toLocaleString('id-ID', opsiWaktu)}) WIB`);
-      return c.json({ success: true, message: "OTP terkirim (DEV MODE)", otp: otpCode });
-    } else {
-      console.log(`OTP untuk ${phoneNumber} disimpan di database. Mengirim pesan via WA...`);
-      
-      // Send WA 1 (Pengguna)
-      const waResponse = await fetch(`${process.env.WA_GATEWAY_URL}/send`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.WA_TOKEN}`
-        },
-        body: JSON.stringify({
-          to: phoneNumber.startsWith('+') ? phoneNumber.slice(1) : phoneNumber,
-          msg: `[BBWS Sumatera VIII] OTP: *${otpCode}*, akan kadaluwarsa pada ${expiresAt.toLocaleString('id-ID', opsiWaktu)} WIB.`
-        }),
-      });
+    const gatewayUrl = process.env.WA_GATEWAY_URL?.replace(/\/+$/, "");
+    const waToken = process.env.WA_TOKEN;
+    if (!gatewayUrl || !waToken) {
+      throw new Error("Konfigurasi gateway WhatsApp belum tersedia.");
+    }
 
-      const responseText = await waResponse.text();
-      console.log('Respon Server WA (User):', responseText);
+    console.log(`OTP untuk ${phoneNumber} tersimpan. Mengirim pesan via WA gateway...`);
+    const waResponse = await fetch(`${gatewayUrl}/send`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${waToken}`
+      },
+      body: JSON.stringify({
+        to: phoneNumber.startsWith('+') ? phoneNumber.slice(1) : phoneNumber,
+        msg: `[BBWS Sumatera VIII] OTP: *${otpCode}*, akan kadaluwarsa pada ${expiresAt.toLocaleString('id-ID', opsiWaktu)} WIB.`
+      }),
+    });
 
-      if (!waResponse.ok) {
-        console.error(`[WA_ERROR] Gagal mengirim pesan ke user. Status: ${waResponse.status}, Detail: ${responseText}`);
-        throw new Error(`Gagal mengirim pesan via WA: ${responseText}`);
-      }
+    const responseText = await waResponse.text();
+    console.log('Respon Server WA (User):', responseText);
+    if (!waResponse.ok) {
+      console.error(`[WA_ERROR] Gagal mengirim pesan ke user. Status: ${waResponse.status}, Detail: ${responseText}`);
+      throw new Error(`Gagal mengirim pesan via WA: ${responseText}`);
+    }
 
+    if (!isDev) {
       await delay(3000);
 
       // Send WA 2 (Group Admin Monitoring)
-      const waResponse2 = await fetch(`${process.env.WA_GATEWAY_URL}/send`, {
+      const waResponse2 = await fetch(`${gatewayUrl}/send`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${process.env.WA_TOKEN}`,
+          "Authorization": `Bearer ${waToken}`,
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
@@ -231,9 +230,9 @@ auth.post("/send-otp", async (c) => {
         console.error(`[WA_ERROR] Gagal mengirim pesan ke grup admin. Status: ${waResponse2.status}, Detail: ${responseText2}`);
         throw new Error(`Gagal mengirim pesan monitoring via WA: ${responseText2}`);
       }
-
-      return c.json({ success: true, message: "OTP berhasil dikirim via WhatsApp" });
     }
+
+    return c.json({ success: true, message: "OTP berhasil dikirim via WhatsApp" });
   } catch (error: any) {
     console.error('[SEND-OTP ERROR]:', error);
     return c.json({ success: false, message: error.message || "Gagal memproses permintaan OTP" }, 500);

@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { API } from "../../services";
 import VerificationForm from "../../components/VerificationForm";
 import heroImage from "../../assets/pengaduanmasyarakat.jpeg";
+import { LocateFixed } from "lucide-react";
+import LocationPicker from "./location-picker";
 
 const initialFormState = {
   nama: "",
@@ -23,6 +25,17 @@ const PengaduanMasyarakat = () => {
   const [formData, setFormData] = useState(initialFormState);
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState("");
+  const fileInputRef = useRef(null);
+  const isFormValid =
+    Boolean(formData.nama.trim()) &&
+    Boolean(verifiedNumber.trim()) &&
+    Boolean(formData.kategori) &&
+    Boolean(formData.lokasi.trim()) &&
+    Boolean(formData.deskripsi.trim()) &&
+    Boolean(selectedLocation);
 
   // Cek Sesi Verifikasi saat Komponen Dimuat
   useEffect(() => {
@@ -37,6 +50,7 @@ const PengaduanMasyarakat = () => {
       } else {
         setVerifiedNumber(savedNumber);
         setIsVerified(true);
+        setFormData((prev) => ({ ...prev, telepon: savedNumber }));
         fetchHistory(savedNumber);
       }
     }
@@ -51,6 +65,14 @@ const PengaduanMasyarakat = () => {
       });
       if (response.data?.success) {
         setHistory(response.data.data);
+        const latestComplaint = response.data.data?.[0];
+        if (latestComplaint) {
+          setFormData((prev) => ({
+            ...prev,
+            nama: prev.nama || latestComplaint.namaPelapor || "",
+            email: prev.email || latestComplaint.email || "",
+          }));
+        }
       }
     } catch (error) {
       console.error("Gagal mengambil riwayat pengaduan:", error);
@@ -62,6 +84,7 @@ const PengaduanMasyarakat = () => {
   // Handler Verifikasi Berhasil
   const handleVerificationSuccess = (noWa) => {
     setIsVerified(true);
+    setShowAuthForm(false);
     setVerifiedNumber(noWa);
     setFormData((prev) => ({ ...prev, telepon: noWa }));
     fetchHistory(noWa);
@@ -72,24 +95,56 @@ const PengaduanMasyarakat = () => {
     const { name, value, files } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: files ? files[0] : value,
+      [name]: files ? files[0] || null : value,
       telepon: name === "telepon" ? verifiedNumber : prev.telepon,
     }));
+  };
+
+  const handleUseCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationError("Browser ini tidak mendukung akses lokasi.");
+      return;
+    }
+
+    setLocating(true);
+    setLocationError("");
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        setSelectedLocation({ latitude: coords.latitude, longitude: coords.longitude });
+        setLocating(false);
+      },
+      (error) => {
+        const messages = {
+          1: "Izin lokasi ditolak. Izinkan akses lokasi atau pilih titik pada peta.",
+          2: "Lokasi perangkat tidak tersedia. Pilih titik pada peta.",
+          3: "Pencarian lokasi terlalu lama. Coba lagi atau pilih titik pada peta.",
+        };
+        setLocationError(messages[error.code] || "Gagal mendapatkan lokasi perangkat.");
+        setLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
   };
 
   // Handler Submit Pengaduan
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const dataForBackend = {
-      namaPelapor: formData.nama,
-      noWa: verifiedNumber,
-      email: formData.email,
-      kategori: formData.kategori,
-      lokasi: formData.lokasi,
-      deskripsi: formData.deskripsi,
-      fileLampiran: formData.file,
-    };
+    if (!selectedLocation) {
+      alert("Pilih titik lokasi kejadian pada peta atau gunakan lokasi perangkat.");
+      return;
+    }
+
+    const dataForBackend = new FormData();
+    dataForBackend.append("namaPelapor", formData.nama.trim());
+    dataForBackend.append("noWa", verifiedNumber);
+    dataForBackend.append("email", formData.email.trim());
+    dataForBackend.append("kategori", formData.kategori);
+    dataForBackend.append("lokasi", formData.lokasi.trim());
+    dataForBackend.append("deskripsi", formData.deskripsi.trim());
+    dataForBackend.append("latitude", String(selectedLocation.latitude));
+    dataForBackend.append("longitude", String(selectedLocation.longitude));
+    if (formData.file) dataForBackend.append("fileLampiran", formData.file);
 
     try {
       const response = await API.post("/api/pengaduan-masyarakat", dataForBackend);
@@ -97,6 +152,8 @@ const PengaduanMasyarakat = () => {
       if (response.status === 201 || response.data?.success) {
         alert("Pengaduan berhasil dikirim! Kami akan menindaklanjuti dalam 5 hari kerja.");
         setFormData({ ...initialFormState, telepon: verifiedNumber });
+        setSelectedLocation(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
         fetchHistory(verifiedNumber);
       }
     } catch (error) {
@@ -200,7 +257,23 @@ const PengaduanMasyarakat = () => {
                     {history.map((item) => (
                       <tr key={item.id} className="border-b hover:bg-gray-50">
                         <td className="py-3 font-bold uppercase">{item.kategori}</td>
-                        <td className="py-3 text-gray-600">{item.lokasi}</td>
+                        <td className="py-3 text-gray-600">
+                          <div>{item.lokasi}</div>
+                          {item.latitude !== null && item.latitude !== undefined &&
+                            item.longitude !== null && item.longitude !== undefined &&
+                            Number.isFinite(Number(item.latitude)) &&
+                            Number.isFinite(Number(item.longitude)) && (
+                            <a
+                              href={`https://www.google.com/maps?q=${item.latitude},${item.longitude}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(event) => event.stopPropagation()}
+                              className="mt-1 inline-block text-xs text-blue-700 hover:underline"
+                            >
+                              Lihat titik peta
+                            </a>
+                          )}
+                        </td>
                         <td className="py-3 text-gray-600 truncate max-w-xs">{item.deskripsi}</td>
                         <td className="py-3 text-center">
                           <span
@@ -311,6 +384,39 @@ const PengaduanMasyarakat = () => {
                 />
               </div>
 
+              <div className="flex flex-col space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700">
+                      Titik pada Peta <span className="text-red-500">*</span>
+                    </label>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Ketuk peta untuk memilih titik, atau geser pin ke lokasi kejadian.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleUseCurrentLocation}
+                    disabled={locating}
+                    className="inline-flex items-center gap-2 rounded-md bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100 disabled:cursor-wait disabled:opacity-60"
+                  >
+                    <LocateFixed className="h-4 w-4" />
+                    {locating ? "Mencari lokasi..." : "Gunakan lokasi saat ini"}
+                  </button>
+                </div>
+                {locationError && <p role="alert" className="text-sm text-red-600">{locationError}</p>}
+                <div className="overflow-hidden rounded-lg border border-gray-300">
+                  <LocationPicker value={selectedLocation} onChange={setSelectedLocation} />
+                </div>
+                {selectedLocation ? (
+                  <p className="text-xs text-green-700">
+                    Titik terpilih: {selectedLocation.latitude.toFixed(6)}, {selectedLocation.longitude.toFixed(6)}
+                  </p>
+                ) : (
+                  <p className="text-xs text-amber-700">Pilih titik kejadian sebelum mengirim pengaduan.</p>
+                )}
+              </div>
+
               <div className="flex flex-col space-y-2">
                 <label className="text-sm font-semibold text-gray-700">
                   Deskripsi Pengaduan Lengkap <span className="text-red-500">*</span>
@@ -331,19 +437,25 @@ const PengaduanMasyarakat = () => {
                   Upload Foto / Dokumen Pendukung
                 </label>
                 <input
+                  ref={fileInputRef}
                   name="file"
                   type="file"
                   onChange={handleChange}
-                  accept="image/*,.pdf,.doc,.docx"
+                  accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
                   className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-50 file:text-blue-700 cursor-pointer"
                 />
-                <p className="text-xs text-gray-400">Format: JPG, PNG, PDF (Maks. 5MB)</p>
+                <p className="text-xs text-gray-400">Format: JPG, PNG, PDF, DOC, DOCX (maks. 5 MB), opsional.</p>
               </div>
 
               <div className="flex justify-end pt-4">
                 <button
                   type="submit"
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-10 rounded shadow-lg transition-all text-sm"
+                  disabled={!isFormValid}
+                  className={`font-bold py-3 px-10 rounded shadow-lg transition-all text-sm ${
+                    isFormValid
+                      ? "bg-blue-600 hover:bg-blue-700 text-white"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none"
+                  }`}
                 >
                   Kirim Pengaduan
                 </button>

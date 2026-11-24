@@ -113,6 +113,13 @@
       "when": 1795622400000,
       "tag": "0015_permintaan_data_attachments",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "6",
+      "when": 1795708800000,
+      "tag": "0016_pengaduan_location_coordinates",
+      "breakpoints": true
     }
   ]
 }
